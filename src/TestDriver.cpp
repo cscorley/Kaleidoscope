@@ -80,45 +80,6 @@ Driver::~Driver() {
       exit(1);
    }
 }
- 
-void Driver::queueReportAssertion(std::shared_ptr<_Assertion> &assertion) {
-
-   this->configureReportAssertion(assertion);
-   queued_report_assertions_.push_back(assertion);
-}
- 
-void Driver::queueGroupedReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-
-   queued_report_assertions_.push_back(
-      this->generateAssertionGroup(assertions));
-}
-
-void Driver::removeQueuedReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   this->removeItemsFromList(queued_report_assertions_, assertions);
-}
-
-void Driver::addPermanentReportAssertion(std::shared_ptr<_Assertion> &assertion) {
-   this->configureReportAssertion(assertion);
-   permanent_report_assertions_.push_back(assertion);
-}
-
-void Driver::addPermanentReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   this->configureReportAssertions(assertions);
-   permanent_report_assertions_.insert(
-      permanent_report_assertions_.end(),
-      assertions.begin(),
-      assertions.end()
-   );
-}
-
-void Driver::removePermanentReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   this->removeItemsFromList(permanent_report_assertions_, assertions);
-}
-   
-void Driver::removeReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   this->removeQueuedReportAssertions(assertions);
-   this->removePermanentReportAssertions(assertions);
-}
 
 void Driver::keyDown(uint8_t row, uint8_t col) {
    out_ << "+ Activating key (" << row << ", " << col << ")\n";
@@ -142,46 +103,6 @@ void Driver::clearAllKeys(self) {
          KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
       }
    }
-}
-
-void Driver::queueCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-
-   for(auto &assertion: assertions) {
-      this->configureReportAssertion(assertion);
-   }
-   
-   queued_cycle_assertions_.insert(
-      queued_cycle_assertions_.end(),
-      assertions.begin(),
-      assertions.end()
-   );
-}
-
-void Driver::removeQueuedCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-
-   removeItemsFromList(queued_cycle_assertions_, assertions);
-}
- 
-void Driver::registerPermanentCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-
-   for(auto &assertion: assertions) {
-      this->configureReportAssertion(assertion);
-   }
-   
-   permanent_cycle_assertions_.insert(
-      permanent_cycle_assertions_.end(),
-      assertions.begin(),
-      assertions.end()
-   );
-}
-
-void Driver::removePermanentCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   removeItemsFromList(permanent_cycle_assertions_, assertions);
-}
-
-void Driver::removeCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   this->removeQueuedCycleAssertions(assertions);
-   this->removePermanentCycleAssertions(assertions);
 }
 
 void Driver::scanCycle(std::vector<std::shared_ptr<_Assertion>> 
@@ -265,8 +186,8 @@ bool Driver::checkStatus() const {
    
    bool success = true;
    
-   if(!queued_report_assertions_.empty()) {
-      this->error() << "There are " << queued_report_assertions_.size()
+   if(!queued_keyboard_report_assertions_.empty()) {
+      this->error() << "There are " << queued_keyboard_report_assertions_.size()
          << " left over assertions in the queue";
       success = false;
    }
@@ -309,28 +230,6 @@ void Driver::footerText() {
    out_ << "\n";
 }
 
-void Driver::configureReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   for(auto &assertion: assertions) {
-      this->configureReportAssertion(assertion);
-   }
-}
-      
-void Driver::configureReportAssertion(std::shared_ptr<_Assertion> &assertion) {
-   assertion->setTestDriver(this);
-}
-         
-std::shared_ptr<_Assertion> Driver::generateAssertionGroup(
-      std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   for(const auto &assertion: assertions) {
-      this->configureReportAssertion(assertion);
-   }
-      
-   assertions::Group group{assertions}; 
-   this->configureReportAssertion(group);
-   
-   return group;
-}
-
 void Driver::processKeyboardReport(const KeyboardReport &keyboard_report) {
    
    ++n_keyboard_reports_;
@@ -341,23 +240,22 @@ void Driver::processKeyboardReport(const KeyboardReport &keyboard_report) {
          << " (" << n_reports_in_cycle_ << ". in cycle "
          << cycle_id_ << "\n";
                   
-   auto n_assertions_queued = queued_report_assertions_.size();
+   auto n_assertions_queued = queued_keyboard_report_assertions_.size();
    
    out_ << n_assertions_queued
       << " queued report assertions\n";
    
-   if(!queued_report_assertions_.empty()) {
-      this->processReportAssertion(queued_report_assertions_[0], keyboard_report);
-      this->queued_report_assertions_.pop_front();
+   if(!queued_keyboard_report_assertions_.empty()) {
+      this->processKeyboardReportAssertion(queued_keyboard_report_assertions_.popFront(), keyboard_report);
    }
       
-   if(!permanent_report_assertions_.empty()) {
+   if(!permanent_keyboard_report_assertions_.empty()) {
       
-      out_ << permanent_report_assertions_.size()
+      out_ << permanent_keyboard_report_assertions_.size()
          << " permanent report assertions\n";
       
-      for(auto &assertion: permanent_report_assertions_) {
-         this->processReportAssertion(assertion, keyboard_report);
+      for(auto &assertion: permanent_keyboard_report_assertions_.directAccess()) {
+         this->processKeyboardReportAssertion(assertion, keyboard_report);
       }
    }
          
@@ -366,7 +264,7 @@ void Driver::processKeyboardReport(const KeyboardReport &keyboard_report) {
    }
 }
       
-void Driver::processReportAssertion(std::shared_ptr<_Assertion> &assertion, 
+void Driver::processKeyboardReportAssertion(std::shared_ptr<_Assertion> &assertion, 
                               const KeyboardReport &keyboard_report) {
    
    current_keyboard_report_ = keyboard_report;
@@ -378,14 +276,6 @@ void Driver::processReportAssertion(std::shared_ptr<_Assertion> &assertion,
    }
    
    assertions_passed_ &= assertion_passed;
-}
-         
-void Driver::configureCycleAssertion(std::shared_ptr<_Assertion> &assertion) {
-   assertion->setTestDriver(this);
-}
-   
-void Driver::configureTemporaryAssertion(std::shared_ptr<_Assertion> &assertion) {
-   assertion->setTestDriver(this);
 }
             
 void Driver::scanCycle(std::vector<std::shared_ptr<_Assertion>> 
@@ -430,7 +320,7 @@ void Driver::scanCycle(std::vector<std::shared_ptr<_Assertion>>
    if(!queued_cycle_assertions_.empty()) {
       out_ << "Processing " << queued_cycle_assertions_.size()
          << " queued cycle assertions\n";
-      this->processCycleAssertions(queued_cycle_assertions_);
+      this->processCycleAssertions(queued_cycle_assertions_.directAccess());
       
       queued_cycle_assertions_.clear();
    }
@@ -439,7 +329,7 @@ void Driver::scanCycle(std::vector<std::shared_ptr<_Assertion>>
       out_ << "Processing " << permanent_cycle_assertions_.size()
          << " permanent cycle assertions\n";
       
-      this->processCycleAssertions(permanent_cycle_assertions_);
+      this->processCycleAssertions(permanent_cycle_assertions_.directAccess());
    }
 }
 
@@ -447,21 +337,5 @@ void Driver::checkCycleDurationSet() {
    if(cycle_duration_ == 0) {
       this->error() << "Please set test.cycle_duration_ to a value in "
          "[ms] greater zero before using time based testing";
-   }
-}
-
-void Driver::processCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   
-   if(assertions.empty()) { return; }
-   
-   for(auto &assertion: assertions) {
-      
-      bool assertion_passed = assertion->eval(self);
-      
-      if(!assertion_passed || debug_) {
-         assertion->report(out_);
-      }
-      
-      assertions_passed_ &= assertion_passed;
    }
 }

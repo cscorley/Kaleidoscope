@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "AssertionQueue.h"
+
 #include <vector>
 
 namespace kaleidoscope {
@@ -95,10 +97,10 @@ class Driver {
       
       bool error_if_report_without_queued_assertions_ = false;
       
-      std::deque<std::shared_ptr<_Assertion>> queued_report_assertions_;
-      std::deque<std::shared_ptr<_Assertion>> permanent_report_assertions_;
-      std::deque<std::shared_ptr<_Assertion>> queued_cycle_assertions_;
-      std::deque<std::shared_ptr<_Assertion>> permanent_cycle_assertions_;
+      AssertionQueue queued_keyboard_report_assertions_;
+      AssertionQueue permanent_keyboard_report_assertions_;
+      AssertionQueue queued_cycle_assertions_;
+      AssertionQueue permanent_cycle_assertions_;
       
    public:
       
@@ -126,79 +128,22 @@ class Driver {
       bool getErrorIfReportWithoutQueuedAssertions() const {
          return error_if_report_without_queued_assertions_;
       }
-
-      /** brief Queues a report assertion.
-       * 
-       * details The report assertion at the end of 
-       * the queue will be applied to the next keyboard report. 
-       * It will be discarded afterwards.
-       *
-       * param assertion The assertion to be added to the queue.
-       * 
-       * return void
-       */ 
-      void queueReportAssertion(std::shared_ptr<_Assertion> &assertion);
-
-      /** brief Queues a number of report assertions.
-       * 
-       * details The assertions will be 
-         grouped and applied all together on a keyboard report. 
-         Grouped assertions are discarded afterwards.
-       *
-       * param assertions The assertions to be grouped and added to the queue.
-       * 
-       * return void
-       */ 
-      void queueGroupedReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-        
-      /** brief Removes assertions from the report assertion queue (only if registered).
-       *
-       * param assertions The assertions to be removed from the queue.
-       * 
-       * return void
-       */ 
-      void removeQueuedReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-         
-      /** brief Adds a permanent report assertion.
-       * 
-       * details The assertions thus added will
-         be applied on every future keyboard report until removed.
-       *
-       * param assertion The assertion to be added.
-       * 
-       * return void
-       */ 
-      void addPermanentReportAssertion(std::shared_ptr<_Assertion> &assertion);
-             
-      /** brief Adds a number of permanent report assertions.
-       * 
-       * details The assertions thus added will
-         be cast on every future keyboard report until removed.
-       *
-       * param assertions The assertion to be added.
-       * 
-       * return void
-       */ 
-      void addPermanentReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-        
-      /** brief Removes a number of permanent report assertions (only if registered).
-       *
-       * param assertions The assertion to be removed.
-       * 
-       * return void
-       */ 
-      void removePermanentReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-         
-      /** brief Removes a number of report assertions from both queued and permanent 
-       *  assertions (only if registered).
-       *
-       * details Assertions that are not registered are ignored.
-       *
-       * param assertions The assertion to be removed.
-       * 
-       * return void
-       */ 
-      void removeReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
+      
+      AssertionQueue &getQueuedKeyboardReportAssertions() {
+         return queued_keyboard_report_assertions_;
+      }
+      
+      AssertionQueue &getPermanentKeyboardReportAssertions() {
+         return permanent_keyboard_report_assertions_;
+      }
+      
+      AssertionQueue &getQueuedCycleAssertions() {
+         return queued_cycle_assertions_;
+      }
+      
+      AssertionQueue &getPermanentCycleAssertions() {
+         return permanent_cycle_assertions_;
+      }
 
       // Some wrapper functions for kaleidoscope stuff
       
@@ -237,55 +182,6 @@ class Driver {
        * return void
        */ 
       void clearAllKeys();
-         
-      /** brief Queues a number of cycle assertions. 
-       * 
-       * details Queued assertions will be 
-       *         applied at the end of the next cycle and then discarded.
-       * 
-       * param assertions A list of assertions to add.
-       * 
-       * return void
-       */ 
-      void queueCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-         
-      /** brief Removes a number of queued cycle assertions (only if registered).
-       * 
-       * details Assertions that are not registered are ignored.
-       * 
-       * param assertions A list of assertions to remove.
-       * 
-       * return void
-       */ 
-      void removeQueuedCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-        
-      /** brief Registers a number of cycle assertions that are 
-         applied after every future cycle until removed.
-       * 
-       * param assertions A list of assertions to register.
-       * 
-       * return void
-       */ 
-      void registerPermanentCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-         
-      /** brief Removes a number of permanent cycle assertions (only if registered).
-         Assertions that are not registered are ignored.
-       * 
-       * param assertions A list of assertions to remove.
-       * 
-       * return void
-       */ 
-      void removePermanentCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-         
-      /** brief Removes a number of cycle assertions, both from queued
-         and permanent assertions (only if registered).
-         Assertions that are not registered are ignored.
-       * 
-       * param assertions A list of assertions to remove.
-       * 
-       * return void
-       */ 
-      void removeCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
          
       /** brief Executes a scan cycle and processes assertions afterwards.
        * 
@@ -387,19 +283,10 @@ class Driver {
       
       void footerText();
       
-      void configureReportAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
-            
-      void configureReportAssertion(std::shared_ptr<_Assertion> &assertion);
-               
-      std::shared_ptr<_Assertion> generateAssertionGroup(
-            std::vector<std::shared_ptr<_Assertion>> &assertions);
-      
       void processKeyboardReport(const KeyboardReport &keyboard_report);
             
-      void processReportAssertion(std::shared_ptr<_Assertion> &assertion, 
+      void processKeyboardReportAssertion(std::shared_ptr<_Assertion> &assertion, 
                                   const KeyboardReport &keyboard_report);
-               
-      void configureCycleAssertion(std::shared_ptr<_Assertion> &assertion);
          
       void configureTemporaryAssertion(std::shared_ptr<_Assertion> &assertion);
                  
@@ -409,7 +296,22 @@ class Driver {
       
       void checkCycleDurationSet();
       
-      void processCycleAssertions(std::vector<std::shared_ptr<_Assertion>> &assertions);
+      template<typename _Container>
+      void processCycleAssertions(_Containter &assertions) {
+            
+         if(assertions.empty()) { return; }
+         
+         for(auto &assertion: assertions) {
+            
+            bool assertion_passed = assertion->eval(self);
+            
+            if(!assertion_passed || debug_) {
+               assertion->report(out_);
+            }
+            
+            assertions_passed_ &= assertion_passed;
+         }
+      }
       
    private:
       
