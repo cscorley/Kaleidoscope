@@ -26,12 +26,26 @@ namespace testing {
 void _Assertion::report(const char *add_indent) const 
 {
    if(this->valid_) {
-      driver_->log() << add_indent << type(*this) << " assertion passed";
+      {
+         auto log = driver_->log();
+         log << add_indent;
+         if(this->negate_) {
+            log << "negated ";
+         }
+         log << type(*this) << " assertion passed";
+      }
       //this->describe();
    }
    else {
       std::string indent = std::string(add_indent) + "      ";
-      driver_->error() << add_indent << type(*this) << " assertion failed";
+      {
+         auto error = driver_->error();
+         error << add_indent;
+         if(negate_) {
+            error << "negated ";
+         }
+         error << type(*this) << " assertion failed";
+      }
       driver_->log() << add_indent << "expected:";
       this->describe(indent.c_str());
       driver_->log() << add_indent << "actual:";

@@ -578,7 +578,11 @@ void runTest(Driver &driver) {
    assert(driver.queuedKeyboardReportAssertions().empty());
    
    driver.header() << "Test 1";
-   
+      
+   driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+   driver.keyDown(2, 1); // A
+   driver.cycle();
+      
    driver.queuedKeyboardReportAssertions().add(
       Grouped{
          KeycodeActive{Key_A},
@@ -590,37 +594,50 @@ void runTest(Driver &driver) {
          DumpReport{}
       }
    );
-      
-   driver.tapKey(2, 1); // A
-   driver.tapKey(3, 5); // B
+   driver.keyDown(3, 5); // B
    driver.cycle();
+   driver.keyUp(2, 1); // A
+   driver.keyUp(3, 5); // B
+   
+   driver.cycles(5);
    
    assert(driver.queuedKeyboardReportAssertions().empty());
    
-#if 0
-   
    driver.header() << "Test 2";
    
+   driver.queuedKeyboardReportAssertions().add(
+      KeycodeActive{Key_A}
+   );
+      
+   driver.keyDown(2, 1); // A
+   driver.cycle();
+      
    driver.queuedKeyboardReportAssertions().addGrouped(
       KeycodeActive{Key_A},
       KeycodeActive{Key_B}
    );
-      
-   driver.tapKey(2, 1); // A
-   driver.tapKey(3, 5); // B
+   driver.keyDown(3, 5); // B
    driver.cycle();
+   
+   driver.keyUp(2, 1);
+   driver.keyUp(3, 5);
+   
+   driver.cycles(5);
    
    assert(driver.queuedKeyboardReportAssertions().empty());
    
    driver.header() << "Test 3";
    
-   driver.queuedKeyboardReportAssertions().addGrouped(
+   driver.keyDown(2, 1); // A
+   driver.cycle();
+   driver.keyDown(3, 5); // B
+   driver.queuedKeyboardReportAssertions().add(
       KeycodesActive{Key_A, Key_B}
    );
-      
-   driver.tapKey(2, 1); // A
-   driver.tapKey(3, 5); // B
    driver.cycle();
+   driver.keyUp(2, 1);
+   driver.keyUp(3, 5);
+   driver.cycles(5);
    
    assert(driver.queuedKeyboardReportAssertions().empty());
    
@@ -684,7 +701,6 @@ void runTest(Driver &driver) {
    driver.cycle();
    
    assert(driver.queuedKeyboardReportAssertions().empty());
-#endif
 }
 
 } // namespace testing
