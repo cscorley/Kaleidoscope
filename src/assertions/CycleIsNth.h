@@ -22,13 +22,12 @@
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
    
 /** class CycleIsNth
  *  brief Asserts that the current cycle is the nth.
  */
 class CycleIsNth {
-   
-   KS_TESTING_ASSERTION_WRAPPER(AssertCycleIsNth)
    
    private:
       
@@ -38,24 +37,28 @@ class CycleIsNth {
          
             Assertion(int cycle_id) : cycle_id_(cycle_id) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
-               out << add_indent << "Is " << cycle_ << ". cycle";
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
+               out << add_indent << "Is " << cycle_id_ << ". cycle";
             }
 
             virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << this->describe(out, add_indent);
+               this->describe(out, add_indent);
             }
          
          private:
 
             virtual bool evalInternal() override {
-               return this-tD()->getCycleId() == cycle_id_;
+               return test_driver_->getCycleId() == cycle_id_;
             }
             
          private:
             
             int cycle_id_ = -1;
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(CycleIsNth)
+};
 
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

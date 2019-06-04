@@ -20,18 +20,16 @@
 
 #include "assertions/_Assertion.h"
 
-#include <key_defs.h>
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace testing {
-namespace keyboard_report {
+namespace assertions {
 
 /** class ModifierActive
  *  brief Asserts that a specific modifier is active in the keyboard report.
  */
 class ModifierActive {
-   
-   KS_TESTING_ASSERTION_WRAPPER(ModifierActive)
    
    private:
       
@@ -42,7 +40,7 @@ class ModifierActive {
             Assertion(uint8_t modifier) 
                : modifier_(modifier) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Modifier " << keycodes::keycodeToName(modifier_) << " active";
             }
 
@@ -59,8 +57,10 @@ class ModifierActive {
             
             uint8_t modifier_ = 255;  
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(ModifierActive)
 };
 
-} // namespace keyboard_report
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

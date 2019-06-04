@@ -18,7 +18,13 @@
 
 #pragma once
 
+// Undefine some macros that are defined by Arduino
+#undef min
+#undef max
+
 #include <deque>
+#include <vector>
+#include <memory>
 
 namespace kaleidoscope {
 namespace testing {
@@ -26,11 +32,11 @@ namespace testing {
 class Driver;
 class _Assertion;
    
-class AssertionsQueue
+class AssertionQueue
 {
    public:
       
-      AssertionsQueue(Driver *driver) : driver_(driver) {}
+      AssertionQueue(Driver &driver) : driver_(driver) {}
       
       /** brief Queues an assertion.
        *
@@ -38,7 +44,7 @@ class AssertionsQueue
        * 
        * return void
        */ 
-      void queue(std::shared_ptr<_Assertion> &assertion);
+      AssertionQueue &add(const std::shared_ptr<_Assertion> &assertion);
       
       /** brief Queues a list of assertion.
        *
@@ -46,7 +52,7 @@ class AssertionsQueue
        * 
        * return void
        */ 
-      void queueGrouped(std::vector<std::shared_ptr<_Assertion>> &assertions);
+      AssertionQueue &addGrouped(const std::vector<std::shared_ptr<_Assertion>> &assertions);
       
       
       /** brief Queues a list of assertion.
@@ -56,8 +62,8 @@ class AssertionsQueue
        * return void
        */ 
       template<typename..._Assertions>
-      void queueGrouped(_Assertions...assertions) {
-         this->queueGrouped(
+      AssertionQueue &addGrouped(_Assertions...assertions) {
+         return this->addGrouped(
             std::vector<std::shared_ptr<_Assertion>>{std::forward<_Assertions>(assertions)...}
          );
       }
@@ -68,7 +74,7 @@ class AssertionsQueue
        * 
        * return void
        */ 
-      void remove(std::shared_ptr<_Assertion> &assertion);
+      AssertionQueue &remove(const std::shared_ptr<_Assertion> &assertion);
       
       /** brief Removes a list of assertions.
        *
@@ -76,7 +82,7 @@ class AssertionsQueue
        * 
        * return void
        */ 
-      void remove(std::vector<std::shared_ptr<_Assertion>> &assertions);
+      AssertionQueue &remove(const std::vector<std::shared_ptr<_Assertion>> &assertions);
       
       /** brief Removes the assertion at the front of the queue and returns it.
        * 
@@ -96,17 +102,26 @@ class AssertionsQueue
        */
       bool empty() const;
       
+      /** brief Clear the entire queue.
+       * 
+       * return void.
+       */
+      void clear();
+      
       const std::deque<std::shared_ptr<_Assertion>> &directAccess() {
          return queue_;
       }
       
    private:
       
-      void configureAssertion(std::shared_ptr<_Assertion> &assertion);
+      void configureAssertion(const std::shared_ptr<_Assertion> &assertion);
+      
+      std::shared_ptr<_Assertion> generateAssertionGroup(
+            const std::vector<std::shared_ptr<_Assertion>> &assertions);
       
    private:
       
-      Driver *driver_;
+      Driver &driver_;
       std::deque<std::shared_ptr<_Assertion>> queue_;
 };
 

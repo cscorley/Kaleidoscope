@@ -18,42 +18,23 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
-
-#include "kaleidoscope/key_defs.h"
+#include <sstream>
+#include <exception>
 
 namespace kaleidoscope {
 namespace testing {
-namespace assertions {
-
-/** class DumpReport
- *  brief Asserts nothing but dumps the current report instead.
- */
-class DumpReport {
    
-   private:
-      
-      class Assertion : public _Assertion {
-            
-         public:
-
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               test_driver_->getCurrentKeyboardReport().dump(out, add_indent);
-            }
-
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               this->describe(out, add_indent);
-            }
-
-            virtual bool evalInternal() override {
-               return true;
-            }
-
-      };
+struct OStringStreamWrapper
+{
+   template<typename _T>
+   OStringStreamWrapper &operator<<(const _T &t) { osstream_ << t; return *this; }
    
-   KS_TESTING_ASSERTION_WRAPPER(DumpReport)
+   operator const char *() { return osstream_.str().c_str(); }
+   
+   std::ostringstream osstream_;
 };
-
-} // namespace assertions
+   
+#define KS_T_EXCEPTION(...)                                                    \
+   throw std::runtime_error(OStringStreamWrapper() << __VA_ARGS__);
 } // namespace testing
 } // namespace kaleidoscope

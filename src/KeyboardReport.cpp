@@ -16,7 +16,14 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+// Important: Leave stdint.h the first header as some other Kaleidoscope
+//            related stuff depends on standard integer types to be defined
+//            (Arduino defines them auto-magically).
+//
+#include <stdint.h>
+
+#include "KeyboardReport.h"
+#include "aux/exceptions.h"
 
 #include <vector>
 
@@ -29,12 +36,12 @@ bool
 {
    if (k <= HID_LAST_KEY) {
       uint8_t bit = 1 << (uint8_t(k) % 8);
-      return reportData_.keys[k / 8] & bit;
+      return report_data_.keys[k / 8] & bit;
    }
   
    KS_T_EXCEPTION("isKeycodeActive: Unknown keycode type " << unsigned(k))
    
-  return false;
+   return false;
 }
 
 std::vector<uint8_t>
@@ -45,7 +52,7 @@ std::vector<uint8_t>
    
    for(uint8_t k = 0; k <= HID_LAST_KEY; ++k) {
       uint8_t bit = 1 << (uint8_t(k) % 8);
-      uint8_t keyCode = reportData_.keys[k / 8] & bit;
+      uint8_t keyCode = report_data_.keys[k / 8] & bit;
       if(keyCode) {
          activeKeys.push_back(k);
       }
@@ -66,7 +73,7 @@ bool
 {
    for(int k = 0; k <= HID_LAST_KEY; ++k) {
       uint8_t bit = 1 << (uint8_t(k) % 8);
-      if(reportData_.keys[k / 8] & bit) {
+      if(report_data_.keys[k / 8] & bit) {
          return true;
       }
    }
@@ -80,7 +87,7 @@ bool
 {
    if (k >= HID_KEYBOARD_FIRST_MODIFIER && k <= HID_KEYBOARD_LAST_MODIFIER) {
       k = k - HID_KEYBOARD_FIRST_MODIFIER;
-      return !!(reportData_.modifiers & (1 << k));
+      return !!(report_data_.modifiers & (1 << k));
    }
    
    KS_T_EXCEPTION("isKeycodeActive: Unknown modifier type " << unsigned(k))
@@ -101,7 +108,7 @@ bool
 {
    for(uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
       uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
-      if(!!(reportData_.modifiers & (1 << kTmp))) {
+      if(!!(report_data_.modifiers & (1 << kTmp))) {
          return true;
       }
    }
@@ -116,7 +123,7 @@ std::vector<uint8_t>
    
    for(uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
       uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
-      if(!!(reportData_.modifiers & (1 << kTmp))) {
+      if(!!(report_data_.modifiers & (1 << kTmp))) {
          activeModifiers.push_back(k);
       }
    }
@@ -132,9 +139,9 @@ bool
       
 void 
    KeyboardReport
-      ::setReportData(const HID_KeyboardReport_Data_t &reportData)
+      ::setReportData(const HID_KeyboardReport_Data_t &report_data)
 {
-   memcpy(reportData_.allkeys, reportData.allkeys, sizeof(reportData_));
+   memcpy(report_data_.allkeys, report_data.allkeys, sizeof(report_data_));
 }
 
 // For each bit set in 'bitfield', output the corresponding string to 'stream'
@@ -152,52 +159,52 @@ void
       ::dump(std::ostream &out, const char *add_indent) const
 {
   bool anything = false;
-  if(reportData_.modifiers) anything = true;
-  else for(int i = 0; i < KEY_BYTES; i++) if(reportData_.keys[i]) { anything = true; break; }
+  if(report_data_.modifiers) anything = true;
+  else for(int i = 0; i < KEY_BYTES; i++) if(report_data_.keys[i]) { anything = true; break; }
   if(!anything) {
     out << add_indent << "<none>";
   } else {
      out << add_indent;
-    FOREACHBIT(reportData_.modifiers, out,
+    FOREACHBIT(report_data_.modifiers, out,
         "lctrl ", "lshift ", "lalt ", "lgui ",
         "rctrl ", "rshift ", "ralt ", "rgui ")
-    FOREACHBIT(reportData_.keys[0], out,
+    FOREACHBIT(report_data_.keys[0], out,
         "NO_EVENT ", "ERROR_ROLLOVER ", "POST_FAIL ", "ERROR_UNDEFINED ",
         "a ", "b ", "c ", "d ")
-    FOREACHBIT(reportData_.keys[1], out,
+    FOREACHBIT(report_data_.keys[1], out,
         "e ", "f ", "g ", "h ", "i ", "j ", "k ", "l ")
-    FOREACHBIT(reportData_.keys[2], out,
+    FOREACHBIT(report_data_.keys[2], out,
         "m ", "n ", "o ", "p ", "q ", "r ", "s ", "t ")
-    FOREACHBIT(reportData_.keys[3], out,
+    FOREACHBIT(report_data_.keys[3], out,
         "u ", "v ", "w ", "x ", "y ", "z ", "1/! ", "2/@ ")
-    FOREACHBIT(reportData_.keys[4], out,
+    FOREACHBIT(report_data_.keys[4], out,
         "3/# ", "4/$ ", "5/% ", "6/^ ", "7/& ", "8/* ", "9/( ", "0/) ")
-    FOREACHBIT(reportData_.keys[5], out,
+    FOREACHBIT(report_data_.keys[5], out,
         "enter ", "esc ", "del/bksp ", "tab ",
         "space ", "-/_ ", "=/+ ", "[/{ ")
-    FOREACHBIT(reportData_.keys[6], out,
+    FOREACHBIT(report_data_.keys[6], out,
         "]/} ", "\\/| ", "#/~ ", ";/: ", "'/\" ", "`/~ ", ",/< ", "./> ")
-    FOREACHBIT(reportData_.keys[7], out,
+    FOREACHBIT(report_data_.keys[7], out,
         "//? ", "capslock ", "F1 ", "F2 ", "F3 ", "F4 ", "F5 ", "F6 ")
-    FOREACHBIT(reportData_.keys[8], out,
+    FOREACHBIT(report_data_.keys[8], out,
         "F7 ", "F8 ", "F9 ", "F10 ", "F11 ", "F12 ", "prtscr ", "scrolllock ")
-    FOREACHBIT(reportData_.keys[9], out,
+    FOREACHBIT(report_data_.keys[9], out,
         "pause ", "ins ", "home ", "pgup ", "del ", "end ", "pgdn ", "r_arrow ")
-    FOREACHBIT(reportData_.keys[10], out,
+    FOREACHBIT(report_data_.keys[10], out,
         "l_arrow ", "d_arrow ", "u_arrow ", "numlock ",
         "num/ ", "num* ", "num- ", "num+ ")
-    FOREACHBIT(reportData_.keys[11], out,
+    FOREACHBIT(report_data_.keys[11], out,
         "numenter ", "num1 ", "num2 ", "num3 ",
         "num4 ", "num5 ", "num6 ", "num7 ")
-    FOREACHBIT(reportData_.keys[12], out,
+    FOREACHBIT(report_data_.keys[12], out,
         "num8 ", "num9 ", "num0 ", "num. ", "\\/| ", "app ", "power ", "num= ")
-    FOREACHBIT(reportData_.keys[13], out,
+    FOREACHBIT(report_data_.keys[13], out,
         "F13 ", "F14 ", "F15 ", "F16 ", "F17 ", "F18 ", "F19 ", "F20 ")
-    FOREACHBIT(reportData_.keys[14], out,
+    FOREACHBIT(report_data_.keys[14], out,
         "F21 ", "F22 ", "F23 ", "F24 ", "exec ", "help ", "menu ", "sel ")
-    FOREACHBIT(reportData_.keys[15], out,
+    FOREACHBIT(report_data_.keys[15], out,
         "stop ", "again ", "undo ", "cut ", "copy ", "paste ", "find ", "mute ")
-    FOREACHBIT(reportData_.keys[16], out,
+    FOREACHBIT(report_data_.keys[16], out,
         "volup ", "voldn ", "capslock_l ", "numlock_l ",
         "scrolllock_l ", "num, ", "num= ", "(other) ")
     for(int i = 17; i < KEY_BYTES; i++) {
@@ -205,11 +212,9 @@ void
       //   (1) obviously, "(other)" refers to many distinct keys
       //   (2) this might undercount the number of "other" keys pressed
       // Therefore, if any keys are frequently used, they should be handled above and not via "other"
-      if(reportData_.keys[i]) out << "(other) ";
+      if(report_data_.keys[i]) out << "(other) ";
     }
   }
-
-  return out.str();
 }
 
 } // namespace testing

@@ -22,13 +22,12 @@
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
 
 /** class ElapsedTimeGreater
  *  brief Asserts that that time that elapsed is greater than a given time in [ms].
  */
 class ElapsedTimeGreater {
-   
-   KS_TESTING_ASSERTION_WRAPPER(ElapsedTimeGreater)
    
    private:
       
@@ -36,12 +35,12 @@ class ElapsedTimeGreater {
       
          public:
             
-            Assertion(double start_t) 
-               : start_t_(start_t),
-               delta_t_(delta_t)
+            Assertion(double start_t, double delta_t) 
+               :  start_t_(start_t),
+                  delta_t_(delta_t)
             {}
             
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Time elapsed greater " << delta_t_ << " ms";
             }
 
@@ -51,14 +50,18 @@ class ElapsedTimeGreater {
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getTime() - start_t_ > delta_t;
+               return test_driver_->getTime() - start_t_ > delta_t_;
             }
          
          private:
             
             double start_t_ = .0;
-            double delta_t = .0;
+            double delta_t_ = .0;
       };
+      
+   KS_TESTING_ASSERTION_WRAPPER(ElapsedTimeGreater)
+};
 
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

@@ -16,6 +16,14 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Important: Leave stdint.h to be first header. Some Kaleidoscope stuff
+//            relies on standard integers being defined, which is done
+//            by Arduino auto-magically and is missign in virtual builds.
+//
+#include <stdint.h>
+
+#include "kaleidoscope/key_defs.h"
+
 namespace kaleidoscope {
 namespace testing {
 namespace keycodes {

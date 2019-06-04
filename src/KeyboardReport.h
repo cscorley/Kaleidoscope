@@ -18,7 +18,16 @@
 
 #pragma once
 
+#include "kaleidoscope/key_defs.h"
+
+// Undefine some macros defined by Arduino
+//
+#undef min
+#undef max
+
 #include <vector>
+#include <stdint.h>
+#include <ostream>
 
 namespace kaleidoscope {
 namespace testing {
@@ -31,7 +40,7 @@ class KeyboardReport {
    public:
       
       bool isKeycodeActive(uint8_t k) const;
-      bool isKeyActive(const Key_ &k) const;
+      bool isKeyActive(const Key &k) const;
       std::vector<uint8_t> getActiveKeycodes() const;
       
       bool isModifierKeycodeActive(uint8_t modifier) const;
@@ -46,11 +55,11 @@ class KeyboardReport {
       
       void dump(std::ostream &out, const char *add_indent = "") const;
       
-      void setReportData(const HID_KeyboardReport_Data_t &reportData);
+      void setReportData(const HID_KeyboardReport_Data_t &report_data);
       
    private:
    
-      HID_KeyboardReport_Data_t reportData_;
+      HID_KeyboardReport_Data_t report_data_;
 };
 
 } // namespace testing

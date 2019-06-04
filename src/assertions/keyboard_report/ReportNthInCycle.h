@@ -20,18 +20,14 @@
 
 #include "assertions/_Assertion.h"
 
-#include <key_defs.h>
-
 namespace kaleidoscope {
 namespace testing {
-namespace keyboard_report {
+namespace assertions {
 
 /** class ReportNthInCycle
  *  brief Asserts that the current keyboard report is the nth report in the current cycle.
  */
 class ReportNthInCycle {
-   
-   KS_TESTING_ASSERTION_WRAPPER(ReportNthInCycle)
    
    private:
       
@@ -41,25 +37,27 @@ class ReportNthInCycle {
             
             Assertion(int report_id) : report_id_(report_id) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Report " << report_id_ << ". in cycle";
             }
 
             virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Report is " << test_driver_->getNumReportsInCycle()
+               out << add_indent << "Report is " << test_driver_->getNumKeyboardReportsInCycle()
                   << ". in cycle";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNumReportsInCycle() == report_id;
+               return test_driver_->getNumKeyboardReportsInCycle() == report_id_;
             }
             
          private:
             
             int report_id_ = -1;
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(ReportNthInCycle)
 };
 
-} // namespace keyboard_report
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

@@ -22,14 +22,13 @@
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
 
 /** class NumOverallReportsGenerated
  *  brief Asserts that there was a specific number of keyboard reports generated
           since the assertion was instanciated.
  */
 class NumOverallReportsGenerated {
-   
-   KS_TESTING_ASSERTION_WRAPPER(KeycodeActive)
    
    private:
       
@@ -40,23 +39,26 @@ class NumOverallReportsGenerated {
             Assertion(int n_overall_reports) 
                : n_overall_reports_(n_overall_reports) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << n_overall_reports_ << " overall keyboard reports expected";
             }
 
             virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << test_driver_->getNOverallKeyboardReports() << " overall keyboard reports encountered";
+               out << add_indent << test_driver_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNOverallKeyboardReports() == n_overall_reports_;
+               return test_driver_->getNumOverallKeyboardReports() == n_overall_reports_;
             }
             
          private:
             
             int n_overall_reports_ = -1;      
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(NumOverallReportsGenerated)
 };
 
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

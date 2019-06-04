@@ -19,6 +19,7 @@
 #pragma once
 
 #include "AssertionQueue.h"
+#include "KeyboardReport.h"
 
 #include <vector>
 
@@ -26,53 +27,94 @@ namespace kaleidoscope {
 namespace testing {
    
 class Driver;
-   
-class ErrorStream {
+
+class DriverStream_ {
    
    public:
       
-      ErrorStream(Driver *driver, bool abort_after_output);
+      struct Endl {};
+      
+      DriverStream_(const Driver *driver) : driver_(driver) {}
+
+   protected:
+      
+      std::ostream &getOStream() const;
+      
+      void checkLineStart();
+      
+      virtual void reactOnLineStart();
+      virtual void reactOnLineEnd() {}
       
       template<typename _T>
-      ErrorStream &operator<<(const _T &t) { driver.getOStream() << t; return *this; }
+      void output(const _T &t) {
+         this->checkLineStart();
+         this->getOStream() << t;
+      }
+      
+      void output(const Endl &) {
+         line_start_ = true;
+         this->reactOnLineEnd();
+         this->getOStream() << std::endl;
+      }
+      
+   protected:
+      
+      const Driver *driver_;
+      
+   private:
+      
+      bool line_start_ = true;
+};
+   
+class ErrorStream : public DriverStream_ {
+   
+   public:
+      
+      ErrorStream(const Driver *driver);
+      
+      template<typename _T>
+      ErrorStream &operator<<(const _T &t) { 
+         this->output(t);
+         return *this; 
+      }
       
       ~ErrorStream();
-      
+
    private:
-      
-      Driver *driver_;
+   
+      virtual void reactOnLineStart() override;
 };
 
-class LogStream {
+class LogStream : public DriverStream_ {
    
    public:
       
-      LogStream(Driver *driver);
+      LogStream(const Driver *driver);
       
       template<typename _T>
-      LogStream &operator<<(const _T &t) { driver.getOStream() << t; return *this; }
-      
-      ~LogStream();
-      
-   private:
-      
-      Driver *driver_;
+      LogStream &operator<<(const _T &t) { 
+         this->output(t);
+         return *this; 
+      }
 };
 
-class HeaderStream {
+class HeaderStream : public DriverStream_ {
    
    public:
       
-      HeaderStream(Driver *driver);
+      HeaderStream(const Driver *driver);
       
       template<typename _T>
-      HeaderStream &operator<<(const _T &t) { driver.getOStream() << t; return *this; }
+      HeaderStream &operator<<(const _T &t) { 
+         this->output(t);
+         return *this; 
+      }
       
       ~HeaderStream();
       
-   private:
+   protected:
       
-      Driver *driver_;
+      virtual void reactOnLineStart() override;
 };
         
 /** class Driver
@@ -102,6 +144,25 @@ class Driver {
       AssertionQueue queued_cycle_assertions_;
       AssertionQueue permanent_cycle_assertions_;
       
+      KeyboardReport current_keyboard_report_;
+      
+      class KeyboardReportConsumer : public KeyboardReportConsumer_
+      {
+         public:
+            
+            KeyboardReportConsumer(Driver &driver) : driver_(driver) {}
+
+            virtual void processKeyboardReport(
+                           const HID_KeyboardReport_Data_t &report_data) override;
+                           
+         private:
+            
+            Driver &driver_;
+            
+      } keyboard_report_consumer_;
+      
+      friend class KeyboardReportConsumer;
+      
    public:
       
       /** brief The driver constructor.
@@ -129,19 +190,19 @@ class Driver {
          return error_if_report_without_queued_assertions_;
       }
       
-      AssertionQueue &getQueuedKeyboardReportAssertions() {
+      AssertionQueue &queuedKeyboardReportAssertions() {
          return queued_keyboard_report_assertions_;
       }
       
-      AssertionQueue &getPermanentKeyboardReportAssertions() {
+      AssertionQueue &permanentKeyboardReportAssertions() {
          return permanent_keyboard_report_assertions_;
       }
       
-      AssertionQueue &getQueuedCycleAssertions() {
+      AssertionQueue &queuedCycleAssertions() {
          return queued_cycle_assertions_;
       }
       
-      AssertionQueue &getPermanentCycleAssertions() {
+      AssertionQueue &permanentCycleAssertions() {
          return permanent_cycle_assertions_;
       }
 
@@ -175,7 +236,7 @@ class Driver {
        * 
        * return void
        */ 
-      void tap(uint8_t row, uint8_t col);
+      void tapKey(uint8_t row, uint8_t col);
 
       /** brief Clears all keys that are currently active (down).
        * 
@@ -190,7 +251,7 @@ class Driver {
        * 
        * return void
        */ 
-      void scanCycle(std::vector<std::shared_ptr<_Assertion>> 
+      void cycle(const std::vector<std::shared_ptr<_Assertion>> 
                &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
          
       /** brief Executes a number of scan cycles and processes assertions afterwards.
@@ -204,16 +265,16 @@ class Driver {
        * 
        * return void
        */ 
-      void scanCycles(int n = 0, 
-                      std::vector<std::shared_ptr<_Assertion>> 
+      void cycles(int n = 0, 
+                      const std::vector<std::shared_ptr<_Assertion>> 
                            &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{}, 
-                      std::vector<std::shared_ptr<_Assertion>> 
+                      const std::vector<std::shared_ptr<_Assertion>> 
                            &cycle_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
             
       /** brief Skips a given amount of time by executing cycles and processes assertions afterwards.
        * 
        * details Important:
-            Make sure to set the cycle_duration_ property of the TestDriver class 
+            Make sure to set the cycle_duration_ property of the Driver class 
             to a non zero value in [ms] before calling this method.
        * 
        * param delta_t A time in [ms] that is supposed to be skipped.
@@ -224,14 +285,14 @@ class Driver {
        * return void
        */ 
       void skipTime(double delta_t, 
-                    std::vector<std::shared_ptr<_Assertion>> 
+                    const std::vector<std::shared_ptr<_Assertion>> 
                            &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
             
      /** brief Retreives a log stream.
       * 
        * return A log stream object.
        */ 
-      LogStream log() { return LogStream{this}; }
+      LogStream log() const { return LogStream{this}; }
       
 //       void rawLog(msg) {
 //          """ Writes a log message without time information.
@@ -253,9 +314,9 @@ class Driver {
       * 
        * return A header stream object.
        */ 
-      HeaderStream header() { return HeaderStream{this}; }
+      HeaderStream header() const { return HeaderStream{this}; }
          
-      ErrorStream error() { return ErrorStream{this}; }
+      ErrorStream error() const { return ErrorStream{this}; }
       
 //       void graphicalMap(self) {
 //          import GraphicalMap
@@ -271,9 +332,17 @@ class Driver {
          return current_keyboard_report_;
       }
          
-      std::ostream &getOStream() { return out_; }  
+      std::ostream &getOStream() const { return out_; }  
       
       bool getAbortOnFirstError() const { return abort_on_first_error_; }
+      
+      int getNumKeyboardReportsInCycle() const { return n_keyboard_reports_in_cycle_; }
+      int getNumOverallKeyboardReports() const { return n_overall_keyboard_reports_; }
+      double getTime() const { return time_; }
+      int getCycleId() const { return cycle_id_; }
+      
+      void setDebug(bool state) { debug_ = state; }
+      bool getDebug() const { return debug_; }
       
    private:
       
@@ -283,27 +352,24 @@ class Driver {
       
       void footerText();
       
-      void processKeyboardReport(const KeyboardReport &keyboard_report);
+      void processKeyboardReport(const HID_KeyboardReport_Data_t &report_data);
             
-      void processKeyboardReportAssertion(std::shared_ptr<_Assertion> &assertion, 
-                                  const KeyboardReport &keyboard_report);
-         
-      void configureTemporaryAssertion(std::shared_ptr<_Assertion> &assertion);
+      void processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion);
                  
-      void scanCycle(std::vector<std::shared_ptr<_Assertion>> 
-               &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{}, 
-               only_log_reports = false);
+      void cycleInternal(const std::vector<std::shared_ptr<_Assertion>> 
+               &on_stop_assertion_list, 
+               bool only_log_reports = false);
       
       void checkCycleDurationSet();
       
       template<typename _Container>
-      void processCycleAssertions(_Containter &assertions) {
+      void processCycleAssertions(_Container &assertions) {
             
          if(assertions.empty()) { return; }
          
          for(auto &assertion: assertions) {
             
-            bool assertion_passed = assertion->eval(self);
+            bool assertion_passed = assertion->eval();
             
             if(!assertion_passed || debug_) {
                assertion->report(out_);
@@ -313,9 +379,7 @@ class Driver {
          }
       }
       
-   private:
-      
-      KeyboardReport current_keyboard_report_;
+      std::string generateCycleInfo() const;
 };
       
 } // namespace testing

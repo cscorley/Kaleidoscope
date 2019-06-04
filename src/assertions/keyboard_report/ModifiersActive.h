@@ -21,18 +21,18 @@
 #include "assertions/_Assertion.h"
 #include "aux/keycodes.h"
 
-#include <key_defs.h>
+#include "kaleidoscope/key_defs.h"
+
+#include <algorithm>
 
 namespace kaleidoscope {
 namespace testing {
-namespace keyboard_report {
+namespace assertions {
 
 /** class ModifiersActive
  *  brief Asserts that a specific list of keys is active in the keyboard report.
  */
 class ModifiersActive {
-   
-   KS_TESTING_ASSERTION_WRAPPER(ModifiersActive)
    
    private:
       
@@ -46,7 +46,7 @@ class ModifiersActive {
                   exclusively_(exclusively) 
             {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Modifiers active: ";
                
                if(modifiers_.empty()) {
@@ -88,7 +88,7 @@ class ModifiersActive {
                
                   for(auto modifier: active_modifiers) {
                      
-                     if(std::find(modifiers_.begin(), modifiers_.end(), modifier) == vec.end()) {
+                     if(std::find(modifiers_.begin(), modifiers_.end(), modifier) == modifiers_.end()) {
                         return false;
                      }
                   }
@@ -102,8 +102,10 @@ class ModifiersActive {
             std::vector<uint8_t> modifiers_;
             bool exclusively_ = false;
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(ModifiersActive)
 };
 
-} // namespace keyboard_report
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

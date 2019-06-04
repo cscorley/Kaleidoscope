@@ -19,17 +19,17 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
+#include "Driver.h"
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
 
 /** class CycleHasNReports
  *  brief Asserts that there was a specific number of keyboard reports generated
           within a cycle.
  */
 class CycleHasNReports {
-   
-   KS_TESTING_ASSERTION_WRAPPER(CycleHasNReports)
    
    private:
       
@@ -39,23 +39,26 @@ class CycleHasNReports {
 
             Assertion(int n_reports) : n_reports_(n_reports) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << n_reports_ << " keyboard reports expected in cycle";
             }
 
             virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << test_driver_->getNKeyboardReportsInCycle() << " keyboard reports encountered";
+               out << add_indent << test_driver_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNKeyboardReportsInCycle() == n_reports_;
+               return test_driver_->getNumKeyboardReportsInCycle() == n_reports_;
             }
             
          private:
             
             int n_reports_ = -1;      
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(CycleHasNReports)
 };
 
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

@@ -547,11 +547,25 @@ void loop() {
 
 #include "Kaleidoscope-Testing.h"
 
+#include <iostream>
+
+KALEIDOSCOPE_TESTING_INIT
+
 namespace kaleidoscope {
 namespace testing {
    
-void runTest(Driver &) {
+void runTest(Driver &driver) {
    
+   using namespace assertions;
+   
+   driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+   
+   driver.tapKey(2, 1);
+   
+//    driver.keyDown(2, 1);
+//    driver.cycle();
+//    driver.keyUp(2, 1);
+   driver.cycle();
 }
 
 } // namespace testing

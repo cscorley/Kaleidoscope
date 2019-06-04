@@ -24,13 +24,12 @@
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
    
 /** class Group
  *  brief Groups multiple assertions.
  */
 class Group {
-   
-   KS_TESTING_ASSERTION_WRAPPER(Group)
  
    private:
       
@@ -39,19 +38,19 @@ class Group {
          public:
 
             template<typename..._AssertionPtrs>
-            AssertionGroup(_AssertionPtrs...assertion_ptrs)
-               :  assertions_(std::forward<_AssertionPtrs>(assertion_ptrs)...)
+            Assertion(_AssertionPtrs...assertion_ptrs)
+               :  assertions_{std::forward<_AssertionPtrs>(assertion_ptrs)...}
             {}
 
             virtual void report(std::ostream &out, const char *add_indent = "") const override;
 
-            virtual void setTestDriver(std::weak_ptr<TestDriver> test_driver) override;
+            virtual void setDriver(const Driver *test_driver) override;
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
-               return "A group of assertions";
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
+               out << "A group of assertions";
             }
 
-            virtual describeState(std::ostream &out, const char *add_indent = "") const override;
+            virtual void describeState(std::ostream &out, const char *add_indent = "") const override;
 
          private:
 
@@ -64,8 +63,15 @@ class Group {
                
                return valid_;
             }
+            
+         private:
+            
+            std::vector<std::shared_ptr<_Assertion>> assertions_;
       };
+      
+   KS_TESTING_ASSERTION_WRAPPER(Group)
 };
 
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

@@ -20,17 +20,16 @@
 
 #include "assertions/_Assertion.h"
 
-#include <Layer.h>
+#include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
 namespace testing {
+namespace assertions {
    
 /** class AssertLayerIsActive
  *  brief Asserts that a given layer is active (the current top layer).
  */
 class LayerIsActive {
-   
-   KS_TESTING_ASSERTION_WRAPPER(LayerIsActive)
    
    private:
       
@@ -40,19 +39,26 @@ class LayerIsActive {
             
             Assertion(uint8_t layer_id) : layer_id_(layer_id) {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Layer " << layer_id_ << " expected to be active";
             }
 
             virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Layer " << layer_id_ << " is active: " << Layer.is_active(layer_id_);
+               out << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive(layer_id_);
             }
 
             virtual bool evalInternal() override {
-               return Layer.is_active(layer_id_);
+               return Layer.isActive(layer_id_);
             }
+            
+         private:
+            
+            uint8_t layer_id_;
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(LayerIsActive)
 };
    
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

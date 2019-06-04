@@ -20,18 +20,14 @@
 
 #include "assertions/_Assertion.h"
 
-#include <key_defs.h>
-
 namespace kaleidoscope {
 namespace testing {
-namespace keyboard_report {
+namespace assertions {
 
 /** class AnyModifiersActive
  *  brief Asserts that any modifiers are active in the current report.
  */
 class AnyModifiersActive {
-   
-   KS_TESTING_ASSERTION_WRAPPER(AnyModifiersActive)
    
    private:
       
@@ -39,7 +35,7 @@ class AnyModifiersActive {
             
          public:
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Any modifiers active";
             }
 
@@ -52,8 +48,10 @@ class AnyModifiersActive {
                return test_driver_->getCurrentKeyboardReport().isAnyModifierActive();
             }
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(AnyModifiersActive)
 };
 
-} // namespace keyboard_report
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

@@ -25,7 +25,7 @@
 namespace kaleidoscope {
 namespace testing {
    
-class TestDriver;
+class Driver;
    
 /** class _Assertion
  *  brief An abstract assertion.
@@ -69,7 +69,7 @@ class _Assertion {
        * 
        * return void
        */
-      virtual void describe(std::ostream, const char *add_indent = "") const = 0;
+      virtual void describe(std::ostream &out, const char *add_indent = "") const = 0;
 
       /** brief Evaluates the condition that is supposed to be asserted.
        * details Do not override this method.
@@ -105,7 +105,7 @@ class _Assertion {
        * 
        * return void
        */
-      virtual void setTestDriver(const TestDriver *test_driver) {
+      virtual void setDriver(const Driver *test_driver) {
          test_driver_ = test_driver;
       }
 
@@ -113,7 +113,7 @@ class _Assertion {
        * 
        * return A pointer to the current test driver
        */
-      const TestDriver *getTestDriver() const {
+      const Driver *getDriver() const {
          return test_driver_;
       }
      
@@ -150,12 +150,17 @@ class _Assertion {
        */
       virtual bool evalInternal() = 0;
       
-   private:
+   protected:
       
       bool valid_;
-      const TestDriver *test_driver_ = nullptr;
+      const Driver *test_driver_ = nullptr;
+      
+   private:
+      
+      bool negate_ = false;
 };
 
+inline
 std::shared_ptr<_Assertion> negate(std::shared_ptr<_Assertion> &assertion) {
    assertion->setNegate(true);
    return assertion;
@@ -167,12 +172,12 @@ std::shared_ptr<_Assertion> negate(std::shared_ptr<_Assertion> &assertion) {
 #define KS_TESTING_ASSERTION_WRAPPER(WRAPPER)                                  \
                                                                                \
    private:                                                                    \
-      std::shared_ptr<Assertion> assertion_;                                   \
+      std::shared_ptr<WRAPPER::Assertion> assertion_;                          \
                                                                                \
    public:                                                                     \
       template<typename..._Args>                                               \
-      WRAPPER(_Args args)                                                      \
-         : assertion_{new Assertion{std::forward<_Args>(args)...}}             \
+      WRAPPER(_Args...args)                                                    \
+         : assertion_{new WRAPPER::Assertion{std::forward<_Args>(args)...}}    \
       {}                                                                       \
                                                                                \
-      std::shared_ptr<_Assertion> operator() { return assertion_; }
+      operator std::shared_ptr<_Assertion> () { return assertion_; }

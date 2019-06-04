@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "TestDriver.h"
+#include "Driver.h"
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
 #include "assertions/Group.h"
@@ -37,3 +37,23 @@
 #include "assertions/NumOverallReportsGenerated.h"
 #include "assertions/CycleIsNth.h"
 #include "assertions/ElapsedTimeGreater.h"
+
+extern void executeTestFunction();
+
+#define KALEIDOSCOPE_TESTING_INIT                                              \
+                                                                               \
+   namespace kaleidoscope {                                                    \
+   namespace testing {                                                         \
+   /* Forward declare the actual test function */                              \
+   void runTest(Driver &driver);                                               \
+   } /* namespace testing */                                                   \
+   } /* namespace kaleidoscope */                                              \
+                                                                               \
+   /* This is an override of the weak function defined in main.cpp             \
+    * of the virtual core.                                                     \
+    */                                                                         \
+   void executeTestFunction() {                                                \
+      setup(); /* setup Kaleidoscope */                                        \
+      kaleidoscope::testing::Driver driver(std::cout, false);                  \
+      kaleidoscope::testing::runTest(driver);                                  \
+   }

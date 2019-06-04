@@ -21,18 +21,26 @@
 #include "assertions/_Assertion.h"
 #include "aux/keycodes.h"
 
-#include <key_defs.h>
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace testing {
-namespace keyboard_report {
+namespace assertions {
+   
+inline
+uint8_t toKeycode(uint8_t keycode) { return keycode; }
+
+inline
+uint8_t toKeycode(Key key) { return key.keyCode; }
 
 /** class KeycodesActive
  *  brief Asserts that a specific list of keys is active in the keyboard report.
  */
 class KeycodesActive {
    
-   KS_TESTING_ASSERTION_WRAPPER(KeycodesActive)
+   public:
+      
+      void exclusively() { assertion_->setExclusively(true); }
    
    private:
       
@@ -45,8 +53,14 @@ class KeycodesActive {
                :  keycodes_(keycodes),
                   exclusively_(exclusively) 
             {}
+            
+            template<typename..._KeyInfo>
+            Assertion(_KeyInfo...key_info) 
+               :  keycodes_{toKeycode(std::forward<_KeyInfo>(key_info))...},
+                  exclusively_(exclusively) 
+            {}
 
-            virtual void describe(std::ostream, const char *add_indent = "") const override {
+            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
                out << add_indent << "Keycodes active: ";
                
                if(keycodes_.empty()) {
@@ -88,7 +102,7 @@ class KeycodesActive {
                
                   for(auto keycode: active_keycodes) {
                      
-                     if(std::find(keycodes_.begin(), keycodes_.end(), keycode) == vec.end()) {
+                     if(std::find(keycodes_.begin(), keycodes_.end(), keycode) == keycodes_.end()) {
                         return false;
                      }
                   }
@@ -97,13 +111,18 @@ class KeycodesActive {
                return true;
             }
             
+            void setExclusively(bool state) { exclusively_ = state; }
+            bool getExclusively() const { return exclusively_; }
+            
          private:
             
             std::vector<uint8_t> keycodes_;
             bool exclusively_ = false;
       };
+   
+   KS_TESTING_ASSERTION_WRAPPER(KeycodesActive)
 };
 
-} // namespace keyboard_report
+} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

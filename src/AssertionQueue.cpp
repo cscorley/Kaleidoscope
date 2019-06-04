@@ -16,52 +16,59 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AssertionsQueue.h"
+#include "AssertionQueue.h"
+#include "assertions/Group.h"
 
 namespace kaleidoscope {
 namespace testing {
    
-void AssertionsQueue::queue(std::shared_ptr<_Assertion> &assertion)
+AssertionQueue &AssertionQueue::add(const std::shared_ptr<_Assertion> &assertion)
 {
    this->configureAssertion(assertion);
    queue_.push_back(assertion);
+   return *this;
 }
       
-void AssertionsQueue::queueGrouped(std::vector<std::shared_ptr<_Assertion>> &assertions)
+AssertionQueue &AssertionQueue::addGrouped(const std::vector<std::shared_ptr<_Assertion>> &assertions)
 {
    queue_.push_back(
       this->generateAssertionGroup(assertions)
    );
+   return *this;
 }
 
-std::shared_ptr<_Assertion> AssertionsQueue::generateAssertionGroup(
-      std::vector<std::shared_ptr<_Assertion>> &assertions) {
-   for(const auto &assertion: assertions) {
-      this->configureAssertion(assertion);
-   }
-      
-   assertions::Group group{assertions}; 
-   this->configureAssertion(group);
-   
-   return group;
-}
-
-void AssertionQueue::remove(std::shared_ptr<_Assertion> &assertion)
+std::shared_ptr<_Assertion> AssertionQueue::generateAssertionGroup(
+      const std::vector<std::shared_ptr<_Assertion>> &assertions) 
 {
-   for (auto iter = deque_.begin(); iter != deque_.end() ; ) {
-     (*iter == assertion) ? iter = deque_.erase(iter) : ++iter;
-   }
+   for(auto &assertion: assertions) {
+      this->configureAssertion(assertion);
+   } 
+   
+   std::shared_ptr<_Assertion> groupAssertion = assertions::Group{assertions};
+   
+   this->configureAssertion(groupAssertion);
+   
+   return groupAssertion;
 }
 
-void AssertionQueue::remove(std::vector<std::shared_ptr<_Assertion>> &assertions)
+AssertionQueue &AssertionQueue::remove(const std::shared_ptr<_Assertion> &assertion)
+{
+   for (auto iter = queue_.begin(); iter != queue_.end() ; ) {
+     (*iter == assertion) ? iter = queue_.erase(iter) : ++iter;
+   }
+   return *this;
+}
+
+AssertionQueue &AssertionQueue::remove(const std::vector<std::shared_ptr<_Assertion>> &assertions)
 {
    for(auto &assertion: assertions) {
       this->remove(assertion);
    }
+   return *this;
 }
  
-void AssertionQueue::configureAssertion(std::shared_ptr<_Assertion> &assertion) {
-   assertion->setTestDriver(driver_);
+void AssertionQueue::configureAssertion(const std::shared_ptr<_Assertion> &assertion) {
+   assertion->setDriver(&driver_);
 }
 
 std::shared_ptr<_Assertion> AssertionQueue::popFront()
@@ -74,6 +81,15 @@ std::shared_ptr<_Assertion> AssertionQueue::popFront()
 std::size_t AssertionQueue::size() const
 {
    return queue_.size();
+}
+
+bool AssertionQueue::empty() const 
+{ 
+   return queue_.empty();
+}
+
+void AssertionQueue::clear() {
+   queue_.clear();
 }
  
 } // namespace testing
