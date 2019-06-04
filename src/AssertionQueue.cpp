@@ -16,8 +16,10 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Driver.h"
 #include "AssertionQueue.h"
-#include "assertions/Group.h"
+#include "assertions/Grouped.h"
+#include "aux/demangle.h"
 
 namespace kaleidoscope {
 namespace testing {
@@ -26,6 +28,8 @@ AssertionQueue &AssertionQueue::add(const std::shared_ptr<_Assertion> &assertion
 {
    this->configureAssertion(assertion);
    queue_.push_back(assertion);
+   driver_.log() << "Adding " << type_string_ << " assertion: " 
+      << type(*assertion);
    return *this;
 }
       
@@ -34,6 +38,12 @@ AssertionQueue &AssertionQueue::addGrouped(const std::vector<std::shared_ptr<_As
    queue_.push_back(
       this->generateAssertionGroup(assertions)
    );
+   
+   driver_.log() << "Adding grouped " << type_string_ << " assertions";
+   for(const auto &assertion: assertions) {
+      driver_.log() << "   " << type(*assertion);
+   }   
+   
    return *this;
 }
 
@@ -44,7 +54,7 @@ std::shared_ptr<_Assertion> AssertionQueue::generateAssertionGroup(
       this->configureAssertion(assertion);
    } 
    
-   std::shared_ptr<_Assertion> groupAssertion = assertions::Group{assertions};
+   std::shared_ptr<_Assertion> groupAssertion = assertions::Grouped{assertions};
    
    this->configureAssertion(groupAssertion);
    
@@ -53,8 +63,25 @@ std::shared_ptr<_Assertion> AssertionQueue::generateAssertionGroup(
 
 AssertionQueue &AssertionQueue::remove(const std::shared_ptr<_Assertion> &assertion)
 {
+   bool remove_success = false;
+   
    for (auto iter = queue_.begin(); iter != queue_.end() ; ) {
-     (*iter == assertion) ? iter = queue_.erase(iter) : ++iter;
+     if(*iter == assertion) {
+        iter = queue_.erase(iter);
+        remove_success = true;
+        break;
+     }
+     else {
+        ++iter;
+     }
+   }
+   if(remove_success) {
+      driver_.log() << "Removed " << type_string_ << " assertion: " 
+         << type(*assertion);
+   }
+   else {
+      driver_.error() << "Failed to remove " << type_string_ << " assertion: " 
+         << type(*assertion);
    }
    return *this;
 }

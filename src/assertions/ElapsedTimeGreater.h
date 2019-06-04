@@ -19,6 +19,7 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
+#include "Driver.h"
 
 namespace kaleidoscope {
 namespace testing {
@@ -35,28 +36,28 @@ class ElapsedTimeGreater {
       
          public:
             
-            Assertion(double start_t, double delta_t) 
+            Assertion(Driver::TimeType delta_t, Driver::TimeType start_t = 0) 
                :  start_t_(start_t),
                   delta_t_(delta_t)
             {}
             
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Time elapsed greater " << delta_t_ << " ms";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Actual time elapsed " 
-                  << test_driver_->getTime() << " ms";
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Actual time elapsed " 
+                  << driver_->getTime() << " ms";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getTime() - start_t_ > delta_t_;
+               return driver_->getTime() - start_t_ > delta_t_;
             }
          
          private:
             
-            double start_t_ = .0;
-            double delta_t_ = .0;
+            Driver::TimeType start_t_ = .0;
+            Driver::TimeType delta_t_ = .0;
       };
       
    KS_TESTING_ASSERTION_WRAPPER(ElapsedTimeGreater)

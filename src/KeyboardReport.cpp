@@ -24,6 +24,7 @@
 
 #include "KeyboardReport.h"
 #include "aux/exceptions.h"
+#include "Driver.h"
 
 #include <vector>
 
@@ -156,11 +157,13 @@ void
   if((bitfield) & 1<<7) stream << str7;
 void
    KeyboardReport
-      ::dump(std::ostream &out, const char *add_indent) const
+      ::dump(const Driver &driver, const char *add_indent) const
 {
   bool anything = false;
   if(report_data_.modifiers) anything = true;
   else for(int i = 0; i < KEY_BYTES; i++) if(report_data_.keys[i]) { anything = true; break; }
+  
+  auto out = driver.log();
   if(!anything) {
     out << add_indent << "<none>";
   } else {

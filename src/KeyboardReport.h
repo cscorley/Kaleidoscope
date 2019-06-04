@@ -31,6 +31,8 @@
 
 namespace kaleidoscope {
 namespace testing {
+   
+class Driver;
   
 /** class KeyboardReport
  *  brief An interface to query keyboard reports.
@@ -53,7 +55,7 @@ class KeyboardReport {
       
       bool isEmpty() const;
       
-      void dump(std::ostream &out, const char *add_indent = "") const;
+      void dump(const Driver &driver, const char *add_indent = "") const;
       
       void setReportData(const HID_KeyboardReport_Data_t &report_data);
       

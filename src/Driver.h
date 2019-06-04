@@ -27,6 +27,7 @@ namespace kaleidoscope {
 namespace testing {
    
 class Driver;
+class _Assertion;
 
 class DriverStream_ {
    
@@ -35,6 +36,8 @@ class DriverStream_ {
       struct Endl {};
       
       DriverStream_(const Driver *driver) : driver_(driver) {}
+      
+      virtual ~DriverStream_() {}
 
    protected:
       
@@ -43,7 +46,7 @@ class DriverStream_ {
       void checkLineStart();
       
       virtual void reactOnLineStart();
-      virtual void reactOnLineEnd() {}
+      virtual void reactOnLineEnd();
       
       template<typename _T>
       void output(const _T &t) {
@@ -78,7 +81,7 @@ class ErrorStream : public DriverStream_ {
          return *this; 
       }
       
-      ~ErrorStream();
+      virtual ~ErrorStream() override;
 
    private:
    
@@ -90,6 +93,7 @@ class LogStream : public DriverStream_ {
    public:
       
       LogStream(const Driver *driver);
+      virtual ~LogStream() override;
       
       template<typename _T>
       LogStream &operator<<(const _T &t) { 
@@ -110,10 +114,10 @@ class HeaderStream : public DriverStream_ {
          return *this; 
       }
       
-      ~HeaderStream();
+      virtual ~HeaderStream() override;
       
-   protected:
-      
+   private:
+   
       virtual void reactOnLineStart() override;
 };
         
@@ -121,6 +125,10 @@ class HeaderStream : public DriverStream_ {
  *  brief The main test driver object.
  */
 class Driver {
+   
+   public:
+      
+      typedef int TimeType;
    
    private:
       
@@ -134,7 +142,7 @@ class Driver {
       int n_overall_keyboard_reports_ = 0;
    
       int cycle_id_ = 0;
-      double time_ = .0;
+      TimeType time_ = .0;
       int scan_cycles_default_count_ = 5;
       
       bool error_if_report_without_queued_assertions_ = false;
@@ -284,7 +292,7 @@ class Driver {
        * 
        * return void
        */ 
-      void skipTime(double delta_t, 
+      void skipTime(TimeType delta_t, 
                     const std::vector<std::shared_ptr<_Assertion>> 
                            &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
             
@@ -338,7 +346,7 @@ class Driver {
       
       int getNumKeyboardReportsInCycle() const { return n_keyboard_reports_in_cycle_; }
       int getNumOverallKeyboardReports() const { return n_overall_keyboard_reports_; }
-      double getTime() const { return time_; }
+      TimeType getTime() const { return time_; }
       int getCycleId() const { return cycle_id_; }
       
       void setDebug(bool state) { debug_ = state; }
@@ -372,7 +380,7 @@ class Driver {
             bool assertion_passed = assertion->eval();
             
             if(!assertion_passed || debug_) {
-               assertion->report(out_);
+               assertion->report();
             }
             
             assertions_passed_ &= assertion_passed;

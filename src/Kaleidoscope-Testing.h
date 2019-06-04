@@ -21,7 +21,7 @@
 #include "Driver.h"
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
-#include "assertions/Group.h"
+#include "assertions/Grouped.h"
 #include "assertions/LayerIsActive.h"
 #include "assertions/CycleHasNReports.h"
 #include "assertions/keyboard_report/ReportEmpty.h"

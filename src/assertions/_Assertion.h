@@ -22,6 +22,9 @@
 #include <ostream>
 #include <memory>
 
+// #include <iostream>
+// #include "aux/demangle.h"
+
 namespace kaleidoscope {
 namespace testing {
    
@@ -45,22 +48,7 @@ class _Assertion {
        * 
        * return void
        */
-      virtual void report(std::ostream &out, const char *add_indent = "") const {
-   
-         if(this->valid_) {
-            out << add_indent << typeid(*this).name() << " assertion passed: ";
-            this->describe(out);
-            out << std::endl;
-         }
-         else {
-            out << add_indent << "!!! " << typeid(*this).name() << " assertion failed: ";
-            this->describe(out);
-            out << std::endl;
-            out << add_indent << "   actual:" << std::endl;
-            std::string indent = std::string(add_indent) + "      ";
-            this->describeState(out, indent.c_str());
-         }
-      }
+      virtual void report(const char *add_indent = "") const;
       
       /** brief Describes the assertion.
        * 
@@ -69,7 +57,7 @@ class _Assertion {
        * 
        * return void
        */
-      virtual void describe(std::ostream &out, const char *add_indent = "") const = 0;
+      virtual void describe(const char *add_indent = "") const = 0;
 
       /** brief Evaluates the condition that is supposed to be asserted.
        * details Do not override this method.
@@ -78,7 +66,11 @@ class _Assertion {
        */
       bool eval() {
          
-         valid_ = this->evalInternal() ^ negate_;
+//          std::cout << "Checking assertion " << (void*)this << " " << type(*this) << "\n";
+//          std::cout << "evalInternal: " << this->evalInternal() << "\n";
+//          std::cout << "negate: " << negate_ << "\n";
+         valid_ = (this->evalInternal() != negate_); // logical XOR
+//          std::cout << "valid: " << valid_ << "\n";
          return valid_;
       }
       
@@ -91,22 +83,14 @@ class _Assertion {
        * 
        * return void
        */
-      virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-         out << add_indent;
-         if(valid_) {
-            out << "valid";
-         }
-         else {
-            out << "failed";
-         }
-      }
+      virtual void describeState(const char *add_indent = "") const;
    
       /** brief Register the test driver with the assertion.
        * 
        * return void
        */
-      virtual void setDriver(const Driver *test_driver) {
-         test_driver_ = test_driver;
+      virtual void setDriver(const Driver *driver) {
+         driver_ = driver;
       }
 
       /** brief Register the test driver with the assertion.
@@ -114,7 +98,7 @@ class _Assertion {
        * return A pointer to the current test driver
        */
       const Driver *getDriver() const {
-         return test_driver_;
+         return driver_;
       }
      
       /** brief Checks validity of an assertion.
@@ -152,8 +136,8 @@ class _Assertion {
       
    protected:
       
-      bool valid_;
-      const Driver *test_driver_ = nullptr;
+      bool valid_ = false;
+      const Driver *driver_ = nullptr;
       
    private:
       
@@ -161,7 +145,8 @@ class _Assertion {
 };
 
 inline
-std::shared_ptr<_Assertion> negate(std::shared_ptr<_Assertion> &assertion) {
+std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion) {
+//    std::cout << "Negating assertion " << (void*)&(*assertion) << " " << type(*assertion) << "\n";
    assertion->setNegate(true);
    return assertion;
 }

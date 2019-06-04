@@ -19,7 +19,6 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
-
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
@@ -37,18 +36,18 @@ class ReportEmpty {
             
          public:
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Report empty";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Report empty";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Report: ";
-               test_driver_->getCurrentKeyboardReport().dump(out, add_indent);
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Report: ";
+               driver_->getCurrentKeyboardReport().dump(*driver_, add_indent);
             }
 
             virtual bool evalInternal() override {
-               return !test_driver_->getCurrentKeyboardReport().isAnyKeyActive()
-                   && !test_driver_->getCurrentKeyboardReport().isAnyModifierActive();
+               return !driver_->getCurrentKeyboardReport().isAnyKeyActive()
+                   && !driver_->getCurrentKeyboardReport().isAnyModifierActive();
             }
       };
    

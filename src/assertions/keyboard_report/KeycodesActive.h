@@ -57,48 +57,48 @@ class KeycodesActive {
             template<typename..._KeyInfo>
             Assertion(_KeyInfo...key_info) 
                :  keycodes_{toKeycode(std::forward<_KeyInfo>(key_info))...},
-                  exclusively_(exclusively) 
+                  exclusively_(false) 
             {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Keycodes active: ";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Keycodes active: ";
                
                if(keycodes_.empty()) {
-                  out << "<none>";
+                  driver_->log() << "<none>";
                   return;
                }
                
                for(auto keycode: keycodes_) {
-                  out << keycodes::keycodeToName(keycode) << " ";
+                  driver_->log() << keycodes::keycodeToName(keycode) << " ";
                }
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
+            virtual void describeState(const char *add_indent = "") const {
                
-               out << add_indent << "Keycodes actually active: ";
+               driver_->log() << add_indent << "Keycodes actually active: ";
                
-               auto active_keycodes = test_driver_->getCurrentKeyboardReport().getActiveKeycodes();
+               auto active_keycodes = driver_->getCurrentKeyboardReport().getActiveKeycodes();
                               
                if(active_keycodes.empty()) {
-                  out << "<none>";
+                  driver_->log() << "<none>";
                   return;
                }
                for(auto keycode: active_keycodes) {
-                  out << keycodes::keycodeToName(keycode) << " ";
+                  driver_->log() << keycodes::keycodeToName(keycode) << " ";
                }
             }
 
             virtual bool evalInternal() override {
                
                for(auto keycode: keycodes_) {
-                  if(!test_driver_->getCurrentKeyboardReport().isKeycodeActive(keycode)) {
+                  if(!driver_->getCurrentKeyboardReport().isKeycodeActive(keycode)) {
                      return false;
                   }
                }
                   
                if(exclusively_) {
                   
-                  auto active_keycodes = test_driver_->getCurrentKeyboardReport().getActiveKeycodes();
+                  auto active_keycodes = driver_->getCurrentKeyboardReport().getActiveKeycodes();
                
                   for(auto keycode: active_keycodes) {
                      

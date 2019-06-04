@@ -37,23 +37,23 @@ class LayerIsActive {
    
          public:
             
-            Assertion(uint8_t layer_id) : layer_id_(layer_id) {}
+            Assertion(int layer_id) : layer_id_(layer_id) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Layer " << layer_id_ << " expected to be active";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive(layer_id_);
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
             }
 
             virtual bool evalInternal() override {
-               return Layer.isActive(layer_id_);
+               return Layer.isActive((uint8_t)layer_id_);
             }
             
          private:
             
-            uint8_t layer_id_;
+            int layer_id_;
       };
    
    KS_TESTING_ASSERTION_WRAPPER(LayerIsActive)

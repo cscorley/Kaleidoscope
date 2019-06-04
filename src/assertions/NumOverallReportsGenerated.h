@@ -39,16 +39,16 @@ class NumOverallReportsGenerated {
             Assertion(int n_overall_reports) 
                : n_overall_reports_(n_overall_reports) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << n_overall_reports_ << " overall keyboard reports expected";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << n_overall_reports_ << " overall keyboard reports expected";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << test_driver_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << driver_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNumOverallKeyboardReports() == n_overall_reports_;
+               return driver_->getNumOverallKeyboardReports() == n_overall_reports_;
             }
             
          private:

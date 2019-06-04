@@ -36,21 +36,24 @@ class ModifierActive {
       class Assertion : public _Assertion {
             
          public:
+            
+            Assertion(Key key) 
+               : modifier_(key.keyCode) {}
       
             Assertion(uint8_t modifier) 
                : modifier_(modifier) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Modifier " << keycodes::keycodeToName(modifier_) << " active";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Modifier " << keycodes::keycodeToName(modifier_) << " active";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Modifier " << keycodes::keycodeToName(modifier_) << " active: " 
-                  << test_driver_->getCurrentKeyboardReport().isModifierKeycodeActive(modifier_);
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Modifier " << keycodes::keycodeToName(modifier_) << " active: " 
+                  << driver_->getCurrentKeyboardReport().isModifierKeycodeActive(modifier_);
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getCurrentKeyboardReport().isKeycodeActive(modifier_);
+               return driver_->getCurrentKeyboardReport().isModifierKeycodeActive(modifier_);
             }
             
          private:

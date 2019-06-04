@@ -15,46 +15,39 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#pragma once
-
-#include "assertions/_Assertion.h"
-
-#include "kaleidoscope/key_defs.h"
+   
+#include "aux/demangle.h"
+#ifdef __GNUG__
+#include <cstdlib>
+#include <memory>
+#include <cxxabi.h>
+#endif
 
 namespace kaleidoscope {
 namespace testing {
-namespace assertions {
-
-/** class DumpReport
- *  brief Asserts nothing but dumps the current report instead.
- */
-class DumpReport {
    
-   private:
-      
-      class Assertion : public _Assertion {
-            
-         public:
+#ifdef __GNUG__
 
-            virtual void describe(const char *add_indent = "") const override {
-               driver_->getCurrentKeyboardReport().dump(*driver_, add_indent);
-            }
+std::string demangle(const char* name) {
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
+    int status = -4; // some arbitrary value to eliminate the compiler warning
 
-            virtual bool evalInternal() override {
-               this->describe();
-               return true;
-            }
+    // enable c++11 by passing the flag -std=c++11 to g++
+    std::unique_ptr<char, void(*)(void*)> res {
+        abi::__cxa_demangle(name, NULL, NULL, &status),
+        std::free
+    };
 
-      };
-   
-   KS_TESTING_ASSERTION_WRAPPER(DumpReport)
-};
+    return (status==0) ? res.get() : name ;
+}
 
-} // namespace assertions
+#else
+
+// does nothing if not g++
+std::string demangle(const char* name) {
+    return name;
+}
+
+#endif
 } // namespace testing
 } // namespace kaleidoscope

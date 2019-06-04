@@ -27,7 +27,7 @@ namespace assertions {
 /** class AnyModifiersActive
  *  brief Asserts that any modifiers are active in the current report.
  */
-class AnyModifiersActive {
+class AnyModifierActive {
    
    private:
       
@@ -35,21 +35,21 @@ class AnyModifiersActive {
             
          public:
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Any modifiers active";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Any modifiers active";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Any modifiers active: ";
-               out << test_driver_->getCurrentKeyboardReport().isAnyModifierActive();
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Any modifiers active: ";
+               driver_->log() << driver_->getCurrentKeyboardReport().isAnyModifierActive();
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getCurrentKeyboardReport().isAnyModifierActive();
+               return driver_->getCurrentKeyboardReport().isAnyModifierActive();
             }
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(AnyModifiersActive)
+   KS_TESTING_ASSERTION_WRAPPER(AnyModifierActive)
 };
 
 } // namespace assertions

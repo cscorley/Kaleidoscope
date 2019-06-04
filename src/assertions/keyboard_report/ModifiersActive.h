@@ -28,6 +28,12 @@
 namespace kaleidoscope {
 namespace testing {
 namespace assertions {
+   
+inline
+uint8_t toModifier(uint8_t modifier) { return modifier; }
+
+inline
+uint8_t toModifier(Key key) { return key.keyCode; }
 
 /** class ModifiersActive
  *  brief Asserts that a specific list of keys is active in the keyboard report.
@@ -45,46 +51,52 @@ class ModifiersActive {
                :  modifiers_(modifiers),
                   exclusively_(exclusively) 
             {}
+            
+            template<typename..._KeyInfo>
+            Assertion(_KeyInfo...key_info) 
+               :  modifiers_{toModifier(std::forward<_KeyInfo>(key_info))...},
+                  exclusively_(false) 
+            {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Modifiers active: ";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Modifiers active: ";
                
                if(modifiers_.empty()) {
-                  out << "<none>";
+                  driver_->log() << "<none>";
                   return;
                }
                
                for(auto modifier: modifiers_) {
-                  out << keycodes::keycodeToName(modifier) << " ";
+                  driver_->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
+            virtual void describeState(const char *add_indent = "") const {
                
-               out << add_indent << "Modifiers actually active: ";
+               driver_->log() << add_indent << "Modifiers actually active: ";
                
-               auto active_modifiers = test_driver_->getCurrentKeyboardReport().getActiveModifiers();
+               auto active_modifiers = driver_->getCurrentKeyboardReport().getActiveModifiers();
                               
                if(active_modifiers.empty()) {
-                  out << "<none>";
+                  driver_->log() << "<none>";
                   return;
                }
                for(auto modifier: active_modifiers) {
-                  out << keycodes::keycodeToName(modifier) << " ";
+                  driver_->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 
             virtual bool evalInternal() override {
                
                for(auto modifier: modifiers_) {
-                  if(!test_driver_->getCurrentKeyboardReport().isModifierActive(modifier)) {
+                  if(!driver_->getCurrentKeyboardReport().isModifierActive(modifier)) {
                      return false;
                   }
                }
                   
                if(exclusively_) {
                   
-                  auto active_modifiers = test_driver_->getCurrentKeyboardReport().getActiveModifiers();
+                  auto active_modifiers = driver_->getCurrentKeyboardReport().getActiveModifiers();
                
                   for(auto modifier: active_modifiers) {
                      

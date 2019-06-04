@@ -37,17 +37,17 @@ class ReportNthInCycle {
             
             Assertion(int report_id) : report_id_(report_id) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Report " << report_id_ << ". in cycle";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Report " << report_id_ << ". in cycle";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Report is " << test_driver_->getNumKeyboardReportsInCycle()
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Report is " << driver_->getNumKeyboardReportsInCycle()
                   << ". in cycle";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNumKeyboardReportsInCycle() == report_id_;
+               return driver_->getNumKeyboardReportsInCycle() == report_id_;
             }
             
          private:

@@ -43,17 +43,17 @@ class KeycodeActive {
             Assertion(Key key) 
                : keycode_(key.keyCode) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Key " << keycodes::keycodeToName(keycode_) << " active";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Key " << keycodes::keycodeToName(keycode_) << " active";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << "Key " << keycodes::keycodeToName(keycode_) << " active: "
-                  << test_driver_->getCurrentKeyboardReport().isKeycodeActive(keycode_);
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << "Key " << keycodes::keycodeToName(keycode_) << " active: "
+                  << driver_->getCurrentKeyboardReport().isKeycodeActive(keycode_);
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getCurrentKeyboardReport().isKeycodeActive(keycode_);
+               return driver_->getCurrentKeyboardReport().isKeycodeActive(keycode_);
             }
             
          private:

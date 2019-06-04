@@ -39,16 +39,16 @@ class CycleHasNReports {
 
             Assertion(int n_reports) : n_reports_(n_reports) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << n_reports_ << " keyboard reports expected in cycle";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               out << add_indent << test_driver_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
+            virtual void describeState(const char *add_indent = "") const {
+               driver_->log() << add_indent << driver_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return test_driver_->getNumKeyboardReportsInCycle() == n_reports_;
+               return driver_->getNumKeyboardReportsInCycle() == n_reports_;
             }
             
          private:

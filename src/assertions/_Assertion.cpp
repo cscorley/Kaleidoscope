@@ -16,42 +16,37 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
 #include "assertions/_Assertion.h"
+#include "aux/demangle.h"
+#include "Driver.h"
 
 namespace kaleidoscope {
 namespace testing {
-namespace assertions {
 
-/** class AnyKeycodesActive
- *  brief Asserts that any keycodes are active in the current report.
- */
-class AnyKeycodeActive {
-   
-   private:
-      
-      class Assertion : public _Assertion {
-            
-         public:
+void _Assertion::report(const char *add_indent) const 
+{
+   if(this->valid_) {
+      driver_->log() << add_indent << type(*this) << " assertion passed";
+      //this->describe();
+   }
+   else {
+      std::string indent = std::string(add_indent) + "      ";
+      driver_->error() << add_indent << type(*this) << " assertion failed";
+      driver_->log() << add_indent << "expected:";
+      this->describe(indent.c_str());
+      driver_->log() << add_indent << "actual:";
+      this->describeState(indent.c_str());
+   }
+}
 
-            virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Any keycodes active";
-            }
+void _Assertion::describeState(const char *add_indent) const {
+   if(valid_) {
+      driver_->log() << add_indent << "valid";
+   }
+   else {
+      driver_->error() << add_indent << "failed";
+   }
+}
 
-            virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Any keycodes active: ";
-               driver_->log() << driver_->getCurrentKeyboardReport().isAnyKeyActive();
-            }
-
-            virtual bool evalInternal() override {
-               return driver_->getCurrentKeyboardReport().isAnyKeyActive();
-            }
-      };
-   
-   KS_TESTING_ASSERTION_WRAPPER(AnyKeycodeActive)
-};
-
-} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

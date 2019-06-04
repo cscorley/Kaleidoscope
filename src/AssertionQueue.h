@@ -36,7 +36,10 @@ class AssertionQueue
 {
    public:
       
-      AssertionQueue(Driver &driver) : driver_(driver) {}
+      AssertionQueue(Driver &driver, const char *type_string) 
+         :  driver_(driver),
+            type_string_(type_string)
+      {}
       
       /** brief Queues an assertion.
        *
@@ -123,6 +126,7 @@ class AssertionQueue
       
       Driver &driver_;
       std::deque<std::shared_ptr<_Assertion>> queue_;
+      const char *type_string_ = nullptr;
 };
 
 } // namespace testing

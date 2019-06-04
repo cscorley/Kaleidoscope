@@ -548,6 +548,7 @@ void loop() {
 #include "Kaleidoscope-Testing.h"
 
 #include <iostream>
+#include <cassert>
 
 KALEIDOSCOPE_TESTING_INIT
 
@@ -558,14 +559,132 @@ void runTest(Driver &driver) {
    
    using namespace assertions;
    
+   driver.header() << "Test 0";
+   
+   // When tapping, we expect one report with the 
+   // key active and then another report with the key inactive. As our
+   // key is the only one, we can use this to check for an empty report.
+   //
    driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
    
-   driver.tapKey(2, 1);
+   driver.queuedCycleAssertions().add(CycleHasNReports{1});
    
-//    driver.keyDown(2, 1);
-//    driver.cycle();
-//    driver.keyUp(2, 1);
+   driver.tapKey(2, 1); // A
    driver.cycle();
+   
+   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+   driver.header() << "Test 1";
+   
+   driver.queuedKeyboardReportAssertions().add(
+      Grouped{
+         KeycodeActive{Key_A},
+         KeycodeActive{Key_B},
+         negate(ReportEmpty{}),
+         negate(AnyModifierActive{}),
+         AnyKeycodeActive{},
+         ReportNthInCycle{1},
+         DumpReport{}
+      }
+   );
+      
+   driver.tapKey(2, 1); // A
+   driver.tapKey(3, 5); // B
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+#if 0
+   
+   driver.header() << "Test 2";
+   
+   driver.queuedKeyboardReportAssertions().addGrouped(
+      KeycodeActive{Key_A},
+      KeycodeActive{Key_B}
+   );
+      
+   driver.tapKey(2, 1); // A
+   driver.tapKey(3, 5); // B
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+   driver.header() << "Test 3";
+   
+   driver.queuedKeyboardReportAssertions().addGrouped(
+      KeycodesActive{Key_A, Key_B}
+   );
+      
+   driver.tapKey(2, 1); // A
+   driver.tapKey(3, 5); // B
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+   driver.header() << "Test 4";
+   
+   {
+      auto layer_check = LayerIsActive{0};
+      driver.permanentCycleAssertions().add(layer_check);
+      driver.cycle();
+      driver.permanentCycleAssertions().remove(layer_check);
+   }
+   
+   driver.header() << "Test 5";
+      
+   driver.queuedKeyboardReportAssertions().add(ModifierActive{Key_LeftShift});
+   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+   
+   driver.queuedCycleAssertions().add(CycleHasNReports{1});
+   
+   driver.tapKey(3, 7); // left shift
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+   driver.header() << "Test 6";
+   
+   driver.queuedKeyboardReportAssertions().addGrouped(
+      ModifiersActive{Key_LeftShift, Key_LeftControl},
+      AnyModifierActive{}
+   );
+   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+   
+   driver.queuedCycleAssertions().add(CycleHasNReports{1});
+   
+   driver.tapKey(3, 7); // left shift
+   driver.tapKey(0, 7); // left control
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+   
+   driver.header() << "Test 7";
+   
+   driver.queuedCycleAssertions().addGrouped(
+      NumOverallReportsGenerated{1},
+      CycleIsNth{1},
+      ElapsedTimeGreater{1000}
+   );
+   driver.cycle();
+   
+   driver.header() << "Test 8";
+   
+   driver.cycles(10);
+   
+   driver.header() << "Test 9";
+   driver.skipTime(1000); // ms
+   
+   driver.header() << "Test 10";
+   driver.queuedKeyboardReportAssertions().add(DumpReport{});
+   driver.tapKey(3, 7); // left shift
+   driver.tapKey(2, 1); // A
+   driver.cycle();
+   
+   assert(driver.queuedKeyboardReportAssertions().empty());
+#endif
 }
 
 } // namespace testing

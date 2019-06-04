@@ -19,6 +19,7 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
+#include "Driver.h"
 
 #include <vector>
 
@@ -26,10 +27,10 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** class Group
+/** class Grouped
  *  brief Groups multiple assertions.
  */
-class Group {
+class Grouped {
  
    private:
       
@@ -42,15 +43,15 @@ class Group {
                :  assertions_{std::forward<_AssertionPtrs>(assertion_ptrs)...}
             {}
 
-            virtual void report(std::ostream &out, const char *add_indent = "") const override;
+            virtual void report(const char *add_indent = "") const override;
 
-            virtual void setDriver(const Driver *test_driver) override;
+            virtual void setDriver(const Driver *driver) override;
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << "A group of assertions";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << "A group of assertions";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const override;
+            virtual void describeState(const char *add_indent = "") const override;
 
          private:
 
@@ -69,7 +70,7 @@ class Group {
             std::vector<std::shared_ptr<_Assertion>> assertions_;
       };
       
-   KS_TESTING_ASSERTION_WRAPPER(Group)
+   KS_TESTING_ASSERTION_WRAPPER(Grouped)
 };
 
 } // namespace assertions

@@ -18,43 +18,19 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
-
-#include "kaleidoscope/key_defs.h"
+#include <string>
+#include <typeinfo>
 
 namespace kaleidoscope {
 namespace testing {
-namespace assertions {
 
-/** class DumpReport
- *  brief Asserts nothing but dumps the current report instead.
- */
-class DumpReport {
-   
-   private:
-      
-      class Assertion : public _Assertion {
-            
-         public:
+std::string demangle(const char* name);
 
-            virtual void describe(const char *add_indent = "") const override {
-               driver_->getCurrentKeyboardReport().dump(*driver_, add_indent);
-            }
+template <class T>
+std::string type(const T& t) {
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
+    return demangle(typeid(t).name());
+}
 
-            virtual bool evalInternal() override {
-               this->describe();
-               return true;
-            }
-
-      };
-   
-   KS_TESTING_ASSERTION_WRAPPER(DumpReport)
-};
-
-} // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

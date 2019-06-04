@@ -37,18 +37,18 @@ class CycleIsNth {
          
             Assertion(int cycle_id) : cycle_id_(cycle_id) {}
 
-            virtual void describe(std::ostream &out, const char *add_indent = "") const override {
-               out << add_indent << "Is " << cycle_id_ << ". cycle";
+            virtual void describe(const char *add_indent = "") const override {
+               driver_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
             }
 
-            virtual void describeState(std::ostream &out, const char *add_indent = "") const {
-               this->describe(out, add_indent);
+            virtual void describeState(const char *add_indent = "") const {
+               this->describe(add_indent);
             }
          
          private:
 
             virtual bool evalInternal() override {
-               return test_driver_->getCycleId() == cycle_id_;
+               return driver_->getCycleId() == cycle_id_;
             }
             
          private:
