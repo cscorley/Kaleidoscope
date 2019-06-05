@@ -26,8 +26,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** class AssertLayerIsActive
- *  brief Asserts that a given layer is active (the current top layer).
+/** class LayerIsActive
+ *  brief Asserts that a given layer is active.
  */
 class LayerIsActive {
    

@@ -70,6 +70,8 @@ ErrorStream::~ErrorStream() {
    this->getOStream() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
    
    if(driver_->getAbortOnFirstError()) {
+      this->DriverStream_::reactOnLineStart();
+      this->getOStream() << "Bailing out.";
       exit(1);
    }
 }
@@ -106,6 +108,24 @@ void HeaderStream::reactOnLineStart()
 {
    this->DriverStream_::reactOnLineStart();
    this->getOStream() << "### ";
+}
+
+Test::Test(Driver *driver, const char *name) 
+   :  driver_(driver),
+      name_(name),
+      error_count_start_(driver->getErrorCount())
+{
+   driver->header() << "Test " << name;
+}
+
+Test::~Test() {
+   driver_->assertNothingQueued();
+   
+   auto error_count_end = driver_->getErrorCount();
+   
+   if(error_count_start_ != error_count_end) {
+      driver_->error() << "Test " << name_ << " failed";
+   }
 }
 
 void Driver::KeyboardReportConsumer::processKeyboardReport(
@@ -149,12 +169,12 @@ Driver::~Driver() {
 
 using namespace kaleidoscope::hardware;
 
-void Driver::keyDown(uint8_t row, uint8_t col) {
+void Driver::pressKey(uint8_t row, uint8_t col) {
    this->log() << "+ Activating key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::PRESSED);
 }
 
-void Driver::keyUp(uint8_t row, uint8_t col) {
+void Driver::releaseKey(uint8_t row, uint8_t col) {
    this->log() << "+ Releasing key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
 }
@@ -283,7 +303,9 @@ void Driver::headerText() {
    this->log() << "";
    this->log() << "author: noseglasses (https://github.com/noseglasses, shinynoseglasses@gmail.com)";
    this->log() << "";
-   this->log() << "cycle duration: " << cycle_duration_ << "";
+   this->log() << "cycle duration: " << cycle_duration_ << " ms";
+   this->log() << "debug: " << std::boolalpha << debug_;
+   this->log() << "aborting on first error: " << abort_on_first_error_;
    this->log() << "################################################################################";
    this->log() << "";
 }
@@ -292,6 +314,11 @@ void Driver::footerText() {
    this->log() << "";
    this->log() << "################################################################################";
    this->log() << "Testing done";
+   this->log() << "";
+   this->log() << "duration: " << time_ << " ms = " << cycle_id_ << " cycles";
+   this->log() << "error_count: " << error_count_;
+   this->log() << "";
+   this->log() << "num. keyboard reports processed: " << n_overall_keyboard_reports_;
    this->log() << "################################################################################";
    this->log() << "";
 }
@@ -400,6 +427,17 @@ void Driver::checkCycleDurationSet() {
    if(cycle_duration_ == 0) {
       this->error() << "Please set test.cycle_duration_ to a value in "
          "[ms] greater zero before using time based testing";
+   }
+}
+
+void Driver::assertNothingQueued() const
+{
+   if(!queued_keyboard_report_assertions_.empty()) {
+      this->error() << "Keyboard report assertions are left in queue";
+   }
+   
+   if(!queued_cycle_assertions_.empty()) {
+      this->error() << "Cycle assertions are left in queue";
    }
 }
       

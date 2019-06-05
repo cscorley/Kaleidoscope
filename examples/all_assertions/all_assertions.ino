@@ -559,148 +559,206 @@ void runTest(Driver &driver) {
    
    using namespace assertions;
    
-   driver.header() << "Test 0";
-   
-   // When tapping, we expect one report with the 
-   // key active and then another report with the key inactive. As our
-   // key is the only one, we can use this to check for an empty report.
-   //
-   driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
-   
-   driver.queuedCycleAssertions().add(CycleHasNReports{1});
-   
-   driver.tapKey(2, 1); // A
-   driver.cycle();
-   
-   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
-   driver.cycle();
-   
-   assert(driver.queuedKeyboardReportAssertions().empty());
-   
-   driver.header() << "Test 1";
-      
-   driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
-   driver.keyDown(2, 1); // A
-   driver.cycle();
-      
-   driver.queuedKeyboardReportAssertions().add(
-      Grouped{
-         KeycodeActive{Key_A},
-         KeycodeActive{Key_B},
-         negate(ReportEmpty{}),
-         negate(AnyModifierActive{}),
-         AnyKeycodeActive{},
-         ReportNthInCycle{1},
-         DumpReport{}
-      }
-   );
-   driver.keyDown(3, 5); // B
-   driver.cycle();
-   driver.keyUp(2, 1); // A
-   driver.keyUp(3, 5); // B
-   
-   driver.cycles(5);
-   
-   assert(driver.queuedKeyboardReportAssertions().empty());
-   
-   driver.header() << "Test 2";
-   
-   driver.queuedKeyboardReportAssertions().add(
-      KeycodeActive{Key_A}
-   );
-      
-   driver.keyDown(2, 1); // A
-   driver.cycle();
-      
-   driver.queuedKeyboardReportAssertions().addGrouped(
-      KeycodeActive{Key_A},
-      KeycodeActive{Key_B}
-   );
-   driver.keyDown(3, 5); // B
-   driver.cycle();
-   
-   driver.keyUp(2, 1);
-   driver.keyUp(3, 5);
-   
-   driver.cycles(5);
-   
-   assert(driver.queuedKeyboardReportAssertions().empty());
-   
-   driver.header() << "Test 3";
-   
-   driver.keyDown(2, 1); // A
-   driver.cycle();
-   driver.keyDown(3, 5); // B
-   driver.queuedKeyboardReportAssertions().add(
-      KeycodesActive{Key_A, Key_B}
-   );
-   driver.cycle();
-   driver.keyUp(2, 1);
-   driver.keyUp(3, 5);
-   driver.cycles(5);
-   
-   assert(driver.queuedKeyboardReportAssertions().empty());
-   
-   driver.header() << "Test 4";
-   
+   //***************************************************************************
    {
-      auto layer_check = LayerIsActive{0};
+      auto test = driver.newTest("0");
+      
+      // When tapping, we expect one report with the 
+      // key active and then another report with the key inactive. As our
+      // key is the only one, we can use this to check for an empty report.
+      //
+      driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+      
+      driver.queuedCycleAssertions().add(CycleHasNReports{1});
+      
+      driver.tapKey(2, 1); // A
+      driver.cycle();
+      
+      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+      driver.cycle();
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("1");
+         
+      driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+      driver.pressKey(2, 1); // A
+      driver.cycle();
+         
+      driver.queuedKeyboardReportAssertions().add(
+         Grouped{
+            KeycodeActive{Key_A},
+            KeycodeActive{Key_B},
+            negate(ReportEmpty{}),
+            negate(AnyModifierActive{}),
+            AnyKeycodeActive{},
+            ReportNthInCycle{1},
+            DumpReport{}
+         }
+      );
+      driver.pressKey(3, 5); // B
+      driver.cycle();
+      driver.releaseKey(2, 1); // A
+      driver.releaseKey(3, 5); // B
+      
+      driver.cycles(5);
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("2");
+   
+      driver.queuedKeyboardReportAssertions().add(
+         KeycodeActive{Key_A}
+      );
+         
+      driver.pressKey(2, 1); // A
+      driver.cycle();
+         
+      driver.queuedKeyboardReportAssertions().addGrouped(
+         KeycodeActive{Key_A},
+         KeycodeActive{Key_B}
+      );
+      driver.pressKey(3, 5); // B
+      driver.cycle();
+      
+      driver.releaseKey(2, 1);
+      driver.releaseKey(3, 5);
+      
+      driver.cycles(5);
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("3");
+   
+      driver.pressKey(2, 1); // A
+      driver.cycle();
+      driver.pressKey(3, 5); // B
+      driver.queuedKeyboardReportAssertions().add(
+         KeycodesActive{Key_A, Key_B}
+      );
+      driver.cycle();
+      driver.releaseKey(2, 1);
+      driver.releaseKey(3, 5);
+      driver.cycles(5);
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("4");
+
+      auto layer_check = TopActiveLayerIs{0};
       driver.permanentCycleAssertions().add(layer_check);
       driver.cycle();
       driver.permanentCycleAssertions().remove(layer_check);
    }
    
-   driver.header() << "Test 5";
+   //***************************************************************************
+   {
+      auto test = driver.newTest("5");
       
-   driver.queuedKeyboardReportAssertions().add(ModifierActive{Key_LeftShift});
-   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+      driver.queuedKeyboardReportAssertions().add(ModifierActive{Key_LeftShift});
+      driver.queuedCycleAssertions().add(CycleHasNReports{1});
+      driver.tapKey(3, 7); // left shift
+      driver.cycle();
+      
+      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+      driver.queuedCycleAssertions().add(CycleHasNReports{1});
+      driver.cycle();
+   }
    
-   driver.queuedCycleAssertions().add(CycleHasNReports{1});
+   //***************************************************************************
+   {
+      auto test = driver.newTest("6");
    
-   driver.tapKey(3, 7); // left shift
-   driver.cycle();
+      driver.queuedKeyboardReportAssertions().addGrouped(
+         ModifiersActive{Key_LeftShift},
+         AnyModifierActive{}
+      );
+      driver.queuedCycleAssertions().add(CycleHasNReports{1});
+      driver.pressKey(3, 7); // left shift
+      driver.cycle();
+      
+      driver.queuedKeyboardReportAssertions().addGrouped(
+         ModifiersActive{Key_LeftShift, Key_LeftControl},
+         negate(AnyKeycodeActive{})
+      );  
+      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+      driver.pressKey(0, 7); // left control
+      driver.cycle();
+      
+      driver.releaseKey(3, 7); // left shift
+      driver.releaseKey(0, 7); // left control
+      driver.cycles(5);
+   }
    
-   assert(driver.queuedKeyboardReportAssertions().empty());
+   //***************************************************************************
+   {
+      auto test = driver.newTest("7");
    
-   driver.header() << "Test 6";
+      driver.queuedCycleAssertions().addGrouped(
+         NumOverallReportsGenerated{16},
+         CycleIsNth{34},
+         ElapsedTimeGreater{160}
+      );
+      driver.cycle();
+   }
    
-   driver.queuedKeyboardReportAssertions().addGrouped(
-      ModifiersActive{Key_LeftShift, Key_LeftControl},
-      AnyModifierActive{}
-   );
-   driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
+   //***************************************************************************
+   {
+      auto test = driver.newTest("8");
    
-   driver.queuedCycleAssertions().add(CycleHasNReports{1});
+      driver.cycles(10);
+   }
    
-   driver.tapKey(3, 7); // left shift
-   driver.tapKey(0, 7); // left control
-   driver.cycle();
+   //***************************************************************************
+   {
+      auto test = driver.newTest("9");
+    
+      driver.skipTime(1000); // ms
+   }
    
-   assert(driver.queuedKeyboardReportAssertions().empty());
+   //***************************************************************************
+   {
+      auto test = driver.newTest("10");
+      driver.queuedKeyboardReportAssertions().add(DumpReport{});
+      driver.tapKey(3, 7); // left shift
+      driver.tapKey(2, 1); // A
+      driver.cycle();
+   }
    
-   driver.header() << "Test 7";
+   //***************************************************************************
+   {
+      auto test = driver.newTest("11");
+      driver.queuedKeyboardReportAssertions().add(
+         CustomKeyboardReportAssertion{
+            [](const Driver &driver, const KeyboardReport &kr) -> bool {
+               driver.log() << "Custom assertion triggered";
+               return true;
+            }
+         }
+      );
+      driver.tapKey(3, 7); // left shift
+      driver.cycles(5);
+   }
    
-   driver.queuedCycleAssertions().addGrouped(
-      NumOverallReportsGenerated{1},
-      CycleIsNth{1},
-      ElapsedTimeGreater{1000}
-   );
-   driver.cycle();
-   
-   driver.header() << "Test 8";
-   
-   driver.cycles(10);
-   
-   driver.header() << "Test 9";
-   driver.skipTime(1000); // ms
-   
-   driver.header() << "Test 10";
-   driver.queuedKeyboardReportAssertions().add(DumpReport{});
-   driver.tapKey(3, 7); // left shift
-   driver.tapKey(2, 1); // A
-   driver.cycle();
-   
-   assert(driver.queuedKeyboardReportAssertions().empty());
+   //***************************************************************************
+   {
+      auto test = driver.newTest("12");
+      
+      driver.queuedKeyboardReportAssertions().add(
+         CustomKeyboardReportAssertion{
+            [](const Driver &driver, const KeyboardReport &kr) -> bool {
+               driver.log() << "Custom assertion triggered";
+               return true;
+            }
+         }
+      );
+      driver.tapKey(3, 7); // left shift
+      driver.cycles(5);
+   }
 }
 
 } // namespace testing

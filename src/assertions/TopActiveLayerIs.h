@@ -20,45 +20,45 @@
 
 #include "assertions/_Assertion.h"
 
+#include "kaleidoscope/layers.h"
+
 namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** class CycleIsNth
- *  brief Asserts that the current cycle is the nth.
+/** TopActiveLayerIs
+ *  brief Asserts that a given layer is the current top layer.
  */
-class CycleIsNth {
+class TopActiveLayerIs {
    
    private:
       
       class Assertion : public _Assertion {
-      
+   
          public:
-         
-            Assertion(int cycle_id) : cycle_id_(cycle_id) {}
+            
+            Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+               driver_->log() << add_indent << "Top active layer is " << layer_id_;
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Is " << driver_->getCycleId() << ". cycle";
+               driver_->log() << add_indent << "Top active layer is " << Layer.top();
             }
-         
-         private:
 
             virtual bool evalInternal() override {
-               return driver_->getCycleId() == cycle_id_;
+               return Layer.top() == (uint8_t)layer_id_;
             }
             
          private:
             
-            int cycle_id_ = -1;
+            int layer_id_;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(CycleIsNth)
+   KS_TESTING_ASSERTION_WRAPPER(TopActiveLayerIs)
 };
-
+   
 } // namespace assertions
 } // namespace testing
 } // namespace kaleidoscope

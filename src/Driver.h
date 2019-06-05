@@ -120,6 +120,20 @@ class HeaderStream : public DriverStream_ {
    
       virtual void reactOnLineStart() override;
 };
+
+class Test {
+   
+   public:
+      
+      Test(Driver *driver, const char *name);
+      ~Test();
+      
+   private:
+      
+      Driver *driver_;
+      const char *name_;
+      int error_count_start_;
+};
         
 /** class Driver
  *  brief The main test driver object.
@@ -144,6 +158,8 @@ class Driver {
       int cycle_id_ = 0;
       TimeType time_ = .0;
       int scan_cycles_default_count_ = 5;
+      
+      mutable int error_count_ = 0;
       
       bool error_if_report_without_queued_assertions_ = false;
       
@@ -223,19 +239,19 @@ class Driver {
        * 
        * return void
        */ 
-      void keyDown(uint8_t row, uint8_t col);
+      void pressKey(uint8_t row, uint8_t col);
        
       /** brief Registers a key up event. 
        * 
        * details Make sure that the key was registered
-       *         as active before, using keyDown(...).
+       *         as active before, using pressKey(...).
        *
        * param row The keyboard key row.
        * param col The keyboard key col.
        * 
        * return void
        */ 
-      void keyUp(uint8_t row, uint8_t col);
+      void releaseKey(uint8_t row, uint8_t col);
       
       /** brief Registers tap of a key.
        *
@@ -324,7 +340,12 @@ class Driver {
        */ 
       HeaderStream header() const { return HeaderStream{this}; }
          
-      ErrorStream error() const { return ErrorStream{this}; }
+      ErrorStream error() const { 
+         ++error_count_;
+         return ErrorStream{this}; 
+      }
+      
+      int getErrorCount() const { return error_count_; }
       
 //       void graphicalMap(self) {
 //          import GraphicalMap
@@ -351,6 +372,12 @@ class Driver {
       
       void setDebug(bool state) { debug_ = state; }
       bool getDebug() const { return debug_; }
+      
+      void assertNothingQueued() const;
+      
+      Test newTest(const char *name) {
+         return Test{this, name};
+      }
       
    private:
       

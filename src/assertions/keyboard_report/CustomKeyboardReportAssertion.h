@@ -19,44 +19,49 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
+#include "kaleidoscope/key_defs.h"
+
+#include <functional>
 
 namespace kaleidoscope {
 namespace testing {
 namespace assertions {
-   
-/** class CycleIsNth
- *  brief Asserts that the current cycle is the nth.
+
+/** class CustomKeyboardReportAssertion
+ *  brief Executes a lambda function of type bool(const Driver &, const KeyboardReport&).
+ *  details The lambda must return true to signal that the assertion passed
+ *          and false otherwise.      
  */
-class CycleIsNth {
+class CustomKeyboardReportAssertion {
    
    private:
       
       class Assertion : public _Assertion {
-      
+            
          public:
-         
-            Assertion(int cycle_id) : cycle_id_(cycle_id) {}
+            
+            Assertion(const std::function<bool(const Driver &, const KeyboardReport&)> &func)
+               : func_(func)
+            {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+               driver_->log() << add_indent << "Custom keyboard report assertion";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Is " << driver_->getCycleId() << ". cycle";
+               driver_->log() << add_indent << "Custom keyboard report assertion failed";
             }
-         
-         private:
 
             virtual bool evalInternal() override {
-               return driver_->getCycleId() == cycle_id_;
+               return func_(*driver_, driver_->getCurrentKeyboardReport());
             }
             
          private:
             
-            int cycle_id_ = -1;
+            std::function<bool(const Driver &, const KeyboardReport&)> func_;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(CycleIsNth)
+   KS_TESTING_ASSERTION_WRAPPER(CustomKeyboardReportAssertion)
 };
 
 } // namespace assertions
