@@ -27,11 +27,10 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class CustomKeyboardReportAssertion
- *  brief Executes a lambda function of type bool(const Driver &, const KeyboardReport&).
- *  details The lambda must return true to signal that the assertion passed
- *          and false otherwise.      
- */
+/// @brief Executes a lambda function of type bool(const Driver &, const KeyboardReport&).
+/// @details The lambda must return true to signal that the assertion passed
+///        and false otherwise.      
+///
 class CustomKeyboardReportAssertion {
    
    private:
@@ -40,6 +39,10 @@ class CustomKeyboardReportAssertion {
             
          public:
             
+            /// @brief Constructor.
+            /// @param func The function to evaluate as a condition for 
+            ///        the assertion to pass.
+            ///
             Assertion(const std::function<bool(const KeyboardReport&)> &func)
                : func_(func)
             {}
@@ -61,7 +64,7 @@ class CustomKeyboardReportAssertion {
             std::function<bool(const KeyboardReport&)> func_;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(CustomKeyboardReportAssertion)
+   KT_ASSERTION_WRAPPER(CustomKeyboardReportAssertion)
 };
 
 } // namespace assertions

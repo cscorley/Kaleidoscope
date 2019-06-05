@@ -25,9 +25,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class ElapsedTimeGreater
- *  brief Asserts that that time that elapsed is greater than a given time in [ms].
- */
+/// @brief Asserts that that time that elapsed is greater than a given time in [ms].
+///
 class ElapsedTimeGreater {
    
    private:
@@ -36,6 +35,10 @@ class ElapsedTimeGreater {
       
          public:
             
+            /// @brief Constructor.
+            /// @param delta_t The amount of time that is asserted being elapsed.
+            /// @param start_t An optional start point in time as reference (defaults to zero).
+            ///
             Assertion(Driver::TimeType delta_t, Driver::TimeType start_t = 0) 
                :  start_t_(start_t),
                   delta_t_(delta_t)
@@ -60,7 +63,7 @@ class ElapsedTimeGreater {
             Driver::TimeType delta_t_ = .0;
       };
       
-   KS_TESTING_ASSERTION_WRAPPER(ElapsedTimeGreater)
+   KT_ASSERTION_WRAPPER(ElapsedTimeGreater)
 };
 
 } // namespace assertions

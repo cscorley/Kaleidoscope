@@ -230,14 +230,14 @@ void Driver::clearAllKeys() {
 }
 
 void Driver::cycle(const std::vector<std::shared_ptr<_Assertion>> 
-         &on_stop_assertion_list) {
+         &at_end_assertion_list) {
    this->log() << "Running single scan cycle";
-   this->cycleInternal(on_stop_assertion_list, true);
+   this->cycleInternal(at_end_assertion_list, true);
    this->log() << "";
 }
 
 void Driver::cycles(int n, 
-                  const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list , 
+                  const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list , 
                   const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list) {
    if(n == 0) {
       n = scan_cycles_default_count_;
@@ -245,8 +245,8 @@ void Driver::cycles(int n,
    
    this->log() << "Running " << n << " scan cycles";
    
-   if(!on_stop_assertion_list.empty()) {
-      for(auto &assertion: on_stop_assertion_list) {
+   if(!at_end_assertion_list.empty()) {
+      for(auto &assertion: at_end_assertion_list) {
          assertion->setDriver(this);
       }
    }
@@ -255,32 +255,32 @@ void Driver::cycles(int n,
       this->cycleInternal(cycle_assertion_list, true /* on_log_reports */);
    }
       
-   if(!on_stop_assertion_list.empty()) {
-      this->log() << "Processing " << on_stop_assertion_list.size()
+   if(!at_end_assertion_list.empty()) {
+      this->log() << "Processing " << at_end_assertion_list.size()
          << " cycle assertions on stop";
-      this->processCycleAssertions(on_stop_assertion_list);
+      this->processCycleAssertions(at_end_assertion_list);
    }
       
    this->log() << "";
 }
 
 void Driver::skipTime(Driver::TimeType delta_t, 
-               const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list) {
+               const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list) {
    
    this->checkCycleDurationSet();
    
    this->log() << "Skipping dt >= " << delta_t << " ms";
    
-   this->skipTimeInternal(delta_t, on_stop_assertion_list);
+   this->skipTimeInternal(delta_t, at_end_assertion_list);
 }
 
 void Driver::skipTimeInternal(Driver::TimeType delta_t, 
-               const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list) {
+               const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list) {
    
    auto start_cycle = cycle_id_;
          
-   if(!on_stop_assertion_list.empty()) {
-      for(auto &assertion: on_stop_assertion_list) {
+   if(!at_end_assertion_list.empty()) {
+      for(auto &assertion: at_end_assertion_list) {
          assertion->setDriver(this);
       }
    }
@@ -296,17 +296,17 @@ void Driver::skipTimeInternal(Driver::TimeType delta_t,
       
    this->log() << elapsed_time << " ms (" << (cycle_id_ - start_cycle) << " cycles) skipped";
       
-   if(!on_stop_assertion_list.empty()) { 
-      this->log() << "Processing " << on_stop_assertion_list.size() 
+   if(!at_end_assertion_list.empty()) { 
+      this->log() << "Processing " << at_end_assertion_list.size() 
          << " cycle assertions on stop";
-      this->processCycleAssertions(on_stop_assertion_list);
+      this->processCycleAssertions(at_end_assertion_list);
    }
       
    this->log() << "";
 }
 
 void Driver::cycleTo(TimeType time,
-   const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list)
+   const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list)
 {
    if(time <= time_) {
       this->error() << "Failed cycling to time " << time << " ms. Target time is in the past.";
@@ -317,7 +317,7 @@ void Driver::cycleTo(TimeType time,
    
    TimeType delta_t = time - time_;
    
-   this->skipTimeInternal(delta_t, on_stop_assertion_list);
+   this->skipTimeInternal(delta_t, at_end_assertion_list);
 }
 
 void Driver::initKeyboard() {
@@ -430,7 +430,7 @@ void Driver::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &a
    assertions_passed_ &= assertion_passed;
 }
             
-void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list, 
+void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list, 
                        bool only_log_reports) {
    
    ++cycle_id_;
@@ -440,8 +440,8 @@ void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &on_st
       this->log() << "Scan cycle " << cycle_id_;
    }
    
-   if(on_stop_assertion_list.empty()) {
-      for(auto &assertion: on_stop_assertion_list) {
+   if(at_end_assertion_list.empty()) {
+      for(auto &assertion: at_end_assertion_list) {
          assertion->setDriver(this);
       }
    }
@@ -461,10 +461,10 @@ void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &on_st
    
    //kaleidoscope.setMillis(time_)
    
-   if(!on_stop_assertion_list.empty()) {
-      this->log() << "Processing " << on_stop_assertion_list.size()
+   if(!at_end_assertion_list.empty()) {
+      this->log() << "Processing " << at_end_assertion_list.size()
          << " cycle assertions on stop";
-      this->processCycleAssertions(on_stop_assertion_list);
+      this->processCycleAssertions(at_end_assertion_list);
    }
    
    if(!queued_cycle_assertions_.empty()) {

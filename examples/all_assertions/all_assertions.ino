@@ -565,7 +565,7 @@ void runTest(Driver &driver) {
       // key active and then another report with the key inactive. As our
       // key is the only one, we can use this to check for an empty report.
       //
-      driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+      driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
       
       driver.queuedCycleAssertions().add(CycleHasNReports{1});
       
@@ -580,17 +580,17 @@ void runTest(Driver &driver) {
    {
       auto test = driver.newTest("1");
          
-      driver.queuedKeyboardReportAssertions().add(KeycodeActive{Key_A});
+      driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
       driver.pressKey(2, 1); // A
       driver.cycle();
          
       driver.queuedKeyboardReportAssertions().add(
          Grouped{
-            KeycodeActive{Key_A},
-            KeycodeActive{Key_B},
+            KeycodesActive{Key_A},
+            KeycodesActive{Key_B},
             negate(ReportEmpty{}),
-            negate(AnyModifierActive{}),
-            AnyKeycodeActive{},
+            negate(AnyModifiersActive{}),
+            AnyKeycodesActive{},
             ReportNthInCycle{1},
             DumpReport{}
          }
@@ -608,15 +608,15 @@ void runTest(Driver &driver) {
       auto test = driver.newTest("2");
    
       driver.queuedKeyboardReportAssertions().add(
-         KeycodeActive{Key_A}
+         KeycodesActive{Key_A}
       );
          
       driver.pressKey(2, 1); // A
       driver.cycle();
          
       driver.queuedKeyboardReportAssertions().addGrouped(
-         KeycodeActive{Key_A},
-         KeycodeActive{Key_B}
+         KeycodesActive{Key_A},
+         KeycodesActive{Key_B}
       );
       driver.pressKey(3, 5); // B
       driver.cycle();
@@ -657,7 +657,7 @@ void runTest(Driver &driver) {
    {
       auto test = driver.newTest("5");
       
-      driver.queuedKeyboardReportAssertions().add(ModifierActive{Key_LeftShift});
+      driver.queuedKeyboardReportAssertions().add(ModifiersActive{Key_LeftShift});
       driver.queuedCycleAssertions().add(CycleHasNReports{1});
       driver.tapKey(3, 7); // left shift
       driver.cycle();
@@ -673,7 +673,7 @@ void runTest(Driver &driver) {
    
       driver.queuedKeyboardReportAssertions().addGrouped(
          ModifiersActive{Key_LeftShift},
-         AnyModifierActive{}
+         AnyModifiersActive{}
       );
       driver.queuedCycleAssertions().add(CycleHasNReports{1});
       driver.pressKey(3, 7); // left shift
@@ -681,7 +681,7 @@ void runTest(Driver &driver) {
       
       driver.queuedKeyboardReportAssertions().addGrouped(
          ModifiersActive{Key_LeftShift, Key_LeftControl},
-         negate(AnyKeycodeActive{})
+         negate(AnyKeycodesActive{})
       );  
       driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
       driver.pressKey(0, 7); // left control

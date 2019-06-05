@@ -24,11 +24,14 @@
 namespace kaleidoscope {
 namespace testing {
 
+/// @brief Demangles a C++ symbol name.
+///
 std::string demangle(const char* name);
 
+/// @brief Returns a human readable representation of a typename.
+///
 template <class T>
 std::string type(const T& t) {
-
     return demangle(typeid(t).name());
 }
 

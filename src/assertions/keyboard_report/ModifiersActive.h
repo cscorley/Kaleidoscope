@@ -35,23 +35,40 @@ uint8_t toModifier(uint8_t modifier) { return modifier; }
 inline
 uint8_t toModifier(Key key) { return key.keyCode; }
 
-/** class ModifiersActive
- *  brief Asserts that a specific list of keys is active in the keyboard report.
- */
+/// @brief Asserts that a specific list of keys is active in the keyboard report.
+///
 class ModifiersActive {
    
+   public:
+      
+      /// @details After this was called, no other modifiers than the listed 
+      ///          ones are allowed in the keyboard report for the
+      ///          assertion to pass.
+      ///
+      void exclusively() { assertion_->setExclusively(true); }
+      
    private:
       
       class Assertion : public _Assertion {
    
          public:
       
+            /// @brief Constructor.
+            /// @param modifiers A list of modifier keycodes.
+            /// @param exclusively If true only the listed modifiers may
+            ///                  be part of the keyboard report for the
+            ///                  assertion to pass.
+            ///
             Assertion(const std::vector<uint8_t> &modifiers, 
                       bool exclusively = false) 
                :  modifiers_(modifiers),
                   exclusively_(exclusively) 
             {}
             
+            /// @brief Constructor.
+            /// @tparam key_info A list of key information values. Those
+            ///        may be a mixture of keycodes or Key values.
+            ///
             template<typename..._KeyInfo>
             Assertion(_KeyInfo...key_info) 
                :  modifiers_{toModifier(std::forward<_KeyInfo>(key_info))...},
@@ -109,13 +126,25 @@ class ModifiersActive {
                return true;
             }
             
+            /// @brief Set exclusivity of the modifiers allowed in the keyboard
+            ///        report.
+            /// @param state The exclusivity state.
+            ///
+            void setExclusively(bool state) { exclusively_ = state; }
+            
+            /// @brief Retreives the state of exclusivity of modifiers in the  
+            ///        keyboard report.
+            /// @return [bool] The exclusivity state.
+            ///
+            bool getExclusively() const { return exclusively_; }
+            
          private:
             
             std::vector<uint8_t> modifiers_;
             bool exclusively_ = false;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(ModifiersActive)
+   KT_ASSERTION_WRAPPER(ModifiersActive)
 };
 
 } // namespace assertions

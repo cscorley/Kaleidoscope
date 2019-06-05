@@ -24,10 +24,10 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class NumOverallReportsGenerated
- *  brief Asserts that there was a specific number of keyboard reports generated
-          since the assertion was instanciated.
- */
+/// @brief Checks the number of overall keyboard reports.
+/// @details Asserts that there was a specific number of keyboard reports 
+///          generated since the assertion was instanciated.
+///
 class NumOverallReportsGenerated {
    
    private:
@@ -36,6 +36,10 @@ class NumOverallReportsGenerated {
       
          public:
             
+            /// @brief Constructor.
+            /// @param n_overall_reports The number of reports whose
+            ///        generation is being asserted.
+            ///
             Assertion(int n_overall_reports) 
                : n_overall_reports_(n_overall_reports) {}
 
@@ -56,7 +60,7 @@ class NumOverallReportsGenerated {
             int n_overall_reports_ = -1;      
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(NumOverallReportsGenerated)
+   KT_ASSERTION_WRAPPER(NumOverallReportsGenerated)
 };
 
 } // namespace assertions

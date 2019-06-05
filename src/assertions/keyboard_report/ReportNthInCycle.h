@@ -24,9 +24,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class ReportNthInCycle
- *  brief Asserts that the current keyboard report is the nth report in the current cycle.
- */
+/// @brief Asserts that the current keyboard report is the nth report in the current cycle.
+///
 class ReportNthInCycle {
    
    private:
@@ -35,6 +34,9 @@ class ReportNthInCycle {
             
          public:
             
+            /// @brief Constructor.
+            /// @param report_id The id of the report to check against.
+            ///
             Assertion(int report_id) : report_id_(report_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -55,7 +57,7 @@ class ReportNthInCycle {
             int report_id_ = -1;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(ReportNthInCycle)
+   KT_ASSERTION_WRAPPER(ReportNthInCycle)
 };
 
 } // namespace assertions

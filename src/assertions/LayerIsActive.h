@@ -26,9 +26,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** class LayerIsActive
- *  brief Asserts that a given layer is active.
- */
+/// @brief Asserts that a given layer is active.
+///
 class LayerIsActive {
    
    private:
@@ -37,6 +36,10 @@ class LayerIsActive {
    
          public:
             
+            /// @brief Constructor.
+            /// @param layer_id The id of the layer that must be active for
+            ///        the assertion to pass.
+            ///
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -56,7 +59,7 @@ class LayerIsActive {
             int layer_id_;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(LayerIsActive)
+   KT_ASSERTION_WRAPPER(LayerIsActive)
 };
    
 } // namespace assertions

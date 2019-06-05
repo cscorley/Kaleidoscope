@@ -25,10 +25,9 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class CycleHasNReports
- *  brief Asserts that there was a specific number of keyboard reports generated
-          within a cycle.
- */
+/// @brief Asserts that there was a specific number of keyboard reports generated
+///         within a specific scan cycle.
+///
 class CycleHasNReports {
    
    private:
@@ -37,6 +36,10 @@ class CycleHasNReports {
          
          public:
 
+            /// @brief Constructor.
+            /// @param n_reports The number of reports that must have been
+            ///        generated.
+            ///
             Assertion(int n_reports) : n_reports_(n_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -56,7 +59,7 @@ class CycleHasNReports {
             int n_reports_ = -1;      
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(CycleHasNReports)
+   KT_ASSERTION_WRAPPER(CycleHasNReports)
 };
 
 } // namespace assertions

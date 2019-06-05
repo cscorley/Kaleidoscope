@@ -32,38 +32,38 @@ namespace testing {
 class Driver;
 class _Assertion;
    
+/// @brief An auxiliary class that represents a queue of assertion objects.
+///
 class AssertionQueue
 {
    public:
       
+      /// @brief Constructor.
+      /// @param driver The associated Driver object.
+      /// @param type_string The type of assertion queue (queued keyboard reports,
+      ///        permanent keyboard reports, ...).
+      ///
       AssertionQueue(Driver &driver, const char *type_string) 
          :  driver_(driver),
             type_string_(type_string)
       {}
       
-      /** brief Queues an assertion.
-       *
-       * param assertion The assertion to be added to the queue.
-       * 
-       * return void
-       */ 
+      /// @brief Queues an assertion.
+      ///
+      /// @param assertion The assertion to be added to the queue.
+      ///
       AssertionQueue &add(const std::shared_ptr<_Assertion> &assertion);
       
-      /** brief Queues a list of assertion.
-       *
-       * param assertions The assertions to be added to the queue.
-       * 
-       * return void
-       */ 
+      /// @brief Queues a list of assertion.
+      ///
+      /// @param assertions The assertions to be added to the queue.
+      ///
       AssertionQueue &addGrouped(const std::vector<std::shared_ptr<_Assertion>> &assertions);
       
-      
-      /** brief Queues a list of assertion.
-       *
-       * param assertions The assertions to be added to the queue.
-       * 
-       * return void
-       */ 
+      /// @brief Queues a list of assertion.
+      ///
+      /// @tparam assertions The assertions to be added to the queue.
+      ///
       template<typename..._Assertions>
       AssertionQueue &addGrouped(_Assertions...assertions) {
          return this->addGrouped(
@@ -71,46 +71,40 @@ class AssertionQueue
          );
       }
       
-      /** brief Removes an assertion.
-       *
-       * param assertion The assertion to be removed from the queue.
-       * 
-       * return void
-       */ 
+      /// @brief Removes an assertion.
+      ///
+      /// @param assertion The assertion to be removed from the queue.
+      ///
       AssertionQueue &remove(const std::shared_ptr<_Assertion> &assertion);
       
-      /** brief Removes a list of assertions.
-       *
-       * param assertions The assertions to be removed from the queue.
-       * 
-       * return void
-       */ 
+      /// @brief Removes a list of assertions.
+      ///
+      /// @param assertions The assertions to be removed from the queue.
+      /// 
       AssertionQueue &remove(const std::vector<std::shared_ptr<_Assertion>> &assertions);
       
-      /** brief Removes the assertion at the front of the queue and returns it.
-       * 
-       * return The former front element of the queue.
-       */ 
+      /// @brief Removes the assertion at the head of the queue and returns it.
+      ///
+      /// @returns The former front element of the queue.
+      ///
       std::shared_ptr<_Assertion> popFront();
       
-      /** brief Retreives the number of entries in the queue.
-       * 
-       * return The number of entries currently in the queue.
-       */
+      /// @brief Retreives the number of entries in the queue.
+      ///
       std::size_t size() const;
       
-      /** brief Checks the queue for being empty.
-       * 
-       * return True if the queue is empty, false otherwise.
-       */
+      /// @brief Checks the queue for being empty.
+      ///
+      /// @returns True if the queue is empty, false otherwise.
+      ///
       bool empty() const;
       
-      /** brief Clear the entire queue.
-       * 
-       * return void.
-       */
+      /// @brief Clear the entire queue.
+      ///
       void clear();
       
+      /// @brief Enables direct access to the undelying std::deque object.
+      ///
       const std::deque<std::shared_ptr<_Assertion>> &directAccess() {
          return queue_;
       }

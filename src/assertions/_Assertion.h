@@ -30,108 +30,95 @@ namespace testing {
    
 class Driver;
    
-/** class _Assertion
- *  brief An abstract assertion.
- *  details This abstract class serves as base class for any
- *          assertions.
- */
+/// @brief An abstract assertion.
+/// @details This abstract class serves as base class for any
+///        assertions.
+///
 class _Assertion {
    
    public:
       
-      /** brief Reports information about the assertion.
-       * 
-       * details Do not override this method but the method describeState instead.
-       *
-       * param out The target output stream
-       * param add_indent An additional indent string
-       * 
-       * return void
-       */
+      /// @brief Reports information about the assertion.
+      ///
+      /// @details Do not override this method but the method describeState instead.
+      ///
+      /// @param add_indent An additional indentation string.
+      ///
       virtual void report(const char *add_indent = "") const;
       
-      /** brief Describes the assertion.
-       * 
-       * param out The target output stream
-       * param add_indent An additional indent string
-       * 
-       * return void
-       */
+      /// @brief Describes the assertion.
+      ///
+      /// @param add_indent An additional indentation string.
+      ///
       virtual void describe(const char *add_indent = "") const = 0;
 
-      /** brief Evaluates the condition that is supposed to be asserted.
-       * details Do not override this method.
-       * 
-       * return bool True if the assertion passed, false otherwise.
-       */
+      /// @brief Evaluates the condition that is supposed to be asserted.
+      /// @details Do not override this method.
+      ///
+      /// @return [bool] True if the assertion passed, false otherwise.
+      ///
       bool eval() {
-         
-//          std::cout << "Checking assertion " << (void*)this << " " << type(*this) << "\n";
-//          std::cout << "evalInternal: " << this->evalInternal() << "\n";
-//          std::cout << "negate: " << negate_ << "\n";
          valid_ = (this->evalInternal() != negate_); // logical XOR
-//          std::cout << "valid: " << valid_ << "\n";
          return valid_;
       }
       
-      /** brief Describes the current state of the assertion
-       *        object and possibly provides information about what went wrong
-       *        if the assertion failed.
-       * 
-       * param out The target output stream
-       * param add_indent An additional indent string
-       * 
-       * return void
-       */
+      /// @brief Describes the current state of the assertion object.
+      /// @details Possibly provides information about what went wrong
+      ///         if the assertion failed.
+      ///
+      /// @param add_indent An additional indentation string.
+      ///
+      ///
       virtual void describeState(const char *add_indent = "") const;
    
-      /** brief Register the test driver with the assertion.
-       * 
-       * return void
-       */
+      /// @brief Register the test driver with the assertion.
+      ///
       virtual void setDriver(const Driver *driver) {
          driver_ = driver;
       }
 
-      /** brief Register the test driver with the assertion.
-       * 
-       * return A pointer to the current test driver
-       */
+      /// @brief Retreive the test driver object that is associated with
+      ///        the assertion.
+      ///
+      /// @return A pointer to the current test driver.
+      ///
       const Driver *getDriver() const {
          return driver_;
       }
      
-      /** brief Checks validity of an assertion.
-       * 
-       * return True if valid, false otherwise.
-       */
+      /// @brief Checks validity of an assertion.
+      ///
+      /// @return True if valid, false otherwise.
+      ///
       bool isValid() const { 
          return valid_;
       }
       
-      /** brief Set the boolean negation state of the assertion validity check.
-       * 
-       * param state The negation state.
-       */
+      /// @brief Set the boolean negation state of the assertion validity check.
+      /// @details If negation is enabled, an assertion is assumed to be correct
+      ///        if the non negated version would fail.
+      ///
+      /// @param state The negation state.
+      ///
       void setNegate(bool state) {
          negate_ = state;
       }
       
-      /** brief Set the boolean negation state of the assertion validity check.
-       * 
-       * return The negation state.
-       */
+      /// @brief Retreive the boolean negation state of the assertion validity check.
+      ///
+      /// @return The negation state.
+      ///
       bool getNegate() const {
          return negate_;
       }
       
    protected:
             
-      /** brief Evaluates the condition that is supposed to be asserted.
-       * details Override this method in derived assertions.
-       * 
-       * return bool True if the assertion passed, false otherwise.
-       */
+      /// @brief Evaluates the condition that is supposed to be asserted.
+      /// @details Override this method in derived assertions.
+      ///
+      /// @return [bool] True if the assertion passed, false otherwise.
+      ///
       virtual bool evalInternal() = 0;
       
    protected:
@@ -144,9 +131,12 @@ class _Assertion {
       bool negate_ = false;
 };
 
+/// @brief Negates an assertion.
+/// @details Inverts the meaning of the assertion.
+///
+/// @param assertion The assertion to negate.
 inline
 std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion) {
-//    std::cout << "Negating assertion " << (void*)&(*assertion) << " " << type(*assertion) << "\n";
    assertion->setNegate(true);
    return assertion;
 }
@@ -154,7 +144,7 @@ std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion)
 } // namespace testing
 } // namespace kaleidoscope
       
-#define KS_TESTING_ASSERTION_WRAPPER(WRAPPER)                                  \
+#define KT_ASSERTION_WRAPPER(WRAPPER)                                          \
                                                                                \
    private:                                                                    \
       std::shared_ptr<WRAPPER::Assertion> assertion_;                          \

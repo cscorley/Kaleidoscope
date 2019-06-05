@@ -22,6 +22,11 @@ namespace kaleidoscope {
 namespace testing {
 namespace keyboardio {
 namespace model01 {
+   
+/// @brief A formatted string that represents the keyboard layout of 
+///        the Keyboardio Model01.
+/// @details Use this string with the renderKeyboard(...) function.
+///
 extern const char *ascii_keyboard;
 } // namespace model01
 } // namespace keyboardio

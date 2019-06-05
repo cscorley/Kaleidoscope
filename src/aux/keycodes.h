@@ -22,6 +22,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace keycodes {
    
+/// @brief Returns a string representation of a keycode.
+///
 const char *keycodeToName(uint8_t keycode);
 
 } // namespace keycodes

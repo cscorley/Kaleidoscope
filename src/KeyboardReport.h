@@ -34,29 +34,73 @@ namespace testing {
    
 class Driver;
   
-/** class KeyboardReport
- *  brief An interface to query keyboard reports.
- */
+/// @brief An interface to investigate keyboard reports.
+///
 class KeyboardReport {
    
    public:
       
-      bool isKeycodeActive(uint8_t k) const;
-      bool isKeyActive(const Key &k) const;
+      /// @brief Checks if a keycode is active in the keyboard report.
+      /// @param keycode The keycode to check for.
+      /// @returns [bool] True if the given keycode is active.
+      ///
+      bool isKeycodeActive(uint8_t keycode) const;
+      
+      /// @brief Checks if the keycode of a given Key is active in the keyboard report.
+      /// @details Please note that the flags part of the Key is ignored.
+      /// @param key The Key whose keycode to check for.
+      /// @returns [bool] True if the given Key's keycode is active.
+      ///
+      bool isKeyActive(const Key &key) const;
+      
+      /// @brief Retreives a list of all keycodes that are active in the
+      ///        keyboard report.
+      /// @returns A vector of keycodes.
+      ///
       std::vector<uint8_t> getActiveKeycodes() const;
       
+      /// @brief Checks if a modifier keycode is active in the keyboard report.
+      /// @param keycode The modifier keycode to check for.
+      /// @returns [bool] True if the given modifier keycode is active.
+      ///
       bool isModifierKeycodeActive(uint8_t modifier) const;
-      bool isModifierActive(const Key &key) const;
       
+      /// @brief Checks if the modifier keycode of a given Key is active in the keyboard report.
+      /// @details Please note that the flags part of the Key is ignored.
+      /// @param key The Key whose modifier keycode to check for.
+      /// @returns [bool] True if the given Key's modifier keycode is active.
+      ///
+      bool isModifierKeyActive(const Key &key) const;
+      
+      /// @brief Checks if any modifier keycode is active.
+      /// @returns [bool] True if any modifier keycode is active, false otherwise.
+      ///
       bool isAnyModifierActive() const;
+      
+      /// @brief Checks if any key keycode is active.
+      /// @returns [bool] True if any key keycode is active, false otherwise.
+      ///
       bool isAnyKeyActive() const;
       
+      /// @brief Retreives a list of active modifier keycodes.
+      /// @returns A list of active modifier keycodes.
+      ///
       std::vector<uint8_t> getActiveModifiers() const;
       
+      /// @brief Checks if the report is empty.
+      /// @details Empty means neither key nor modifier keycodes are active.
+      ///
       bool isEmpty() const;
       
+      /// @brief Writes a formatted representation of the keyboard report 
+      ///        to the driver's log stream.
+      /// @param add_indent An additional indentation string.
+      ///
       void dump(const Driver &driver, const char *add_indent = "") const;
       
+      /// @brief Associates the object with new report data.
+      /// @param report_data The new report data struct.
+      ///
       void setReportData(const HID_KeyboardReport_Data_t &report_data);
       
    private:

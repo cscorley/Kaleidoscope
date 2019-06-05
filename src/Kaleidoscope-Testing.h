@@ -28,8 +28,6 @@
 #include "assertions/CycleHasNReports.h"
 #include "assertions/CustomAssertion.h"
 #include "assertions/keyboard_report/ReportEmpty.h"
-#include "assertions/keyboard_report/ModifierActive.h"
-#include "assertions/keyboard_report/KeycodeActive.h"
 #include "assertions/keyboard_report/DumpReport.h"
 #include "assertions/keyboard_report/ModifiersActive.h"
 #include "assertions/keyboard_report/AnyKeycodeActive.h"
@@ -46,6 +44,10 @@
 
 extern void executeTestFunction();
 
+/// @brief Initializes testing.
+/// @details VERY IMPORTANT: Make sure to invoke this macro in your sketch
+///        to enable testing.
+///
 #define KALEIDOSCOPE_TESTING_INIT                                              \
                                                                                \
    namespace kaleidoscope {                                                    \

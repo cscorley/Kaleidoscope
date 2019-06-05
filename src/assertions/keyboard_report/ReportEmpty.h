@@ -25,9 +25,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class ReportEmpty
- *  brief Asserts that the current keyboard report is empty.
- */
+/// @brief Asserts that the current keyboard report is empty.
+///
 class ReportEmpty {
    
    private:
@@ -51,7 +50,7 @@ class ReportEmpty {
             }
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(ReportEmpty)
+   KT_ASSERTION_WRAPPER(ReportEmpty)
 };
 
 } // namespace assertions

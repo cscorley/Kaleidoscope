@@ -24,9 +24,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class AnyModifiersActive
- *  brief Asserts that any modifiers are active in the current report.
- */
+/// @brief Asserts that any modifiers are active in the current report.
+///
 class AnyModifierActive {
    
    private:
@@ -49,7 +48,7 @@ class AnyModifierActive {
             }
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(AnyModifierActive)
+   KT_ASSERTION_WRAPPER(AnyModifierActive)
 };
 
 } // namespace assertions

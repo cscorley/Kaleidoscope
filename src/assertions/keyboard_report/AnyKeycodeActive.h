@@ -24,9 +24,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class AnyKeycodesActive
- *  brief Asserts that any keycodes are active in the current report.
- */
+/// @brief Asserts that any keycodes are active in the current report.
+///
 class AnyKeycodeActive {
    
    private:
@@ -49,7 +48,7 @@ class AnyKeycodeActive {
             }
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(AnyKeycodeActive)
+   KT_ASSERTION_WRAPPER(AnyKeycodeActive)
 };
 
 } // namespace assertions

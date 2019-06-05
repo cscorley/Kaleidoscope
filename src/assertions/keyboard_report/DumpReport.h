@@ -26,9 +26,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/** class DumpReport
- *  brief Asserts nothing but dumps the current report instead.
- */
+/// @brief Asserts nothing but dumps the current report instead.
+///
 class DumpReport {
    
    private:
@@ -52,7 +51,7 @@ class DumpReport {
 
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(DumpReport)
+   KT_ASSERTION_WRAPPER(DumpReport)
 };
 
 } // namespace assertions

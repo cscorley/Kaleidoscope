@@ -26,9 +26,8 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** TopActiveLayerIs
- *  brief Asserts that a given layer is the current top layer.
- */
+/// @brief Asserts that a given layer is the current top layer.
+///
 class TopActiveLayerIs {
    
    private:
@@ -37,6 +36,9 @@ class TopActiveLayerIs {
    
          public:
             
+            /// @brief Constructor.
+            /// @param[in] layer_id The id of the layer to check as top active.
+            ///
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -56,7 +58,7 @@ class TopActiveLayerIs {
             int layer_id_;
       };
    
-   KS_TESTING_ASSERTION_WRAPPER(TopActiveLayerIs)
+   KT_ASSERTION_WRAPPER(TopActiveLayerIs)
 };
    
 } // namespace assertions

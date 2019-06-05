@@ -23,6 +23,12 @@ namespace testing {
    
 class Driver;
    
+/// @brief Renders a keyboard's asscii representation.
+///
+/// @param driver The parent driver object.
+/// @param ascii_keyboard The ascii representation of the keyboards
+///        key layout.
+///
 void renderKeyboard(const Driver &driver, const char *ascii_keyboard);
 
 } // namespace testing

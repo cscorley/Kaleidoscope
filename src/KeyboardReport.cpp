@@ -98,7 +98,7 @@ bool
 
 bool
    KeyboardReport
-      ::isModifierActive(const Key &key) const
+      ::isModifierKeyActive(const Key &key) const
 {
    return this->isModifierKeycodeActive(key.keyCode);
 }
@@ -135,7 +135,7 @@ bool
    KeyboardReport
       ::isEmpty() const
 {
-   return !(this->isAnyModifierActive() || this->isAnyKeyActive());
+   return !(this->isAnyModifierActive() || this->isAnyKeyodecActive());
 }
       
 void 

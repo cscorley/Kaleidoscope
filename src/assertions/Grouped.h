@@ -27,9 +27,9 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
    
-/** class Grouped
- *  brief Groups multiple assertions.
- */
+/// @brief Groups multiple assertions.
+/// @details The Grouped assertion only passes if all of its members pass.
+///
 class Grouped {
  
    private:
@@ -38,9 +38,12 @@ class Grouped {
          
          public:
 
-            template<typename..._AssertionPtrs>
-            Assertion(_AssertionPtrs...assertion_ptrs)
-               :  assertions_{std::forward<_AssertionPtrs>(assertion_ptrs)...}
+            /// @brief Constructor.
+            /// @tparam assertion_ptrs A list of assertions to group.
+            ///
+            template<typename..._Assertions>
+            Assertion(_Assertions...assertions)
+               :  assertions_{std::forward<_Assertions>(assertions)...}
             {}
 
             virtual void report(const char *add_indent = "") const override;
@@ -70,7 +73,7 @@ class Grouped {
             std::vector<std::shared_ptr<_Assertion>> assertions_;
       };
       
-   KS_TESTING_ASSERTION_WRAPPER(Grouped)
+   KT_ASSERTION_WRAPPER(Grouped)
 };
 
 } // namespace assertions
