@@ -40,7 +40,7 @@ class CustomKeyboardReportAssertion {
             
          public:
             
-            Assertion(const std::function<bool(const Driver &, const KeyboardReport&)> &func)
+            Assertion(const std::function<bool(const KeyboardReport&)> &func)
                : func_(func)
             {}
 
@@ -53,12 +53,12 @@ class CustomKeyboardReportAssertion {
             }
 
             virtual bool evalInternal() override {
-               return func_(*driver_, driver_->getCurrentKeyboardReport());
+               return func_(driver_->getCurrentKeyboardReport());
             }
             
          private:
             
-            std::function<bool(const Driver &, const KeyboardReport&)> func_;
+            std::function<bool(const KeyboardReport&)> func_;
       };
    
    KS_TESTING_ASSERTION_WRAPPER(CustomKeyboardReportAssertion)

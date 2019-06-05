@@ -343,8 +343,8 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 // LED color modes calibrated to draw 500mA or less on the
 // Keyboardio Model 01.
 
-
-static kaleidoscope::plugin::LEDSolidColor solidRed(160, 0, 0);
+static constexpr uint8_t solid_red_level = 160;
+static kaleidoscope::plugin::LEDSolidColor solidRed(solid_red_level, 0, 0);
 static kaleidoscope::plugin::LEDSolidColor solidOrange(140, 70, 0);
 static kaleidoscope::plugin::LEDSolidColor solidYellow(130, 100, 0);
 static kaleidoscope::plugin::LEDSolidColor solidGreen(0, 160, 0);
@@ -546,9 +546,7 @@ void loop() {
 #ifdef ARDUINO_VIRTUAL
 
 #include "Kaleidoscope-Testing.h"
-
-#include <iostream>
-#include <cassert>
+#include "vendors/keyboardio/model01.h"
 
 KALEIDOSCOPE_TESTING_INIT
 
@@ -734,8 +732,8 @@ void runTest(Driver &driver) {
       auto test = driver.newTest("11");
       driver.queuedKeyboardReportAssertions().add(
          CustomKeyboardReportAssertion{
-            [](const Driver &driver, const KeyboardReport &kr) -> bool {
-               driver.log() << "Custom assertion triggered";
+            [&](const KeyboardReport &kr) -> bool {
+               driver.log() << "Custom keyboard report assertion triggered";
                return true;
             }
          }
@@ -748,9 +746,9 @@ void runTest(Driver &driver) {
    {
       auto test = driver.newTest("12");
       
-      driver.queuedKeyboardReportAssertions().add(
-         CustomKeyboardReportAssertion{
-            [](const Driver &driver, const KeyboardReport &kr) -> bool {
+      driver.queuedCycleAssertions().add(
+         CustomAssertion{
+            [&]() -> bool {
                driver.log() << "Custom assertion triggered";
                return true;
             }
@@ -759,6 +757,56 @@ void runTest(Driver &driver) {
       driver.tapKey(3, 7); // left shift
       driver.cycles(5);
    }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("13");
+      
+      driver.cycleTo(2000); // ms
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("14");
+      
+      // Cycle through the color effects and output the keyboard
+      // after some cycles.
+      //
+      driver.multiTapKey(15 /*num. taps*/, 
+                         0 /*row*/, 6/*col*/, 
+                         50 /* num. cycles after each tap */,
+                         CustomAssertion{
+                            [&]() -> bool {
+                               renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
+                               return true;
+                            }
+                         }
+      );
+   }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("15");
+      
+      // LED effect solid red is the fourth LED effect. Tap the 
+      // LED effect forward key four times to get there.
+      //
+      driver.multiTapKey(4 /*num. taps*/, 
+                         0 /*row*/, 6/*col*/, 
+                         1 /* num. cycles after each tap */,
+                         CustomAssertion{
+                            [&]() -> bool {
+                               driver.log() << "KeyboardHardware.getCrgbAt(0, 0).r = " 
+                                 << (int)KeyboardHardware.getCrgbAt(0, 0).r;
+                               return true;
+                            }
+                         }
+      );
+      
+      KT_ASSERT_CONDITION(driver, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
+   }
+   
+   renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
 }
 
 } // namespace testing

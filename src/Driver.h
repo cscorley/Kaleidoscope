@@ -261,6 +261,23 @@ class Driver {
        * return void
        */ 
       void tapKey(uint8_t row, uint8_t col);
+      
+      /** brief Taps a key a number of times.
+       * 
+       * description After each tap cycles are processed automatically.
+       *
+       * param num_taps The number of taps
+       * param row The keyboard key row.
+       * param col The keyboard key col.
+       * param tap_interval_cycles The number cycles that elaps between individual
+       *                           taps.
+       * 
+       * return void
+       */ 
+      void multiTapKey(int num_taps, uint8_t row, uint8_t col, 
+                       int tap_interval_cycles = 1,
+                       std::shared_ptr<_Assertion> after_tap_and_cycles_assertion = std::shared_ptr<_Assertion>()
+                      );
 
       /** brief Clears all keys that are currently active (down).
        * 
@@ -311,6 +328,21 @@ class Driver {
       void skipTime(TimeType delta_t, 
                     const std::vector<std::shared_ptr<_Assertion>> 
                            &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
+      
+      /** brief Runs keyboard scan cycles until a specified point in time is reached.
+       * 
+       * details Important:
+            Make sure to set the cycle_duration_ property of the Driver class 
+            to a non zero value in [ms] before calling this method.
+       * 
+       * param time The target time in [ms].
+       * 
+       * return void
+       */ 
+      void cycleTo(TimeType time,
+         const std::vector<std::shared_ptr<_Assertion>> 
+                           &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{}
+      );
             
      /** brief Retreives a log stream.
       * 
@@ -379,6 +411,8 @@ class Driver {
          return Test{this, name};
       }
       
+      void assertCondition(bool cond, const char *assertion_code) const;
+      
    private:
       
       bool checkStatus() const;
@@ -415,7 +449,14 @@ class Driver {
       }
       
       std::string generateCycleInfo() const;
+      
+      void skipTimeInternal(TimeType delta_t, 
+                    const std::vector<std::shared_ptr<_Assertion>> 
+                           &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
 };
+
+#define KT_ASSERT_CONDITION(DRIVER, ...)                                       \
+   DRIVER.assertCondition((__VA_ARGS__), #__VA_ARGS__)
       
 } // namespace testing
 } // namespace kaleidoscope

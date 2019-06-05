@@ -19,6 +19,7 @@
 #pragma once
 
 #include "Driver.h"
+#include "Visualization.h"
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
 #include "assertions/Grouped.h"
@@ -40,6 +41,8 @@
 #include "assertions/NumOverallReportsGenerated.h"
 #include "assertions/CycleIsNth.h"
 #include "assertions/ElapsedTimeGreater.h"
+
+#include <iostream>
 
 extern void executeTestFunction();
 

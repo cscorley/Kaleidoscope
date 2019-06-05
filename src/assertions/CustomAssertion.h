@@ -40,7 +40,7 @@ class CustomAssertion {
             
          public:
             
-            Assertion(const std::function<bool(const Driver &)> &func)
+            Assertion(const std::function<bool()> &func)
                : func_(func)
             {}
 
@@ -53,12 +53,12 @@ class CustomAssertion {
             }
 
             virtual bool evalInternal() override {
-               return func_(*driver_);
+               return func_();
             }
             
          private:
             
-            std::function<bool(const Driver &)> func_;
+            std::function<bool()> func_;
       };
    
    KS_TESTING_ASSERTION_WRAPPER(CustomAssertion)

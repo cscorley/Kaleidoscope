@@ -183,6 +183,41 @@ void Driver::tapKey(uint8_t row, uint8_t col) {
    this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::TAP);
 }
+
+void Driver::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
+                         int tap_interval_cycles,
+                         std::shared_ptr<_Assertion> after_tap_and_cycles_assertion) {
+   if(after_tap_and_cycles_assertion) {
+      after_tap_and_cycles_assertion->setDriver(this);
+   }
+   
+   this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ") " 
+            << num_taps << " times";
+   for(int i = 0; i < num_taps; ++i) {
+      
+      // Do the tap
+      //
+      KeyboardHardware.setKeystate(row, col, Virtual::TAP);
+      
+      // Run a user-defined number of cycles
+      //
+      for(int c = 0; c < tap_interval_cycles; ++c) {
+         this->cycleInternal(std::vector<std::shared_ptr<_Assertion>>{} /*dummy*/,
+                             true /* only log reports */
+         );
+      }
+      
+      // Check and execute the assertion
+      //
+      if(after_tap_and_cycles_assertion) {
+         this->log() << "Checking assertion after tap " << i;
+         if(!after_tap_and_cycles_assertion->eval()) {
+            this->error() << "Assertion after tap " << i << " failed";
+            after_tap_and_cycles_assertion->report();
+         }
+      }
+   }
+}
  
 void Driver::clearAllKeys() {
    this->log() << "- Clearing all keys";
@@ -234,9 +269,15 @@ void Driver::skipTime(Driver::TimeType delta_t,
    
    this->checkCycleDurationSet();
    
-   auto start_cycle = cycle_id_;
-   
    this->log() << "Skipping dt >= " << delta_t << " ms";
+   
+   this->skipTimeInternal(delta_t, on_stop_assertion_list);
+}
+
+void Driver::skipTimeInternal(Driver::TimeType delta_t, 
+               const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list) {
+   
+   auto start_cycle = cycle_id_;
          
    if(!on_stop_assertion_list.empty()) {
       for(auto &assertion: on_stop_assertion_list) {
@@ -253,7 +294,7 @@ void Driver::skipTime(Driver::TimeType delta_t,
       elapsed_time = time_ - start_time;
    }
       
-   this->log() << elapsed_time << " ms (" << cycle_id_ << " cycles) skipped";
+   this->log() << elapsed_time << " ms (" << (cycle_id_ - start_cycle) << " cycles) skipped";
       
    if(!on_stop_assertion_list.empty()) { 
       this->log() << "Processing " << on_stop_assertion_list.size() 
@@ -262,6 +303,21 @@ void Driver::skipTime(Driver::TimeType delta_t,
    }
       
    this->log() << "";
+}
+
+void Driver::cycleTo(TimeType time,
+   const std::vector<std::shared_ptr<_Assertion>> &on_stop_assertion_list)
+{
+   if(time <= time_) {
+      this->error() << "Failed cycling to time " << time << " ms. Target time is in the past.";
+      return;
+   }
+   
+   this->log() << "Cycling to t = " << time << " ms";
+   
+   TimeType delta_t = time - time_;
+   
+   this->skipTimeInternal(delta_t, on_stop_assertion_list);
 }
 
 void Driver::initKeyboard() {
@@ -275,12 +331,16 @@ bool Driver::checkStatus() const {
    
    if(!queued_keyboard_report_assertions_.empty()) {
       this->error() << "There are " << queued_keyboard_report_assertions_.size()
-         << " left over assertions in the queue";
+         << " left over assertions in the queue.";
       success = false;
    }
    
    if(!assertions_passed_) {
-      this->error() << "Not all assertions passed";
+      this->error() << "Not all assertions passed.";
+      success = false;
+   }
+   
+   if(error_count_ != 0) {
       success = false;
    }
       
@@ -438,6 +498,13 @@ void Driver::assertNothingQueued() const
    
    if(!queued_cycle_assertions_.empty()) {
       this->error() << "Cycle assertions are left in queue";
+   }
+}
+
+void Driver::assertCondition(bool cond, const char *assertion_code) const
+{
+   if(!cond) {
+      this->error() << "Assertion failed: " << assertion_code;
    }
 }
       
