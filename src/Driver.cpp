@@ -59,6 +59,11 @@ ErrorStream::ErrorStream(const Driver *driver)
    :  DriverStream_(driver)
 {
    auto &out = this->getOStream();
+   
+   // Foreground color red
+   //
+   out << "\x1B[31;1m";
+   
    this->DriverStream_::reactOnLineStart();
    out << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 }
@@ -74,6 +79,10 @@ ErrorStream::~ErrorStream() {
       this->getOStream() << "Bailing out.";
       exit(1);
    }
+   
+   // Restore color to neutral.
+   //
+   this->getOStream() << "\x1B[0m";
 }
 
 void ErrorStream::reactOnLineStart()
@@ -93,7 +102,11 @@ LogStream::~LogStream() {
 
 HeaderStream::HeaderStream(const Driver *driver) 
    :  DriverStream_(driver)
-{
+{  
+   // Foreground color red
+   //
+   this->getOStream() << "\x1B[32;1m";
+   
    this->DriverStream_::reactOnLineStart();
    this->getOStream() << "########################################################\n";
 }
@@ -102,6 +115,10 @@ HeaderStream::~HeaderStream() {
    this->getOStream() << "\n";
    this->DriverStream_::reactOnLineStart();
    this->getOStream() << "########################################################\n";
+   
+   // Restore color to neutral.
+   //
+   this->getOStream() << "\x1B[0m";
 }
 
 void HeaderStream::reactOnLineStart()
@@ -325,6 +342,11 @@ bool Driver::checkStatus() const {
 }
       
 void Driver::headerText() {
+   
+   // Foreground color red
+   //
+   this->getOStream() << "\x1B[33;1m";
+   
    this->log() << "";
    this->log() << "################################################################################";
    this->log() << "";
@@ -337,9 +359,19 @@ void Driver::headerText() {
    this->log() << "aborting on first error: " << abort_on_first_error_;
    this->log() << "################################################################################";
    this->log() << "";
+   
+   // Restore color to neutral.
+   //
+   //this->getOStream() << "\x1B[0m";
+   this->getOStream() << "\x1B[0m";
 }
 
 void Driver::footerText() {
+   
+   // Foreground color red
+   //
+   this->getOStream() << "\x1B[33;1m";
+   
    this->log() << "";
    this->log() << "################################################################################";
    this->log() << "Testing done";
@@ -350,6 +382,11 @@ void Driver::footerText() {
    this->log() << "num. keyboard reports processed: " << n_overall_keyboard_reports_;
    this->log() << "################################################################################";
    this->log() << "";
+   
+   // Restore color to neutral.
+   //
+   //this->getOStream() << "\x1B[0m";
+   this->getOStream() << "\x1B[0m";
 }
 
 void Driver::processKeyboardReport(const HID_KeyboardReport_Data_t &report_data) {

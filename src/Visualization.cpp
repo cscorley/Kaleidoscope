@@ -192,7 +192,7 @@ std::string generateColorEscSeq(uint8_t row, uint8_t col) {
    
 void generateLookup(KeyAddrToKeyString &lookup) {
    
-   const char *neutral_string = "\x1B[39;49m";
+   const char *neutral_string = "\x1B[0m";
    
    for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
       for(uint8_t col = 0; col < KeyboardHardware.matrix_columns; ++col) {
