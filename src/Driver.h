@@ -330,13 +330,13 @@ class Driver {
       ///
       /// @param delta_t A time interval in [ms] that is supposed to be skipped.
       ///
-      void advanceTime(TimeType delta_t);
+      void advanceTimeBy(TimeType delta_t);
       
       /// @brief Runs keyboard scan cycles until a specified point in time.
       ///
       /// @param time The target time in [ms].
       ///
-      void cycleTo(TimeType time);
+      void advanceTimeTo(TimeType time);
       
       /// @brief Immediately evaluates a number of assertions
       ///

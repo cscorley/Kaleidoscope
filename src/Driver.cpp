@@ -266,7 +266,7 @@ void Driver::cyclesInternal(int n,
    this->log() << "";
 }
 
-void Driver::advanceTime(Driver::TimeType delta_t) {
+void Driver::advanceTimeBy(Driver::TimeType delta_t) {
    
    this->checkCycleDurationSet();
    
@@ -292,7 +292,7 @@ void Driver::skipTimeInternal(Driver::TimeType delta_t) {
    this->log() << "";
 }
 
-void Driver::cycleTo(TimeType time)
+void Driver::advanceTimeTo(TimeType time)
 {
    if(time <= time_) {
       this->error() << "Failed cycling to time " << time << " ms. Target time is in the past.";

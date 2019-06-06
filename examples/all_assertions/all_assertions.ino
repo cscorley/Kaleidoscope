@@ -715,7 +715,7 @@ void runTests(Driver &driver) {
    {
       auto test = driver.newTest("9");
     
-      driver.advanceTime(1000); // ms
+      driver.advanceTimeBy(1000); // ms
    }
    
    //***************************************************************************
@@ -762,7 +762,7 @@ void runTests(Driver &driver) {
    {
       auto test = driver.newTest("13");
       
-      driver.cycleTo(2000); // ms
+      driver.advanceTimeTo(2000); // ms
    }
    
    //***************************************************************************

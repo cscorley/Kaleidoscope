@@ -418,11 +418,11 @@ This method runs a single firmware cycle and advances time accordingly.
 
 This method runs a number of firmware cycles and advances time accordingly.
 
-### `cycleTo(...)`
+### `advanceTimeTo(...)`
 
 The simulator processes cycles until it reaches a specific point in time.
 
-### `advanceTime(...)`
+### `advanceTimeBy(...)`
 
 Runs a number of cycles with a given total duration.
 
