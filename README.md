@@ -7,27 +7,32 @@ A development, debugging and testing API for virtual Kaleidoscope firmware build
 The scope of Kaleidoscope-Testing is to provide an API that allows to bundle
 integration tests with the keyboard firmware sketch file.
 
-Apart from integration testing, the API provided can also be used for development.
-Its various assertion classes can be used together with a debugger like gdb
-to debug complex error scenarios.
+Tests are executed by a virtual firmware which is a firmware 
+build to run on the host platform, e.g. an x86 system, 
+rather than on the actual physical keyboard.
 
-The plugin comes with a terminal window visualization of keyboard keycodes
-and LEDs. By means of this feature, it is possible to directly see the 
-current key maps and the state of the per-key LEDs at any time during a
-simulated firmware run.
-
-Virtual firmwares are representations of the firmware that are build for the 
-host plaftorm, e.g. an x86 system, rather than for the actual keyboard.
-Most parts of the keyboards internal states are covered by the simulated 
-keyboard, most importantly, the current keymaps, LED states, EEPROM, ...
+Most parts of the physical keyboard's internal states are also represented 
+in the simulated keyboard. Among those the current keymaps, LED states, EEPROM, ...
 For more information, see Kaleidoscope's documentation of virtual builds.
+
+Apart from integration testing, the supported testing-API is also 
+meant to be used as a development tool.
+When e.g. being used together with a debugger like `gdb`, Kaleidoscope-Testing's 
+unique features can help to deal with complex error scenarios that are otherwise
+hard to debug with the firmware traditionally running on the device.
+
+Additionally, Kaleidoscope-Testing comes with an ASCII 
+visualization of the keyboard covering keyboard keycodes and LED colors.
 
 ## A brief example
 
-The following code could be added to a firmware sketch file (****.ino) to run
-a very simple firmware test (with the stock firmware).
+The following code snipped could be added to Kaleidoscope's stock
+firmware sketch file (****.ino) to run
+a very simple firmware test.
 
 ```cpp
+// ... at end of the firmware file
+
 #ifdef ARDUINO_VIRTUAL
 
 #include "Kaleidoscope-Testing.h"
@@ -43,11 +48,13 @@ void runTests(Driver &driver) {
 
    auto test = driver.newTest("A simple test");
       
-   // Add an assertion to the next keyboard report that will be 
-   // issued.
+   // Assert that the letter 'a' is part of the next keyboard report
+   // that is going to be generated.
    //
    driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
       
+   // Have some action in order to trigger a keyboard report.
+   //
    driver.tapKey(2, 1); // (row = 2, col = 1) -> A
    
    // Run a single scan cycle (during which the key will be detected as
@@ -55,90 +62,104 @@ void runTests(Driver &driver) {
    //
    driver.cycle();
 }
+
 } // namespace testing
 } // namespace kaleidoscope
 
 #endif
 ```
 
-This test checks if a keycode for the letter 'a' is present in a keyboard
-report when the key at matrix position (row = 2, col = 1) is tapped 
+This very simple test checks if a keycode for the letter 'a' is present in a keyboard
+report that is generated as a reaction on a key at matrix position (row = 2, col = 1) being tapped 
 (pressed and immediately released). 
 
-The test implies the standard QWERTY keyboard layout to be used where the 
-letter 'a' is assigned to the respective key matrix position on layer 0.
+This test implies the standard QWERTY keyboard layout to active for the 
+letter 'a' being associated with the key at the respective matrix position on layer 0.
 
-Although this is a very simple test, it could already catch multiple types
-of firmware programming issues, e.g. keymapping problems or reports not being
+Although a very simple test, it could already catch multiple types
+of firmware programming issues, among those keymapping problems or reports accidentally not being
 generated.
 
 ## A simple test in greater detail
 
-Let's look again at the simple test example, now with focus on the way the test is
-specified. We will go through the test line by line.
+Let's look again at the above example, now with focus on the way the test is
+defined using Kaleidoscope-Testing's API. 
+
+We will walk through the test line by line.
+
+First, we have to make sure that the compiler only sees our test in virtual firmware
+builds. This is important as the testing API can not be used in actual 
+firmware builds for the target platform. That's because most target platforms resources
+are simply too limited.
 
 ```cpp
 #ifdef ARDUINO_VIRTUAL
 ```
-We have to make sure that the compiler only sees our test in virtual firmware
-builds. This is important as the testing API can not be used in actual 
-firmware builds for the target platform. Most target platforms resources
-are simply too limited.
+
+Next, we bring the testing API into scope.
 
 ```cpp
 #include "Kaleidoscope-Testing.h"
 ```
-Bring the testing API into scope.
+
+It is good custom to define code in namespaces to avoid symbol naming conflicts.
 
 ```cpp
 namespace kaleidoscope {
 namespace testing {
 ```
-It is good custom to define code in namespaces to avoid symbol naming conflicts.
+
+The test method as the standardized name `runTest` and a pre-defined signature.
+You are free to structure your tests if necessary by introducing additional
+test methods which can be called from `runTests(...)`. Please note that the `Driver` object
+is the central object in testing. It e.g. coordinates timing and assertion handling.
 
 ```cpp
 void runTests(Driver &driver) {
 ```
-The test method must be called `runTest` and have the displayed signature.
-You are free to structure your tests if necessary by introducing additional
-test methods that are called from `runTests(...)`. The `Driver` object
-is the central object in testing. It coordinates timing and assertion handling.
    
+The `using` statement is for mere convenience as all assertion classes live in namespace 
+`assertions`. Otherwise we would need to write `assertions::KeycodesActive{Key_A}`
+instead of the more concise `KeycodesActive{Key_A}`.
+
 ```cpp
    using namespace assertions;
 ```
-This is for mere convenience as all assertion classes live in namespace 
-`assertions`. Otherwise we would need to write `assertions::KeycodesActive{Key_A}`
-in one of the following lines.
+
+Next, we generate a test object. 
+It's only purpose lies in its lifetime that is defined by the scope where
+it is generated. It serves to group testing instructions an checks
+if a set of assertions that are associated with a test are valid.
 
 ```cpp
    auto test = driver.newTest("A simple test");
 ```
-This generates a test object. This test object does not have any methods.
-It's only purpose lies in its lifetime that is defined by the scope where
-it is generated. Via its contructor and destructor methods the
-test object takes care to output a nice text header
-in the generated console output and checks if a test was successful.
-Most importantly, it serves to group testing instructions, as we will see
-later on in this document.
+
+Then, we add an assertion that will check if key 'a' is active 
+in the next keyboard report that is going to be issued during
+the next keyboard scan cycle.
       
 ```cpp
    driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
 ```
-Adds an assertion that checks if key a is active 
-in the next keyboard report. Assertions are stored in a queue where
-the head of the queue is always evaluated for the next incoming keyboard report.
+
+Tap a key at a given matrix position.
 
 ```cpp
    driver.tapKey(2, 1); // (row = 2, col = 1) -> A
 ```
-Tap a key by defining its matrix position.
-   
+
+Finally, we run a scan cycle. This will call Arduinos `loop()`
+function under the hood. During this scan cycle the keyboard matrix
+is checked for keys being pressed or released. It is when our key at
+position (2, 1) is detected as having been tapped and a keyboard report is 
+issued.
+
 ```cpp
    driver.cycle();
 ```
-Run a scan cycle. This basically boils down to calling Arduinos `loop()`
-function.
+
+That's it. Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
 
 ```cpp
 }
@@ -147,23 +168,26 @@ function.
 
 #endif
 ```
-Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
 
 ## Assertions
 
-Assertions are mostly boolean conditions that are evaluated at specific
+Assertions are probably the most important aspect of Kaleidoscope-Testings
+API. They are boolean conditions that are evaluated at specific
 points during the firmware simulation. If an assertion fails, an error
-message is produced and the test is considered as failed. Assertions can
-check literaly everything that can be checked programatically. For some common
-conditions, predefined assertion classes are provided. Anything else can
-be defined by supplying callback functions to custom assertions.
+message is produced and the test is considered as unsuccessfull.
 
-See the doxygen API documentation for more information about all available assertions.
+Assertions can
+check literaly everything what can also be checked programatically. For some common
+conditions, however, predefined assertion classes are provided for the sake of convenience. 
+By supplying callback functions to custom assertions (described in detail later on in this document)
+it is possible to define arbitrarily complex assertions.
+
+See the doxygen API documentation for more information about available assertion classes.
 
 ### Keyboard report assertions
 
-As their name tells, those assertions apply to keyboard reports and 
-analyze and ensure specific properties of such reports.
+As the name tells, those assertions analyze keyboard reports
+ensure specific properties of those.
 
 _As a sidenote: Keyboard reports are those sets of information that a keyboard
 sends to the host system. They can contain information about keycodes or
@@ -171,35 +195,34 @@ modifiers being active._
 
 ### Cycle assertions
 
-This type of assertions is evaluated at the end of a firmware scan cycle.
+This type of assertions is evaluated at the end of firmware scan cycles.
 
 ### Queued vs. permanent assertions
 
-In the above example we queued a keyboard report assertion. This assertion 
-is evaluated when the next keyboard report is generated. Afterwards it is 
-discarded.
+In the above example we added a keyboard report assertion to a queue of 
+assertions. The head of this queue is evaluated whenever a keyboard report
+is generated by the firmware. After its evaluation the assertion is
+removed from the queue and discarded.
 
-Under other circumstances it might be useful to define assertions that
-are evaluated every time, without being discarded. Those assertions are 
+While this is very useful to assert properties of individual keyboard reports, 
+under other circumstances it might be useful to define assertions that
+are evaluated for every report, without being discarded. Those assertions are 
 referred to as _permanent assertions_.
 
-There are both queued assertions and permanent assertions for both keyboard reports
-and cycles. Check out the methods
+Assertions can be queued or permanent both for both keyboard reports
+and cycles. Please, check out the methods
 
 ```cpp
-queuedKeyboardReportAssertions()
-permanentKeyboardReportAssertions()
-queuedCycleAssertions()
-permanentCycleAssertions()
+Driver::queuedKeyboardReportAssertions()
+Driver::permanentKeyboardReportAssertions()
+Driver::queuedCycleAssertions()
+Driver::permanentCycleAssertions()
 ```
-
-of the simulation `Driver` class.
 
 ### Assertion queueing
 
-In most cases, there are specific expectations about keyboard reports being 
-generated in a known order and with known content. In such cases a set of 
-assertions can be added to the queue via a single command, e.g.
+In most cases, the order and content of keyboard reports is known. 
+In such cases a set of assertions can be added to the queue via a single command, e.g.
 
 ```cpp
 driver.queuedKeyboardReportAssertions().add(
@@ -210,19 +233,21 @@ driver.queuedKeyboardReportAssertions().add(
 );
 ```
 
-Every individual assertion will be apply to an individual report.
+Every individual assertion will be applied to an individual report.
 
 ### Permanent assertions
 
 Permanent assertions can be added and removed at any time during 
-testing execution.
+testing execution. They are evaluated whenever a keyboard report arrives
+or at the end of every cycle, respectively.
 
 ### Assertion grouping
 
-When multiple assertions are supposed to be evaluated for the same report,
+When multiple assertions are supposed to be evaluated with respect to the same 
+keyboard report,
 they can be supplied via the `addGrouped(...)` method of the `AssertionQueue`
-class that is returned e.g. by `queuedKeyboardReportAssertions()`. All
-grouped assertions must pass (logical and).
+class. All grouped assertions must pass (logical and) for the test to
+be considered as successful.
 
 For instance
 
@@ -233,11 +258,11 @@ driver.queuedKeyboardReportAssertions().addGrouped(
 );
 ```
 
-would expect both keys 'a' and 'b' be part of the next keyboard report.
+would expect both keys 'a' and 'b' to be part of the next upcoming keyboard report.
 
 ### Negating assertions
 
-Assertions are boolean conditions. It can sometimes make sense to 
+Assertions are boolean conditions. Sometimes you will want to 
 invert their logic. 
 
 For instance
@@ -249,7 +274,7 @@ driver.queuedKeyboardReportAssertions().addGrouped(
 ```
 
 would allow any key and modifier keycodes to be part of a keyboard report
-except for the 'a' key.
+except for key 'a'.
 
 ### Grouping and negation
 
@@ -269,9 +294,11 @@ driver.queuedKeyboardReportAssertions().add(
 
 ### Custom assertions
 
-Despite the numerous predefined assertion classes, it might under 
-certain cicumstances be desirable to execute custom code that represents
-an assertion. This is easily possible by passing a C++ lambda function as an assertion, e.g.
+Despite the numerous predefined assertion classes that come 
+with Kaleidosope-Testing's API, under 
+certain cicumstances it might still be desirable to execute custom code that expresses
+an assertion. This is easily possible by passing a C++ lambda function to the 
+constructor of a special `Custom...Assertion` class, e.g.
 
 ```cpp
 driver.queuedKeyboardReportAssertions().add(
@@ -284,15 +311,18 @@ driver.queuedKeyboardReportAssertions().add(
 );
 ```
 
-In this example nothing is actually evaluated (the assertion returns the constant `true`).
-But it is probably easy to see what could be done. The lambda function
+The lambda function in this example actually doesn't evaluate 
+any specific condition (the assertion returns the constant `true`).
+But you are free to return the result of any complex test instead. 
+
+In general the lambda function
 passed to the `CustomKeyboardReportAssertion` has a predefined signature
-`bool(const KeyboardReport &kr)`. In the examples it uses `[&]` to capture 
-all context variables by reference. This includes the driver object that 
+`bool(const KeyboardReport &kr)`. In the above examples it uses `[&]` to capture 
+all context variables by reference. This also includes the driver object from
+the surrounding context that 
 is used to generate additional log output.
 
-There's also a assertion class `CustomAssertion` that can be used
-for cycle assertions, e.g.
+Use the assertion class `CustomAssertion` for custom cycle assertions as e.g.
 
 ```cpp
 driver.queuedCycleAssertions().add(
@@ -307,32 +337,44 @@ driver.queuedCycleAssertions().add(
 
 ### Immediate assertions
 
-Assertions can also be evaluated immediately as e.g.
+Instead of when a keyboard report occurs or at the end of a cycle,
+assertions may also be evaluated immediately as e.g.
 
 ```cpp
 driver.evaluateAssertions(LayerIsActive{1});
 ```
 
-This checks if a specific layer is active. In most cases this is not 
-necessary as the same can be checked programatically through Kaleidoscopes
-own firmware API. The only difference that predefined assertions might
-require less code to do the same and tests might be less sensitive
-against API changes to the Kaleidoscope core.
+This example checks whether a specific layer is active. In most cases this is not 
+necessary as the same condition can be checked programatically through Kaleidoscope's
+proper firmware API. 
+
+The only difference to doing so is that predefined assertions might
+require less user code to do the same and the generated testing code
+might be less sensitive against API changes to the Kaleidoscope core.
 
 ## Key activation
 
-Keys are activated via methods of the `Driver` class. While `pressKey(...)` activates
-a key at a given key matrix position, `release(...)` will deactivate the key.
-The method `tapKey(...)` will simulate a key being tapped a very short time.
+When testing, key action (press/release/tap) is the most important input 
+that causes the firmware to react. 
+
+In contrast to a real experiment where the user hits a key on the keyboard,
+in a virtual keyboard run, keys are hit virtually through key action methods
+of the `Driver` class. 
+
+While `pressKey(...)` activates
+a key at a given key matrix position, `release(...)` will deactivate it.
+The method `tapKey(...)` simulates a key being tapped instantaneously
+(pressed and released within a single cycle).
 
 ### Multi taps
 
-There are scenarios where tapping a key multiple times might be needed
-as part of a test. E.g. if we want to cycle through the color effects of
-the keyboard, we would hit a dedicated key multiple times.
+There are scenarios where a key must be tapped multiple times during a test run. 
+This might e.g. be necessary if we want to simulate cycling through the LED effects of
+the keyboard. On the real keyboard we would hit the 'next LED effect' key multiple times.
+To simplify this, the `Driver` class supports a dedicated method `multiTapKey(...)`.
 
-The following example demonstrates for the stock firmware how one could
-cycle through the LED modes via multiple taps.
+The following example demonstrates cycling
+through LED modes via multiple taps (stock firmware assumed).
 
 ```cpp
 // Cycle through the color effects and visualize the keyboard's LED state
@@ -352,22 +394,23 @@ driver.multiTapKey(
 
 This example does the following. It simulates the LED effect cycle key (row = 0,
 col = 6) being tapped 15 times. After each tap 50 cycles are run and 
-a `CustomAssertion` is executed.
+a `CustomAssertion` is executed. Read the section about visualization for
+more information on rendering the keyboard.
 
 ## Timing
 
-The virtual hardware comes with a simulated timing. As it is impossible to estimate
+The virtual hardware comes with simulated timing. As it is impossible to estimate
 the actual runtime of a loop scan cycle on the target hardware, a fixed 
-time increment is associated with each loop cycle (default = 5 ms).
+time increment must be associated with each loop cycle (default = 5 ms).
 
-Use the `Driver`'s methods `setCycleDuration(...)` and `getCycleDuration()` to
-adapt duration to a specific keyboard hardware.
+Use the `Driver` class' methods `setCycleDuration(...)` and `getCycleDuration()` to
+consider cycle duration of a specific keyboard hardware.
 
-There are different methods to run forward in time.
+There are different methods to progress time.
 
 ### `cycle(...)`
 
-This method runs a single firmware cycle. Time is advanced accordingly. 
+This method runs a single firmware cycle and advances time accordingly. 
 
 ### `cycles(...)`
 
@@ -375,37 +418,37 @@ This method runs a number of firmware cycles and advances time accordingly.
 
 ### `cycleTo(...)`
 
-The simulator processes cycles until a specific point in time is reached.
+The simulator processes cycles until it reaches a specific point in time.
 
 ### `advanceTime(...)`
 
-Runs a number of cycles whose overall duration is defined by a function parameter.
+Runs a number of cycles with a given total duration.
 
 ## Logging
 
 The testing API supports several logging methods. All log output is written
-to a common `std::ostream` object. An ostream can be queried and registered
-by the driver's methods `getOStream()` and `setOStream(...)`.
+to a common `std::ostream` object. This stream object can be queried and registered
+through the `Driver` class' methods `getOStream()` and `setOStream(...)`.
 
-All log lines start with information about the current time and
+Every log line starts with information about the current time and
 firmware cycle ID.
 
-There's no need to pass `std::endl` or `"\n"` to any of the logging functions.
+FWIW, there's no need to pass `std::endl` or `"\n"` to any of the logging functions.
 Line breaks are inserted automatically.
 
 ### Normal logging
 
-Standard log text can be generated as
+Standard log text can be generated for instance as
 
 ```cpp
 driver.log() << "Text" << 12 << ...;
 ```
 
-Log stream output works exactly as a ordinary `std::ostream`.
+Log stream output works exactly as with `std::ostream` of C++'s standard library.
 
 ### Error logging
 
-Use `driver.error()` instead as
+For error logging use `driver.error()` instead, e.g. as
 
 ```cpp
 driver.error() << "Something bad happened...";
@@ -421,16 +464,17 @@ driver.header() << "And now for something completely different...";
 
 ## Visualization
 
-During development and when debugging in often greatly helps to visualize
+During development and when debugging it may be of great help to visualize
 what the actual keyboard would do, especially when it comes to LED effects.
 
-Kaleidoscope-Testing allows to display an ascii-text visualization of the
-keyboard. This is done via the `renderKeyboard(...)` function.
+Kaleidoscope-Testing allows to display an ASCII-text representation of the
+keyboard via the `renderKeyboard(...)` function.
 
-The function is passed a string that represents a template of the actual keyboard.
-At the time this document is written, only for Keyboardio's model Model01, 
+This function is passed a string that is a template of the actual keyboard.
+
+At the time this document was written, only for Keyboardio's model Model01, 
 the first Kaleidoscope-supporting keyboard, a predefined template string
-is shipped with Kaleidoscope-Testing. 
+was shipped with Kaleidoscope-Testing (see `vendors/keyboardio/model01.cpp`).
 
 ```cpp
 // In the firmware sketch file
@@ -445,13 +489,18 @@ renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
 
 ### Custom keyboards
 
-It is very easy to define a custom template string for any keyboard.
+It is quite easy to define a custom template string for any keyboard.
 
-The template string may contain tokens `{xxxx}` where `xxxx` is an integer number
-that equals `row*matrix_colums + col` for the `(row, col)` tuple of a key.
-Any such strings, when encountered in the template string are replaced by
-the keycode that the respective key would currently generate. The key
+Appart from any ASCII art that represents the keyboard hardware, 
+the template may contain tokens `{xxxx}` where `xxxx` is an integer number
+that equals the expression `row*matrix_colums + col` being evaluated
+for a key's `(row, col)` tuple.
+Any such tokens, when encountered in the template are automatically replaced by
+information about the keycode that the respective key would currently generate. The key
 is colored in the same way as its key LED (if there are key LEDs present).
+
+Please note that any `{xxxxx}` token is replaced by exactly four visible characters
+no matter how wide in terms of characters its appearance in the template string.
 
 ## Structuring tests
 
@@ -480,12 +529,12 @@ tests by uncommenting/commenting the individual test function invokations.
 ## Examples
 
 There is an example sketch `examples/all_assertions/all_assertions.ino`
-that exemplifies most features of Kaleidoscope-Testing's
+that demonstrates most features of Kaleidoscope-Testing's
 API. 
 
 ## Doxygen documentation
 
-To generate Kaleidoscope-Testing's APi documentation with [doxygen](http://doxygen.nl/)
+To generate Kaleidoscope-Testing's API documentation with [doxygen](http://doxygen.nl/)
 make sure doxygen is installed on you unixoid system (GNU/Linux & macOS) and run
 
 ```
