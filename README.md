@@ -517,6 +517,8 @@ was shipped with Kaleidoscope-Testing (see `vendors/keyboardio/model01.cpp`).
 renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
 ```
 
+![Keyboard heatmap](/doc/images/Model01_screenshot.png?raw=true)
+
 ### Custom keyboards
 
 It is quite easy to define a custom template string for any keyboard.
