@@ -393,8 +393,10 @@ driver.multiTapKey(
 ```
 
 This example does the following. It simulates the LED effect cycle key (row = 0,
-col = 6) being tapped 15 times. After each tap 50 cycles are run and 
-a `CustomAssertion` is executed. Read the section about visualization for
+col = 6) being tapped 15 times. After each tap 50 cycles elapse and 
+a `CustomAssertion` is executed every time. 
+
+This exaple uses the function `renderKeyboard`. Please read the section about visualization for
 more information on rendering the keyboard.
 
 ## Timing
@@ -441,8 +443,16 @@ Line breaks are inserted automatically.
 Standard log text can be generated for instance as
 
 ```cpp
-driver.log() << "Text" << 12 << ...;
+driver.log() << "Text ... " << 12 << ...;
 ```
+
+This will e.g. generate
+
+```
+t=5750, c=1150: Text ... 12
+```
+
+in the log output.
 
 Log stream output works exactly as with `std::ostream` of C++'s standard library.
 
@@ -454,6 +464,16 @@ For error logging use `driver.error()` instead, e.g. as
 driver.error() << "Something bad happened...";
 ```
 
+This will e.g. generate
+
+```
+t=5770, c=1154: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+t=5770, c=1154: !!! Something bad happened...
+t=5770, c=1154: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+```
+
+in the log output.
+
 ### Header text
 
 Use `driver.header()` to generate text headers.
@@ -461,6 +481,16 @@ Use `driver.header()` to generate text headers.
 ```cpp
 driver.header() << "And now for something completely different...";
 ```
+
+This will e.g. generate
+
+```
+t=5770, c=1154: ########################################################
+t=5770, c=1154: ### And now for something completely different...
+t=5770, c=1154: ########################################################
+```
+
+in the log output.
 
 ## Visualization
 

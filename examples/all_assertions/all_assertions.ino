@@ -805,8 +805,6 @@ void runTests(Driver &driver) {
       
       KT_ASSERT_CONDITION(driver, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
    }
-   
-   renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
 }
 
 } // namespace testing
