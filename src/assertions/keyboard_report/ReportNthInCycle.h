@@ -28,15 +28,21 @@ namespace assertions {
 ///
 class ReportNthInCycle {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param report_id The id of the report to check against.
+      ///
+      ReportNthInCycle(int report_id)
+         : ReportNthInCycle(DelegateConstruction{}, report_id)
+      {}
+      
    private:
       
       class Assertion : public _Assertion {
             
          public:
-            
-            /// @brief Constructor.
-            /// @param report_id The id of the report to check against.
-            ///
+
             Assertion(int report_id) : report_id_(report_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -57,7 +63,7 @@ class ReportNthInCycle {
             int report_id_ = -1;
       };
    
-   KT_ASSERTION_WRAPPER(ReportNthInCycle)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
 };
 
 } // namespace assertions

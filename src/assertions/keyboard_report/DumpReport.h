@@ -30,6 +30,10 @@ namespace assertions {
 ///
 class DumpReport {
    
+   public:
+      
+      KT_ASSERTION_STD_CONSTRUCTOR(DumpReport)
+   
    private:
       
       class Assertion : public _Assertion {
@@ -51,7 +55,7 @@ class DumpReport {
 
       };
    
-   KT_ASSERTION_WRAPPER(DumpReport)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(DumpReport)
 };
 
 } // namespace assertions

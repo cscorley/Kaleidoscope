@@ -28,6 +28,10 @@ namespace assertions {
 ///
 class AnyKeycodeActive {
    
+   public:
+      
+      KT_ASSERTION_STD_CONSTRUCTOR(AnyKeycodeActive)
+      
    private:
       
       class Assertion : public _Assertion {
@@ -48,7 +52,7 @@ class AnyKeycodeActive {
             }
       };
    
-   KT_ASSERTION_WRAPPER(AnyKeycodeActive)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(AnyKeycodeActive)
 };
 
 } // namespace assertions

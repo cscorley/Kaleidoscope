@@ -33,15 +33,21 @@ namespace assertions {
 ///
 class CustomAssertion {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param func The function object to evaluate.
+      ///
+      CustomAssertion(const std::function<bool()> &func)
+         : CustomAssertion(DelegateConstruction{}, func)
+      {}
+      
    private:
       
       class Assertion : public _Assertion {
             
          public:
             
-            /// @brief Constructor.
-            /// @param func The function object to evaluate.
-            ///
             Assertion(const std::function<bool()> &func)
                : func_(func)
             {}
@@ -63,7 +69,7 @@ class CustomAssertion {
             std::function<bool()> func_;
       };
    
-   KT_ASSERTION_WRAPPER(CustomAssertion)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomAssertion)
 };
 
 } // namespace assertions

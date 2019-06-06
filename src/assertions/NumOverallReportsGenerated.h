@@ -30,16 +30,22 @@ namespace assertions {
 ///
 class NumOverallReportsGenerated {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param n_overall_reports The number of reports whose
+      ///        generation is being asserted.
+      ///
+      NumOverallReportsGenerated(int n_overall_reports) 
+         : NumOverallReportsGenerated(DelegateConstruction{}, n_overall_reports) 
+      {}
+         
    private:
       
       class Assertion : public _Assertion {
       
          public:
             
-            /// @brief Constructor.
-            /// @param n_overall_reports The number of reports whose
-            ///        generation is being asserted.
-            ///
             Assertion(int n_overall_reports) 
                : n_overall_reports_(n_overall_reports) {}
 
@@ -60,7 +66,7 @@ class NumOverallReportsGenerated {
             int n_overall_reports_ = -1;      
       };
    
-   KT_ASSERTION_WRAPPER(NumOverallReportsGenerated)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(NumOverallReportsGenerated)
 };
 
 } // namespace assertions

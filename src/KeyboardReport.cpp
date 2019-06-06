@@ -135,7 +135,7 @@ bool
    KeyboardReport
       ::isEmpty() const
 {
-   return !(this->isAnyModifierActive() || this->isAnyKeyodecActive());
+   return !(this->isAnyModifierActive() || this->isAnyKeyActive());
 }
       
 void 

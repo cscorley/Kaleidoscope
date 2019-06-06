@@ -41,6 +41,26 @@ class ModifiersActive {
    
    public:
       
+      /// @brief Constructor.
+      /// @param modifiers A list of modifier keycodes.
+      /// @param exclusively If true only the listed modifiers may
+      ///                  be part of the keyboard report for the
+      ///                  assertion to pass.
+      ///
+      ModifiersActive(const std::vector<uint8_t> &modifiers, 
+                  bool exclusively = false) 
+         :  ModifiersActive(DelegateConstruction{}, modifiers, exclusively)
+      {}
+      
+      /// @brief Constructor.
+      /// @tparam key_info A list of key information values. Those
+      ///        may be a mixture of keycodes or Key values.
+      ///
+      template<typename..._KeyInfo>
+      ModifiersActive(_KeyInfo...key_info) 
+         :  ModifiersActive(DelegateConstruction{}, std::forward<_KeyInfo>(key_info)...)
+      {}
+      
       /// @details After this was called, no other modifiers than the listed 
       ///          ones are allowed in the keyboard report for the
       ///          assertion to pass.
@@ -53,22 +73,12 @@ class ModifiersActive {
    
          public:
       
-            /// @brief Constructor.
-            /// @param modifiers A list of modifier keycodes.
-            /// @param exclusively If true only the listed modifiers may
-            ///                  be part of the keyboard report for the
-            ///                  assertion to pass.
-            ///
             Assertion(const std::vector<uint8_t> &modifiers, 
                       bool exclusively = false) 
                :  modifiers_(modifiers),
                   exclusively_(exclusively) 
             {}
-            
-            /// @brief Constructor.
-            /// @tparam key_info A list of key information values. Those
-            ///        may be a mixture of keycodes or Key values.
-            ///
+
             template<typename..._KeyInfo>
             Assertion(_KeyInfo...key_info) 
                :  modifiers_{toModifier(std::forward<_KeyInfo>(key_info))...},
@@ -106,7 +116,7 @@ class ModifiersActive {
             virtual bool evalInternal() override {
                
                for(auto modifier: modifiers_) {
-                  if(!driver_->getCurrentKeyboardReport().isModifierActive(modifier)) {
+                  if(!driver_->getCurrentKeyboardReport().isModifierKeycodeActive(modifier)) {
                      return false;
                   }
                }
@@ -144,7 +154,7 @@ class ModifiersActive {
             bool exclusively_ = false;
       };
    
-   KT_ASSERTION_WRAPPER(ModifiersActive)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ModifiersActive)
 };
 
 } // namespace assertions

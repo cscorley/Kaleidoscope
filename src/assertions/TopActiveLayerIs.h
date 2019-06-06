@@ -30,15 +30,21 @@ namespace assertions {
 ///
 class TopActiveLayerIs {
    
+   public:
+   
+      /// @brief Constructor.
+      /// @param[in] layer_id The id of the layer to check as top active.
+      ///
+      TopActiveLayerIs(int layer_id)
+         : TopActiveLayerIs(DelegateConstruction{}, layer_id)
+      {}
+      
    private:
       
       class Assertion : public _Assertion {
    
          public:
-            
-            /// @brief Constructor.
-            /// @param[in] layer_id The id of the layer to check as top active.
-            ///
+
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -58,7 +64,7 @@ class TopActiveLayerIs {
             int layer_id_;
       };
    
-   KT_ASSERTION_WRAPPER(TopActiveLayerIs)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(TopActiveLayerIs)
 };
    
 } // namespace assertions

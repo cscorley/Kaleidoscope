@@ -30,16 +30,22 @@ namespace assertions {
 ///
 class CycleHasNReports {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param n_reports The number of reports that must have been
+      ///        generated.
+      ///
+      CycleHasNReports(int n_reports) 
+         : CycleHasNReports(DelegateConstruction{}, n_reports) 
+      {}
+   
    private:
       
       class Assertion : public _Assertion {
          
          public:
 
-            /// @brief Constructor.
-            /// @param n_reports The number of reports that must have been
-            ///        generated.
-            ///
             Assertion(int n_reports) : n_reports_(n_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -59,7 +65,7 @@ class CycleHasNReports {
             int n_reports_ = -1;      
       };
    
-   KT_ASSERTION_WRAPPER(CycleHasNReports)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleHasNReports)
 };
 
 } // namespace assertions

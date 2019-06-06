@@ -589,8 +589,8 @@ void runTest(Driver &driver) {
             KeycodesActive{Key_A},
             KeycodesActive{Key_B},
             negate(ReportEmpty{}),
-            negate(AnyModifiersActive{}),
-            AnyKeycodesActive{},
+            negate(AnyModifierActive{}),
+            AnyKeycodeActive{},
             ReportNthInCycle{1},
             DumpReport{}
          }
@@ -673,7 +673,7 @@ void runTest(Driver &driver) {
    
       driver.queuedKeyboardReportAssertions().addGrouped(
          ModifiersActive{Key_LeftShift},
-         AnyModifiersActive{}
+         AnyModifierActive{}
       );
       driver.queuedCycleAssertions().add(CycleHasNReports{1});
       driver.pressKey(3, 7); // left shift
@@ -681,7 +681,7 @@ void runTest(Driver &driver) {
       
       driver.queuedKeyboardReportAssertions().addGrouped(
          ModifiersActive{Key_LeftShift, Key_LeftControl},
-         negate(AnyKeycodesActive{})
+         negate(AnyKeycodeActive{})
       );  
       driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
       driver.pressKey(0, 7); // left control

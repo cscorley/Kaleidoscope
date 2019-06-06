@@ -30,16 +30,22 @@ namespace assertions {
 ///
 class LayerIsActive {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param layer_id The id of the layer that must be active for
+      ///        the assertion to pass.
+      ///
+      LayerIsActive(int layer_id) 
+         : LayerIsActive(DelegateConstruction{}, layer_id) 
+      {}
+   
    private:
       
       class Assertion : public _Assertion {
    
          public:
-            
-            /// @brief Constructor.
-            /// @param layer_id The id of the layer that must be active for
-            ///        the assertion to pass.
-            ///
+
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -59,7 +65,7 @@ class LayerIsActive {
             int layer_id_;
       };
    
-   KT_ASSERTION_WRAPPER(LayerIsActive)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(LayerIsActive)
 };
    
 } // namespace assertions

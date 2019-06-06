@@ -28,15 +28,21 @@ namespace assertions {
 ///
 class CycleIsNth {
    
+   public:
+   
+      /// @brief Constructor
+      /// @param cycle_id The id of the cycle to check against.
+      ///
+      CycleIsNth(int cycle_id)
+         : CycleIsNth(DelegateConstruction{}, cycle_id)
+      {}
+   
    private:
       
       class Assertion : public _Assertion {
       
          public:
          
-            /// @brief Constructor
-            /// @param cycle_id The id of the cycle to check against.
-            ///
             Assertion(int cycle_id) : cycle_id_(cycle_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
@@ -58,7 +64,7 @@ class CycleIsNth {
             int cycle_id_ = -1;
       };
    
-   KT_ASSERTION_WRAPPER(CycleIsNth)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleIsNth)
 };
 
 } // namespace assertions

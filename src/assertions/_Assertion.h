@@ -34,6 +34,9 @@ class Driver;
 /// @details This abstract class serves as base class for any
 ///        assertions.
 ///
+///        **Important:** This class is not part of Kaleidoscope-Testing's 
+///                   public API. It is meant for internal use only.
+///
 class _Assertion {
    
    public:
@@ -144,15 +147,22 @@ std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion)
 } // namespace testing
 } // namespace kaleidoscope
       
-#define KT_ASSERTION_WRAPPER(WRAPPER)                                          \
+#define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                            \
                                                                                \
    private:                                                                    \
       std::shared_ptr<WRAPPER::Assertion> assertion_;                          \
                                                                                \
    public:                                                                     \
+      struct DelegateConstruction {};                                          \
+                                                                               \
       template<typename..._Args>                                               \
-      WRAPPER(_Args...args)                                                    \
+      WRAPPER(DelegateConstruction, _Args...args)                              \
          : assertion_{new WRAPPER::Assertion{std::forward<_Args>(args)...}}    \
       {}                                                                       \
                                                                                \
       operator std::shared_ptr<_Assertion> () { return assertion_; }
+      
+#define KT_ASSERTION_STD_CONSTRUCTOR(WRAPPER)                                  \
+      WRAPPER()                                                                \
+         : WRAPPER(DelegateConstruction{})                                     \
+      {}

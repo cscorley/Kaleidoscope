@@ -33,16 +33,22 @@ namespace assertions {
 ///
 class CustomKeyboardReportAssertion {
    
+   public:
+      
+      /// @brief Constructor.
+      /// @param func The function to evaluate as a condition for 
+      ///        the assertion to pass.
+      ///
+      CustomKeyboardReportAssertion(const std::function<bool(const KeyboardReport&)> &func)
+         : CustomKeyboardReportAssertion(DelegateConstruction{}, func)
+      {}
+   
    private:
       
       class Assertion : public _Assertion {
             
          public:
             
-            /// @brief Constructor.
-            /// @param func The function to evaluate as a condition for 
-            ///        the assertion to pass.
-            ///
             Assertion(const std::function<bool(const KeyboardReport&)> &func)
                : func_(func)
             {}
@@ -64,7 +70,7 @@ class CustomKeyboardReportAssertion {
             std::function<bool(const KeyboardReport&)> func_;
       };
    
-   KT_ASSERTION_WRAPPER(CustomKeyboardReportAssertion)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomKeyboardReportAssertion)
 };
 
 } // namespace assertions

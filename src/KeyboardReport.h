@@ -34,7 +34,7 @@ namespace testing {
    
 class Driver;
   
-/// @brief An interface to investigate keyboard reports.
+/// @brief An interface hat facilitates analyzing keyboard reports.
 ///
 class KeyboardReport {
    

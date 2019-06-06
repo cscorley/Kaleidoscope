@@ -39,6 +39,27 @@ class KeycodesActive {
    
    public:
       
+      /// @brief Constructor.
+      ///
+      /// @param keycodes A collection of keycodes.
+      /// @param exclusively If enabled no other keys than the listed 
+      ///                 ones must be part of the checked keyboard report.
+      ///
+      KeycodesActive(const std::vector<uint8_t> &keycodes, 
+                  bool exclusively = false) 
+         : KeycodesActive(DelegateConstruction{}, keycodes, exclusively)
+      {}
+      
+      /// @brief Constructor.
+      ///
+      /// @tparam key_info A list of key information objects. This
+      ///         can be a mixture of keycodes or Key specifications.
+      ///
+      template<typename..._KeyInfo>
+      KeycodesActive(_KeyInfo...key_info) 
+         : KeycodesActive(DelegateConstruction{}, std::forward<_KeyInfo>(key_info)...)
+      {}
+      
       /// @details After this was called, no other keys than the listed 
       ///          ones are allowed in the keyboard report for the
       ///          assertion to pass.
@@ -51,23 +72,12 @@ class KeycodesActive {
    
          public:
       
-            /// @brief Constructor.
-            ///
-            /// @param keycodes A collection of keycodes.
-            /// @param exclusively If enabled no other keys than the listed 
-            ///                 ones must be part of the checked keyboard report.
-            ///
             Assertion(const std::vector<uint8_t> &keycodes, 
                       bool exclusively = false) 
                :  keycodes_(keycodes),
                   exclusively_(exclusively) 
             {}
-            
-            /// @brief Constructor.
-            ///
-            /// @tparam key_info A list of key information objects. This
-            ///         can be a mixture of keycodes or Key specifications.
-            ///
+
             template<typename..._KeyInfo>
             Assertion(_KeyInfo...key_info) 
                :  keycodes_{toKeycode(std::forward<_KeyInfo>(key_info))...},
@@ -143,7 +153,7 @@ class KeycodesActive {
             bool exclusively_ = false;
       };
    
-   KT_ASSERTION_WRAPPER(KeycodesActive)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(KeycodesActive)
 };
 
 } // namespace assertions

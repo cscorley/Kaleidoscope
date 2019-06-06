@@ -31,6 +31,16 @@ namespace assertions {
 /// @details The Grouped assertion only passes if all of its members pass.
 ///
 class Grouped {
+   
+   public:
+      
+      /// @brief Constructor.
+      /// @tparam assertion_ptrs A list of assertions to group.
+      ///
+      template<typename..._Assertions>
+      Grouped(_Assertions...assertions)
+         :  Grouped(DelegateConstruction{}, std::forward<_Assertions>(assertions)...)
+      {}
  
    private:
       
@@ -38,9 +48,6 @@ class Grouped {
          
          public:
 
-            /// @brief Constructor.
-            /// @tparam assertion_ptrs A list of assertions to group.
-            ///
             template<typename..._Assertions>
             Assertion(_Assertions...assertions)
                :  assertions_{std::forward<_Assertions>(assertions)...}
@@ -73,7 +80,7 @@ class Grouped {
             std::vector<std::shared_ptr<_Assertion>> assertions_;
       };
       
-   KT_ASSERTION_WRAPPER(Grouped)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(Grouped)
 };
 
 } // namespace assertions
