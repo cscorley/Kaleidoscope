@@ -553,7 +553,7 @@ KALEIDOSCOPE_TESTING_INIT
 namespace kaleidoscope {
 namespace testing {
    
-void runTest(Driver &driver) {
+void runTests(Driver &driver) {
    
    using namespace assertions;
    
@@ -715,7 +715,7 @@ void runTest(Driver &driver) {
    {
       auto test = driver.newTest("9");
     
-      driver.skipTime(1000); // ms
+      driver.advanceTime(1000); // ms
    }
    
    //***************************************************************************
@@ -749,7 +749,7 @@ void runTest(Driver &driver) {
       driver.queuedCycleAssertions().add(
          CustomAssertion{
             [&]() -> bool {
-               driver.log() << "Custom assertion triggered";
+               driver.log() << "Custom cycle assertion triggered";
                return true;
             }
          }

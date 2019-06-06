@@ -155,7 +155,7 @@ class Driver {
    
    private:
       
-      std::ostream &out_;
+      std::ostream *out_;
       bool debug_;
       int cycle_duration_;
       bool abort_on_first_error_;
@@ -307,12 +307,7 @@ class Driver {
          
       /// @brief Runs a scan cycle and processes assertions afterwards.
       ///
-      /// @param after_cycle_assertion_list A list of assertions that are 
-      ///        evaluated after the next cycle and discarded after 
-      ///        evaluation (optional).
-      ///
-      void cycle(const std::vector<std::shared_ptr<_Assertion>> 
-               &after_cycle_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
+      void cycle();
          
       /// @brief Runs a number of scan cycles and processes assertions afterwards.
       ///
@@ -322,30 +317,39 @@ class Driver {
       /// @param cycle_assertion_list A list of assertions that are evaluated
       ///        after every cycle.
       ///
-      void cycles(int n = 0, 
-                      const std::vector<std::shared_ptr<_Assertion>> 
-                           &at_end_assertion_list = std::vector<std::shared_ptr<_Assertion>>{}, 
-                      const std::vector<std::shared_ptr<_Assertion>> 
-                           &cycle_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
+      template<typename..._Assertions>
+      void cycles(int n = 0, _Assertions...assertions) {
+         this->cyclesInternal(n,
+            std::vector<std::shared_ptr<_Assertion>>{
+               std::forward<_Assertions>(assertions)...
+            }
+         );
+      }
             
       /// @brief Skips a given amount of time by running cycles.
       ///
       /// @param delta_t A time interval in [ms] that is supposed to be skipped.
-      /// @param at_end_assertion_list A list of assertions to be evaluated after
-      ///        cycling. These assertions are discarded after evaluation.
       ///
-      void skipTime(TimeType delta_t, 
-                    const std::vector<std::shared_ptr<_Assertion>> 
-                           &at_end_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
+      void advanceTime(TimeType delta_t);
       
       /// @brief Runs keyboard scan cycles until a specified point in time.
       ///
       /// @param time The target time in [ms].
       ///
-      void cycleTo(TimeType time,
-         const std::vector<std::shared_ptr<_Assertion>> 
-                           &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{}
-      );
+      void cycleTo(TimeType time);
+      
+      /// @brief Immediately evaluates a number of assertions
+      ///
+      /// @tparam assertions A number assertions to be evaluated immediately.
+      ///
+      template<typename..._Assertions>
+      void evaluateAssertions(_Assertions...assertions) {
+         this->evaluateAssertionsInternal(
+            std::vector<std::shared_ptr<_Assertion>>{
+               std::forward<_Assertions>(assertions)...
+            }
+         );
+      }
             
       /// @brief Retreives a stream object for log output.
       ///
@@ -381,10 +385,6 @@ class Driver {
       const KeyboardReport &getCurrentKeyboardReport() const {
          return current_keyboard_report_;
       }
-         
-      /// @brief Retreives the associated ostream object.
-      ///
-      std::ostream &getOStream() const { return out_; }  
       
       /// @brief Retreives the state of the AbortOnFirstError condition.
       ///
@@ -442,6 +442,33 @@ class Driver {
       ///
       void assertCondition(bool cond, const char *condition_string) const;
       
+      /// @brief Changes the duration in [ms] of every simulated cycle.
+      /// @param dt The new duration [ms].
+      ///
+      void setCycleDuration(TimeType dt) {
+         cycle_duration_ = dt;
+      }
+      
+      /// @brief Retreives the currently defined cycle duration.
+      /// @returns The cycle duration in [ms].
+      ///
+      TimeType getCycleDuration() const {
+         return cycle_duration_;
+      }
+      
+      /// @brief Resets the drivers output stream.
+      /// @details This might serve to redirect output to a file
+      ///        by using a std::ofstream.
+      /// @param out The new ostream object.
+      ///
+      void setOStream(std::ostream &out) {
+         out_ = &out;
+      }
+      
+      /// @brief Retreives the currently associated ostream object.
+      ///
+      std::ostream &getOStream() const { return *out_; }  
+      
    private:
       
       bool checkStatus() const;
@@ -454,18 +481,23 @@ class Driver {
             
       void processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion);
                  
-      void cycleInternal(const std::vector<std::shared_ptr<_Assertion>> 
-               &on_stop_assertion_list, 
-               bool only_log_reports = false);
+      void cycleInternal(bool only_log_reports = false);
       
       void checkCycleDurationSet();
       
+      // This method is templated to enable it being used for std::vector
+      // and std::deque.
+      //
       template<typename _Container>
-      void processCycleAssertions(_Container &assertions) {
+      void evaluateAssertionsInternal(const _Container &assertions) {
             
          if(assertions.empty()) { return; }
          
          for(auto &assertion: assertions) {
+      
+            // Just in case we haven't done that before
+            //
+            assertion->setDriver(this);
             
             bool assertion_passed = assertion->eval();
             
@@ -479,9 +511,10 @@ class Driver {
       
       std::string generateCycleInfo() const;
       
-      void skipTimeInternal(TimeType delta_t, 
-                    const std::vector<std::shared_ptr<_Assertion>> 
-                           &on_stop_assertion_list = std::vector<std::shared_ptr<_Assertion>>{});
+      void skipTimeInternal(TimeType delta_t);
+      
+      void cyclesInternal(int n, 
+                  const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list);
 };
 
 /// @brief Asserts a condition.

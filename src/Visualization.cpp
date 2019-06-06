@@ -175,15 +175,18 @@ std::string generateColorEscSeq(uint8_t row, uint8_t col) {
    
    int col_norm = color.r*color.r + color.g*color.g + color.b*color.b;
    
-   int foreground_color;
-   // Have black text on dark background color and wi
+   int foreground_color = 30;
+   
+   // Have dark grey text on light background color and light grey
+   // on dark background.
+   //
    if(col_norm <= 49152) {
-      foreground_color = 15;
+      foreground_color = 37;
    }
       
    std::ostringstream o;
-   o << "\x1B[48;2;" << (int)color.r << ";" << (int)color.g << ";" << (int)color.b << "m" 
-            "\x1B[38;5;" << foreground_color << "m";
+   o << "\x1B[48;2;" << (int)color.r << ";" << (int)color.g << ";" << (int)color.b << "m"
+            "\x1B[" << foreground_color << "m";
    return o.str();
 }
    

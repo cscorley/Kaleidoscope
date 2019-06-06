@@ -53,7 +53,7 @@ extern void executeTestFunction();
    namespace kaleidoscope {                                                    \
    namespace testing {                                                         \
    /* Forward declare the actual test function */                              \
-   void runTest(Driver &driver);                                               \
+   void runTests(Driver &driver);                                               \
    } /* namespace testing */                                                   \
    } /* namespace kaleidoscope */                                              \
                                                                                \
@@ -63,5 +63,5 @@ extern void executeTestFunction();
    void executeTestFunction() {                                                \
       setup(); /* setup Kaleidoscope */                                        \
       kaleidoscope::testing::Driver driver(std::cout, false);                  \
-      kaleidoscope::testing::runTest(driver);                                  \
+      kaleidoscope::testing::runTests(driver);                                  \
    }

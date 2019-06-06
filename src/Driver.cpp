@@ -139,7 +139,7 @@ Driver::Driver(std::ostream &out,
          int cycle_duration, 
          bool abort_on_first_error)
 
-   :  out_{out},
+   :  out_{&out},
       debug_{debug},
       cycle_duration_{cycle_duration}, // ms
       abort_on_first_error_{abort_on_first_error},
@@ -202,9 +202,7 @@ void Driver::multiTapKey(int num_taps, uint8_t row, uint8_t col,
       // Run a user-defined number of cycles
       //
       for(int c = 0; c < tap_interval_cycles; ++c) {
-         this->cycleInternal(std::vector<std::shared_ptr<_Assertion>>{} /*dummy*/,
-                             true /* only log reports */
-         );
+         this->cycleInternal(true /* only log reports */);
       }
       
       // Check and execute the assertion
@@ -229,84 +227,55 @@ void Driver::clearAllKeys() {
    }
 }
 
-void Driver::cycle(const std::vector<std::shared_ptr<_Assertion>> 
-         &at_end_assertion_list) {
+void Driver::cycle() {
    this->log() << "Running single scan cycle";
-   this->cycleInternal(at_end_assertion_list, true);
+   this->cycleInternal(true);
    this->log() << "";
 }
 
-void Driver::cycles(int n, 
-                  const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list , 
+void Driver::cyclesInternal(int n, 
                   const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list) {
    if(n == 0) {
       n = scan_cycles_default_count_;
    }
    
    this->log() << "Running " << n << " scan cycles";
-   
-   if(!at_end_assertion_list.empty()) {
-      for(auto &assertion: at_end_assertion_list) {
-         assertion->setDriver(this);
-      }
-   }
          
    for(int i = 0; i < n; ++i) { 
-      this->cycleInternal(cycle_assertion_list, true /* on_log_reports */);
-   }
-      
-   if(!at_end_assertion_list.empty()) {
-      this->log() << "Processing " << at_end_assertion_list.size()
-         << " cycle assertions on stop";
-      this->processCycleAssertions(at_end_assertion_list);
+      this->cycleInternal(true /* on_log_reports */);
+      this->evaluateAssertionsInternal(cycle_assertion_list);
    }
       
    this->log() << "";
 }
 
-void Driver::skipTime(Driver::TimeType delta_t, 
-               const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list) {
+void Driver::advanceTime(Driver::TimeType delta_t) {
    
    this->checkCycleDurationSet();
    
    this->log() << "Skipping dt >= " << delta_t << " ms";
    
-   this->skipTimeInternal(delta_t, at_end_assertion_list);
+   this->skipTimeInternal(delta_t);
 }
 
-void Driver::skipTimeInternal(Driver::TimeType delta_t, 
-               const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list) {
+void Driver::skipTimeInternal(Driver::TimeType delta_t) {
    
    auto start_cycle = cycle_id_;
-         
-   if(!at_end_assertion_list.empty()) {
-      for(auto &assertion: at_end_assertion_list) {
-         assertion->setDriver(this);
-      }
-   }
          
    auto start_time = time_;
    
    Driver::TimeType elapsed_time = 0;
    while(elapsed_time < delta_t) {
-      this->cycleInternal(std::vector<std::shared_ptr<_Assertion>>{} /*dummy*/,
-                      true /* only_log_reports */);
+      this->cycleInternal(true /* only_log_reports */);
       elapsed_time = time_ - start_time;
    }
       
    this->log() << elapsed_time << " ms (" << (cycle_id_ - start_cycle) << " cycles) skipped";
       
-   if(!at_end_assertion_list.empty()) { 
-      this->log() << "Processing " << at_end_assertion_list.size() 
-         << " cycle assertions on stop";
-      this->processCycleAssertions(at_end_assertion_list);
-   }
-      
    this->log() << "";
 }
 
-void Driver::cycleTo(TimeType time,
-   const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list)
+void Driver::cycleTo(TimeType time)
 {
    if(time <= time_) {
       this->error() << "Failed cycling to time " << time << " ms. Target time is in the past.";
@@ -317,7 +286,7 @@ void Driver::cycleTo(TimeType time,
    
    TimeType delta_t = time - time_;
    
-   this->skipTimeInternal(delta_t, at_end_assertion_list);
+   this->skipTimeInternal(delta_t);
 }
 
 void Driver::initKeyboard() {
@@ -430,8 +399,7 @@ void Driver::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &a
    assertions_passed_ &= assertion_passed;
 }
             
-void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &at_end_assertion_list, 
-                       bool only_log_reports) {
+void Driver::cycleInternal(bool only_log_reports) {
    
    ++cycle_id_;
    n_keyboard_reports_in_cycle_ = 0;
@@ -439,13 +407,7 @@ void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &at_en
    if(!only_log_reports) {
       this->log() << "Scan cycle " << cycle_id_;
    }
-   
-   if(at_end_assertion_list.empty()) {
-      for(auto &assertion: at_end_assertion_list) {
-         assertion->setDriver(this);
-      }
-   }
-   
+
    ::loop();
    
    if(n_keyboard_reports_in_cycle_ == 0) {
@@ -461,16 +423,10 @@ void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &at_en
    
    //kaleidoscope.setMillis(time_)
    
-   if(!at_end_assertion_list.empty()) {
-      this->log() << "Processing " << at_end_assertion_list.size()
-         << " cycle assertions on stop";
-      this->processCycleAssertions(at_end_assertion_list);
-   }
-   
    if(!queued_cycle_assertions_.empty()) {
       this->log() << "Processing " << queued_cycle_assertions_.size()
          << " queued cycle assertions";
-      this->processCycleAssertions(queued_cycle_assertions_.directAccess());
+      this->evaluateAssertionsInternal(queued_cycle_assertions_.directAccess());
       
       queued_cycle_assertions_.clear();
    }
@@ -479,7 +435,7 @@ void Driver::cycleInternal(const std::vector<std::shared_ptr<_Assertion>> &at_en
       this->log() << "Processing " << permanent_cycle_assertions_.size()
          << " permanent cycle assertions";
       
-      this->processCycleAssertions(permanent_cycle_assertions_.directAccess());
+      this->evaluateAssertionsInternal(permanent_cycle_assertions_.directAccess());
    }
 }
 
