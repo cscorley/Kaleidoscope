@@ -22,6 +22,7 @@
 #include "Visualization.h"
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
+#include "LED_Checks.h"
 #include "assertions/Grouped.h"
 #include "assertions/LayerIsActive.h"
 #include "assertions/TopActiveLayerIs.h"

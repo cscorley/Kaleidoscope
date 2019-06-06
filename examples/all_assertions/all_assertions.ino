@@ -805,6 +805,85 @@ void runTests(Driver &driver) {
       
       KT_ASSERT_CONDITION(driver, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
    }
+   
+   //***************************************************************************
+   {
+      auto test = driver.newTest("16");
+      
+      // Use dumpKeyLEDState to generate a representation of the current
+      // LED state.
+      //
+      //dumpKeyLEDState();
+      
+      const cRGB key_led_colors[] = {
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(0, 3, 197),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+         CRGB(160, 0, 0),
+      };
+
+      assertKeyLEDState(driver, key_led_colors);
+   }
 }
 
 } // namespace testing

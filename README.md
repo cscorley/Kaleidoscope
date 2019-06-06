@@ -492,6 +492,20 @@ t=5770, c=1154: ########################################################
 
 in the log output.
 
+## Testing LED states
+
+Kaleidoscope-Testing comes with functions that help integration testing of 
+LED modes.
+
+During a reference run the function `dumpKeyLEDState()` may be used 
+to generate the C++ code of a pre-initialized array that represents the current
+state of the per-key LEDs.
+
+The generated code of the array can then be used to defined a LED state
+verification test using `assertKeyLEDState(...)`. This enables to assert
+that the per-key LEDs are at a given color-state at a specific
+time during future test-runs.
+
 ## Visualization
 
 During development and when debugging it may be of great help to visualize
