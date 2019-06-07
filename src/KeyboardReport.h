@@ -32,7 +32,7 @@
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
   
 /// @brief An interface hat facilitates analyzing keyboard reports.
 ///
@@ -93,10 +93,10 @@ class KeyboardReport {
       bool isEmpty() const;
       
       /// @brief Writes a formatted representation of the keyboard report 
-      ///        to the driver's log stream.
+      ///        to the simulator's log stream.
       /// @param add_indent An additional indentation string.
       ///
-      void dump(const Driver &driver, const char *add_indent = "") const;
+      void dump(const Simulator &simulator, const char *add_indent = "") const;
       
       /// @brief Associates the object with new report data.
       /// @param report_data The new report data struct.

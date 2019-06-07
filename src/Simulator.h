@@ -22,14 +22,15 @@
 #include "KeyboardReport.h"
 
 #include <vector>
+#include <functional>
 
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
 class _Assertion;
 
-/// @brief An abstract driver output stream.
+/// @brief An abstract simulator output stream.
 ///
 class DriverStream_ {
    
@@ -37,7 +38,7 @@ class DriverStream_ {
       
       struct Endl {};
       
-      DriverStream_(const Driver *driver) : driver_(driver) {}
+      DriverStream_(const Simulator *simulator) : driver_(simulator) {}
       
       virtual ~DriverStream_() {}
 
@@ -64,7 +65,7 @@ class DriverStream_ {
       
    protected:
       
-      const Driver *driver_;
+      const Simulator *driver_;
       
    private:
       
@@ -77,7 +78,7 @@ class ErrorStream : public DriverStream_ {
    
    public:
       
-      ErrorStream(const Driver *driver);
+      ErrorStream(const Simulator *simulator);
       
       template<typename _T>
       ErrorStream &operator<<(const _T &t) { 
@@ -98,7 +99,7 @@ class LogStream : public DriverStream_ {
    
    public:
       
-      LogStream(const Driver *driver);
+      LogStream(const Simulator *simulator);
       virtual ~LogStream() override;
       
       template<typename _T>
@@ -114,7 +115,7 @@ class HeaderStream : public DriverStream_ {
    
    public:
       
-      HeaderStream(const Driver *driver);
+      HeaderStream(const Simulator *simulator);
       
       template<typename _T>
       HeaderStream &operator<<(const _T &t) { 
@@ -135,19 +136,19 @@ class Test {
    
    public:
       
-      Test(Driver *driver, const char *name);
+      Test(Simulator *simulator, const char *name);
       ~Test();
       
    private:
       
-      Driver *driver_;
+      Simulator *driver_;
       const char *name_;
       int error_count_start_;
 };
         
-/// @ brief The main test driver object.
+/// @ brief The main test simulator object.
 ///
-class Driver {
+class Simulator {
    
    public:
       
@@ -183,14 +184,14 @@ class Driver {
       {
          public:
             
-            KeyboardReportConsumer(Driver &driver) : driver_(driver) {}
+            KeyboardReportConsumer(Simulator &simulator) : driver_(simulator) {}
 
             virtual void processKeyboardReport(
                            const HID_KeyboardReport_Data_t &report_data) override;
                            
          private:
             
-            Driver &driver_;
+            Simulator &driver_;
             
       } keyboard_report_consumer_;
       
@@ -206,12 +207,12 @@ class Driver {
       /// @param abort_on_first_error If enabled, testing is aborted after
       ///        the first error occurred.
       ///
-      Driver(std::ostream &out, 
+      Simulator(std::ostream &out, 
              bool debug, 
              int cycle_duration = 5, 
              bool abort_on_first_error = false);
       
-      ~Driver();
+      ~Simulator();
       
       /// @details If the ErrorIfReportWithoutQueuedAssertions is enabled
       ///          it is considered an error if no assertions are queued
@@ -312,9 +313,7 @@ class Driver {
       /// @brief Runs a number of scan cycles and processes assertions afterwards.
       ///
       /// @param n The number of cycles to run.
-      /// @param at_end_assertion_list A list of assertions to be evaluated 
-      ///        at the end of cycling. They are discarded after evaluation.
-      /// @param cycle_assertion_list A list of assertions that are evaluated
+      /// @tparam assertions A list of assertions that are evaluated
       ///        after every cycle.
       ///
       template<typename..._Assertions>
@@ -324,6 +323,15 @@ class Driver {
                std::forward<_Assertions>(assertions)...
             }
          );
+      }
+      
+      template<typename..._Assertions>
+      void cycleExpectKeyboardReports(_Assertions...assertions) {
+         this->queuedKeyboardReportAssertions().add(std::forward<_Assertions>(assertions)...);
+         this->cycle();
+         if(!queued_keyboard_report_assertions_.empty()) {
+            this->error() << "Keyboard report assertions are left in queue";
+         }
       }
             
       /// @brief Skips a given amount of time by running cycles.
@@ -467,7 +475,27 @@ class Driver {
       
       /// @brief Retreives the currently associated ostream object.
       ///
-      std::ostream &getOStream() const { return *out_; }  
+      std::ostream &getOStream() const { return *out_; }
+      
+      /// @brief Runs the simulator for a given amount of time.
+      /// @details The simulation runs in real time, i.e. if necessary
+      ///        the simulator waits for a given amount of time in each
+      ///        cycle to make sure that the simulation runs in exactly
+      ///        the same speed as it would run on the device.
+      ///        A provided function is executed in every cycle.
+      ///
+      /// @param duration The duration of the run. If duration is zero,
+      ///        the simulation runs forever.
+      /// @param cycle_function A function that is executed after every cycle.
+      ///
+      void runRealtime(TimeType duration, const std::function<void()> &cycle_function);
+      
+      /// @brief Runs the simulator in a continuous loop an reacts on stdin.
+      /// @details Key state information is read from stdin in each loop cycle.
+      ///
+      /// @param cycle_function A function that is executed after every cycle.
+      ///
+      void runRemoteControlled(const std::function<void()> &cycle_function);
       
    private:
       
@@ -518,7 +546,7 @@ class Driver {
 };
 
 /// @brief Asserts a condition.
-/// @details Use this macro instead of the Driver class' assertCondition(...)
+/// @details Use this macro instead of the Simulator class' assertCondition(...)
 ///        method to enable string output of the condition code in
 ///        error messages.
 ///

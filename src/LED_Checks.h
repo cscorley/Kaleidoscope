@@ -23,11 +23,11 @@
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
    
 void dumpKeyLEDState();
 
-void assertKeyLEDState(const Driver &driver,
+void assertKeyLEDState(const Simulator &simulator,
                        const cRGB *key_led_colors);
    
 } // namespace testing

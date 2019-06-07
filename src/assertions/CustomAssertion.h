@@ -27,7 +27,7 @@ namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/// @brief Executes a lambda function of type bool(const Driver &).
+/// @brief Executes a lambda function of type bool(const Simulator &).
 /// @details The lambda must return true to signal that the assertion passed
 ///        and false otherwise.      
 ///

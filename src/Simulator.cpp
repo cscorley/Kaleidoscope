@@ -16,7 +16,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Driver.h"
+#include "Simulator.h"
 #include "assertions/_Assertion.h"
 
 #include "Kaleidoscope.h"
@@ -25,6 +25,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include <ctime>
+#include <sstream>
 
 namespace kaleidoscope {
 namespace testing {
@@ -55,8 +57,8 @@ void DriverStream_::reactOnLineEnd()
    this->getOStream() << "\n";
 }
    
-ErrorStream::ErrorStream(const Driver *driver) 
-   :  DriverStream_(driver)
+ErrorStream::ErrorStream(const Simulator *simulator) 
+   :  DriverStream_(simulator)
 {
    auto &out = this->getOStream();
    
@@ -91,8 +93,8 @@ void ErrorStream::reactOnLineStart()
    this->getOStream() << "!!! ";
 }
 
-LogStream::LogStream(const Driver *driver) 
-   :  DriverStream_(driver)
+LogStream::LogStream(const Simulator *simulator) 
+   :  DriverStream_(simulator)
 {
 }
 
@@ -100,8 +102,8 @@ LogStream::~LogStream() {
    this->getOStream() << "\n";
 }
 
-HeaderStream::HeaderStream(const Driver *driver) 
-   :  DriverStream_(driver)
+HeaderStream::HeaderStream(const Simulator *simulator) 
+   :  DriverStream_(simulator)
 {  
    // Foreground color red
    //
@@ -127,12 +129,12 @@ void HeaderStream::reactOnLineStart()
    this->getOStream() << "### ";
 }
 
-Test::Test(Driver *driver, const char *name) 
-   :  driver_(driver),
+Test::Test(Simulator *simulator, const char *name) 
+   :  driver_(simulator),
       name_(name),
-      error_count_start_(driver->getErrorCount())
+      error_count_start_(simulator->getErrorCount())
 {
-   driver->header() << "Test " << name;
+   simulator->header() << "Test " << name;
 }
 
 Test::~Test() {
@@ -145,13 +147,13 @@ Test::~Test() {
    }
 }
 
-void Driver::KeyboardReportConsumer::processKeyboardReport(
+void Simulator::KeyboardReportConsumer::processKeyboardReport(
                            const HID_KeyboardReport_Data_t &report_data)
 {
    driver_.processKeyboardReport(report_data);
 }
 
-Driver::Driver(std::ostream &out, 
+Simulator::Simulator(std::ostream &out, 
          bool debug, 
          int cycle_duration, 
          bool abort_on_first_error)
@@ -175,7 +177,7 @@ Driver::Driver(std::ostream &out,
    this->headerText();
 }
 
-Driver::~Driver() {
+Simulator::~Simulator() {
    this->footerText();
    
    if(!this->checkStatus()) {
@@ -186,22 +188,22 @@ Driver::~Driver() {
 
 using namespace kaleidoscope::hardware;
 
-void Driver::pressKey(uint8_t row, uint8_t col) {
+void Simulator::pressKey(uint8_t row, uint8_t col) {
    this->log() << "+ Activating key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::PRESSED);
 }
 
-void Driver::releaseKey(uint8_t row, uint8_t col) {
+void Simulator::releaseKey(uint8_t row, uint8_t col) {
    this->log() << "+ Releasing key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
 }
 
-void Driver::tapKey(uint8_t row, uint8_t col) {
+void Simulator::tapKey(uint8_t row, uint8_t col) {
    this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ")";
    KeyboardHardware.setKeystate(row, col, Virtual::TAP);
 }
 
-void Driver::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
+void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                          int tap_interval_cycles,
                          std::shared_ptr<_Assertion> after_tap_and_cycles_assertion) {
    if(after_tap_and_cycles_assertion) {
@@ -234,7 +236,7 @@ void Driver::multiTapKey(int num_taps, uint8_t row, uint8_t col,
    }
 }
  
-void Driver::clearAllKeys() {
+void Simulator::clearAllKeys() {
    this->log() << "- Clearing all keys";
    
    for(byte row = 0; row < KeyboardHardware.matrix_rows; row++) {
@@ -244,13 +246,13 @@ void Driver::clearAllKeys() {
    }
 }
 
-void Driver::cycle() {
+void Simulator::cycle() {
    this->log() << "Running single scan cycle";
    this->cycleInternal(true);
    this->log() << "";
 }
 
-void Driver::cyclesInternal(int n, 
+void Simulator::cyclesInternal(int n, 
                   const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list) {
    if(n == 0) {
       n = scan_cycles_default_count_;
@@ -266,7 +268,7 @@ void Driver::cyclesInternal(int n,
    this->log() << "";
 }
 
-void Driver::advanceTimeBy(Driver::TimeType delta_t) {
+void Simulator::advanceTimeBy(Simulator::TimeType delta_t) {
    
    this->checkCycleDurationSet();
    
@@ -275,13 +277,13 @@ void Driver::advanceTimeBy(Driver::TimeType delta_t) {
    this->skipTimeInternal(delta_t);
 }
 
-void Driver::skipTimeInternal(Driver::TimeType delta_t) {
+void Simulator::skipTimeInternal(Simulator::TimeType delta_t) {
    
    auto start_cycle = cycle_id_;
          
    auto start_time = time_;
    
-   Driver::TimeType elapsed_time = 0;
+   Simulator::TimeType elapsed_time = 0;
    while(elapsed_time < delta_t) {
       this->cycleInternal(true /* only_log_reports */);
       elapsed_time = time_ - start_time;
@@ -292,7 +294,7 @@ void Driver::skipTimeInternal(Driver::TimeType delta_t) {
    this->log() << "";
 }
 
-void Driver::advanceTimeTo(TimeType time)
+void Simulator::advanceTimeTo(TimeType time)
 {
    if(time <= time_) {
       this->error() << "Failed cycling to time " << time << " ms. Target time is in the past.";
@@ -306,12 +308,12 @@ void Driver::advanceTimeTo(TimeType time)
    this->skipTimeInternal(delta_t);
 }
 
-void Driver::initKeyboard() {
+void Simulator::initKeyboard() {
    this->clearAllKeys();
    kaleidoscope::hid::initializeKeyboard();
 }
 
-bool Driver::checkStatus() const {
+bool Simulator::checkStatus() const {
    
    bool success = true;
    
@@ -341,7 +343,7 @@ bool Driver::checkStatus() const {
    return false;
 }
       
-void Driver::headerText() {
+void Simulator::headerText() {
    
    // Foreground color red
    //
@@ -366,7 +368,7 @@ void Driver::headerText() {
    this->getOStream() << "\x1B[0m";
 }
 
-void Driver::footerText() {
+void Simulator::footerText() {
    
    // Foreground color red
    //
@@ -389,7 +391,7 @@ void Driver::footerText() {
    this->getOStream() << "\x1B[0m";
 }
 
-void Driver::processKeyboardReport(const HID_KeyboardReport_Data_t &report_data) {
+void Simulator::processKeyboardReport(const HID_KeyboardReport_Data_t &report_data) {
    
    current_keyboard_report_.setReportData(report_data);
    
@@ -425,7 +427,7 @@ void Driver::processKeyboardReport(const HID_KeyboardReport_Data_t &report_data)
    }
 }
       
-void Driver::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion) {
+void Simulator::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion) {
    
    bool assertion_passed = assertion->eval();
    
@@ -436,7 +438,7 @@ void Driver::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &a
    assertions_passed_ &= assertion_passed;
 }
             
-void Driver::cycleInternal(bool only_log_reports) {
+void Simulator::cycleInternal(bool only_log_reports) {
    
    ++cycle_id_;
    n_keyboard_reports_in_cycle_ = 0;
@@ -476,14 +478,14 @@ void Driver::cycleInternal(bool only_log_reports) {
    }
 }
 
-void Driver::checkCycleDurationSet() {
+void Simulator::checkCycleDurationSet() {
    if(cycle_duration_ == 0) {
       this->error() << "Please set test.cycle_duration_ to a value in "
          "[ms] greater zero before using time based testing";
    }
 }
 
-void Driver::assertNothingQueued() const
+void Simulator::assertNothingQueued() const
 {
    if(!queued_keyboard_report_assertions_.empty()) {
       this->error() << "Keyboard report assertions are left in queue";
@@ -494,10 +496,89 @@ void Driver::assertNothingQueued() const
    }
 }
 
-void Driver::assertCondition(bool cond, const char *assertion_code) const
+void Simulator::assertCondition(bool cond, const char *assertion_code) const
 {
    if(!cond) {
       this->error() << "Assertion failed: " << assertion_code;
+   }
+}
+
+void Simulator::runRealtime(TimeType duration, 
+                         const std::function<void()> &cycle_function)
+{
+   auto n_cycles = duration/cycle_duration_;
+   
+   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
+      
+   for(int i = 0; i < n_cycles; ++i) {
+      
+      auto begin_cycle = std::clock();
+      
+      this->cycle();
+      cycle_function();
+      
+      // Slow down the simulation if necessary.
+      //
+      double elapsed_ms = 0;
+      do {
+         auto cur_time = std::clock();
+         elapsed_ms = 1000*double(cur_time - begin_cycle)*inv_clocks_per_sec;
+      } while(elapsed_ms < 5);
+   }
+}
+      
+void Simulator::runRemoteControlled(const std::function<void()> &cycle_function)
+{
+   while(1) {
+      
+      std::string line;
+      std::getline(std::cin, line);
+      
+      if(line.empty() || line[0] == '.') {
+         continue;
+      }
+      
+      constexpr uint8_t n_bytes = 8;
+      uint16_t key_bitfield[n_bytes] = {}; // We use uint16_t here as 
+                                           // uint8_t is parsed as char
+                                           // during stream input.
+      
+      std::istringstream line_stream(line);
+      for(uint8_t byte_id = 0; byte_id < n_bytes; ++byte_id) {
+         line_stream >> key_bitfield[byte_id];
+      }
+   
+      for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
+         for(uint8_t col = 0; col < KeyboardHardware.matrix_columns; ++col) {
+            uint16_t pos = row*KeyboardHardware.matrix_columns + col;
+            
+            uint8_t byte_id = pos/n_bytes;
+            uint8_t bit_id = pos%n_bytes;
+            
+            bool is_keyswitch_pressed = bitRead(key_bitfield[byte_id], bit_id);// & (1 << bit_id);
+            
+            if(is_keyswitch_pressed) {
+               
+               if(!KeyboardHardware.wasKeyswitchPressed(row, col)) {
+//                   std::cout << "byte_id: " << (int)byte_id << std::endl;
+//                   std::cout << "bit_id: " << (int)bit_id << std::endl;
+//                   std::cout << "byte: " << (int)key_bitfield[byte_id] << std::endl;
+//                   std::cout << "Keyswitch (" << (int)row << ", " << (int)col << ") pressed" << std::endl;
+//                   std::cout << "line: " << line << std::endl;
+                  KeyboardHardware.setKeystate(row, col, Virtual::PRESSED);
+               }
+            }
+            else {
+               if(KeyboardHardware.wasKeyswitchPressed(row, col)) {
+                  //std::cout << "Keyswitch (" << (int)row << ", " << (int)col << ") released" << std::endl;
+                  KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
+               }
+            }
+         }
+      }
+      
+      cycleInternal(true /*only log reports*/);
+      cycle_function();
    }
 }
       

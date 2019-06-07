@@ -19,7 +19,7 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
-#include "Driver.h"
+#include "Simulator.h"
 
 #include <vector>
 
@@ -55,7 +55,7 @@ class Grouped {
 
             virtual void report(const char *add_indent = "") const override;
 
-            virtual void setDriver(const Driver *driver) override;
+            virtual void setDriver(const Simulator *simulator) override;
 
             virtual void describe(const char *add_indent = "") const override {
                driver_->log() << "A group of assertions";

@@ -17,7 +17,7 @@
  */
 
 #include "Visualization.h"
-#include "Driver.h"
+#include "Simulator.h"
 #include "Kaleidoscope.h"
 
 // Undef those stupid Arduino-macros conflicting with stl stuff
@@ -183,10 +183,18 @@ std::string generateColorEscSeq(uint8_t row, uint8_t col) {
    if(col_norm <= 49152) {
       foreground_color = 37;
    }
+   
+   static const char * const empty = "";
+   static const char * const framed = "\x1B[4m";
+   const char *activation_highlight = empty;
+   if(KeyboardHardware.wasKeyswitchPressed(row, col)) {
+      activation_highlight = framed;
+   }
       
    std::ostringstream o;
    o << "\x1B[48;2;" << (int)color.r << ";" << (int)color.g << ";" << (int)color.b << "m"
-            "\x1B[" << foreground_color << "m";
+         "\x1B[" << foreground_color << "m" 
+         << activation_highlight;
    return o.str();
 }
    
@@ -221,7 +229,7 @@ void generateLookup(KeyAddrToKeyString &lookup) {
    }
 }
    
-void renderKeyboard(const Driver &driver, const char *ascii_keyboard) {
+void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard) {
    
    KeyAddrToKeyString lookup;
    generateLookup(lookup);
@@ -256,7 +264,7 @@ void renderKeyboard(const Driver &driver, const char *ascii_keyboard) {
          end;
       std::for_each(begin,end,callback);
 
-      driver.log() << output_text;
+      simulator.log() << output_text;
     }
 }
 

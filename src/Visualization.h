@@ -21,15 +21,15 @@
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
    
 /// @brief Renders a keyboard's asscii representation.
 ///
-/// @param driver The parent driver object.
+/// @param simulator The parent simulator object.
 /// @param ascii_keyboard The ascii representation of the keyboards
 ///        key layout.
 ///
-void renderKeyboard(const Driver &driver, const char *ascii_keyboard);
+void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard);
 
 } // namespace testing
 } // namespace kaleidoscope

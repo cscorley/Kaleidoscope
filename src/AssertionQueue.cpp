@@ -16,7 +16,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Driver.h"
+#include "Simulator.h"
 #include "AssertionQueue.h"
 #include "assertions/Grouped.h"
 #include "aux/demangle.h"
@@ -24,12 +24,14 @@
 namespace kaleidoscope {
 namespace testing {
    
-AssertionQueue &AssertionQueue::add(const std::shared_ptr<_Assertion> &assertion)
+AssertionQueue &AssertionQueue::add(const std::vector<std::shared_ptr<_Assertion>> &assertions)
 {
-   this->configureAssertion(assertion);
-   queue_.push_back(assertion);
-   driver_.log() << "Adding " << type_string_ << " assertion: " 
-      << type(*assertion);
+   for(auto &assertion: assertions) {
+      this->configureAssertion(assertion);
+      queue_.push_back(assertion);
+      driver_.log() << "Adding " << type_string_ << " assertion: " 
+         << type(*assertion);
+   }
    return *this;
 }
       

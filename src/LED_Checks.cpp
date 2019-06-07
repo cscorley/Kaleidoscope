@@ -17,7 +17,7 @@
  */
 
 #include "LED_Checks.h"
-#include "Driver.h"
+#include "Simulator.h"
 
 #include "Kaleidoscope.h"
 
@@ -44,7 +44,7 @@ void dumpKeyLEDState() {
    std::cout << "};\n\n";
 }
 
-void assertKeyLEDState(const Driver &driver,
+void assertKeyLEDState(const Simulator &simulator,
                        const cRGB *key_led_colors)
 {
    for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
@@ -60,13 +60,13 @@ void assertKeyLEDState(const Driver &driver,
             || (color_expected.g != color_actual.g)
             || (color_expected.b != color_actual.b)) {
             
-            driver.error() << "LED color mismatch at (" << (int)row << ", " << (int)col << ")";
+            simulator.error() << "LED color mismatch at (" << (int)row << ", " << (int)col << ")";
          
-            driver.error() << "   expected: (" << (int)color_expected.r << ", " 
+            simulator.error() << "   expected: (" << (int)color_expected.r << ", " 
                                                << (int)color_expected.g << ", " 
                                                << (int)color_expected.b << ")";
                                                
-            driver.error() << "   actual: ("   << (int)color_actual.r << ", " 
+            simulator.error() << "   actual: ("   << (int)color_actual.r << ", " 
                                                << (int)color_actual.g << ", " 
                                                << (int)color_actual.b << ")";                                   
          }

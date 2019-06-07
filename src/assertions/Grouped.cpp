@@ -32,11 +32,11 @@ void Grouped::Assertion::report(const char *add_indent) const {
    }
 }
 
-void Grouped::Assertion::setDriver(const Driver *driver) {
-   this->_Assertion::setDriver(driver);
+void Grouped::Assertion::setDriver(const Simulator *simulator) {
+   this->_Assertion::setDriver(simulator);
    
    for(auto &assertion: assertions_) {
-      assertion->setDriver(driver);
+      assertion->setDriver(simulator);
    }
 }
 

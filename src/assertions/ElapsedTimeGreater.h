@@ -19,7 +19,7 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
-#include "Driver.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace testing {
@@ -35,7 +35,7 @@ class ElapsedTimeGreater {
       /// @param delta_t The amount of time that is asserted being elapsed.
       /// @param start_t An optional start point in time as reference (defaults to zero).
       ///
-      ElapsedTimeGreater(Driver::TimeType delta_t, Driver::TimeType start_t = 0) 
+      ElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
          :  ElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
       {}
       
@@ -45,7 +45,7 @@ class ElapsedTimeGreater {
       
          public:
 
-            Assertion(Driver::TimeType delta_t, Driver::TimeType start_t = 0) 
+            Assertion(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
                :  start_t_(start_t),
                   delta_t_(delta_t)
             {}
@@ -65,8 +65,8 @@ class ElapsedTimeGreater {
          
          private:
             
-            Driver::TimeType start_t_ = .0;
-            Driver::TimeType delta_t_ = .0;
+            Simulator::TimeType start_t_ = .0;
+            Simulator::TimeType delta_t_ = .0;
       };
       
    KT_AUTO_DEFINE_ASSERTION_INVENTORY(ElapsedTimeGreater)

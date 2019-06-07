@@ -29,7 +29,7 @@
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
 class _Assertion;
    
 /// @brief An auxiliary class that represents a queue of assertion objects.
@@ -39,20 +39,30 @@ class AssertionQueue
    public:
       
       /// @brief Constructor.
-      /// @param driver The associated Driver object.
+      /// @param simulator The associated Simulator object.
       /// @param type_string The type of assertion queue (queued keyboard reports,
       ///        permanent keyboard reports, ...).
       ///
-      AssertionQueue(Driver &driver, const char *type_string) 
-         :  driver_(driver),
+      AssertionQueue(Simulator &simulator, const char *type_string) 
+         :  driver_(simulator),
             type_string_(type_string)
       {}
       
-      /// @brief Queues an assertion.
+      /// @brief Queues assertions.
       ///
-      /// @param assertion The assertion to be added to the queue.
+      /// @param assertions The assertions to be added to the queue.
       ///
-      AssertionQueue &add(const std::shared_ptr<_Assertion> &assertion);
+      AssertionQueue &add(const std::vector<std::shared_ptr<_Assertion>> &assertions);
+      
+      /// @brief Queues assertions.
+      ///
+      /// @tparam assertions The assertions to be added to the queue.
+      ///
+      template<typename..._Assertions>
+      AssertionQueue &add(_Assertions...assertions) {
+         this->add(std::vector<std::shared_ptr<_Assertion>>{std::forward<_Assertions>(assertions)...});
+         return *this;
+      }
       
       /// @brief Queues a list of assertion.
       ///
@@ -118,7 +128,7 @@ class AssertionQueue
       
    private:
       
-      Driver &driver_;
+      Simulator &driver_;
       std::deque<std::shared_ptr<_Assertion>> queue_;
       const char *type_string_ = nullptr;
 };

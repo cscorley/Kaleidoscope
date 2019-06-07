@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "Driver.h"
+#include "Simulator.h"
 #include "Visualization.h"
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
@@ -26,7 +26,7 @@
 #include "assertions/Grouped.h"
 #include "assertions/LayerIsActive.h"
 #include "assertions/TopActiveLayerIs.h"
-#include "assertions/CycleHasNReports.h"
+#include "assertions/CycleGeneratesNKeyboardReports.h"
 #include "assertions/CustomAssertion.h"
 #include "assertions/keyboard_report/ReportEmpty.h"
 #include "assertions/keyboard_report/DumpReport.h"
@@ -37,7 +37,7 @@
 #include "assertions/keyboard_report/AnyModifierActive.h"
 #include "assertions/keyboard_report/CustomKeyboardReportAssertion.h"
 #include "assertions/_Assertion.h"
-#include "assertions/NumOverallReportsGenerated.h"
+#include "assertions/NumOverallKeyboardReportsGenerated.h"
 #include "assertions/CycleIsNth.h"
 #include "assertions/ElapsedTimeGreater.h"
 
@@ -54,7 +54,7 @@ extern void executeTestFunction();
    namespace kaleidoscope {                                                    \
    namespace testing {                                                         \
    /* Forward declare the actual test function */                              \
-   void runTests(Driver &driver);                                               \
+   void runTests(Simulator &simulator);                                               \
    } /* namespace testing */                                                   \
    } /* namespace kaleidoscope */                                              \
                                                                                \
@@ -63,6 +63,6 @@ extern void executeTestFunction();
     */                                                                         \
    void executeTestFunction() {                                                \
       setup(); /* setup Kaleidoscope */                                        \
-      kaleidoscope::testing::Driver driver(std::cout, false);                  \
-      kaleidoscope::testing::runTests(driver);                                  \
+      kaleidoscope::testing::Simulator simulator(std::cout, false);                  \
+      kaleidoscope::testing::runTests(simulator);                                  \
    }

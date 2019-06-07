@@ -548,43 +548,39 @@ void loop() {
 #include "Kaleidoscope-Testing.h"
 #include "vendors/keyboardio/model01.h"
 
+#include <ctime>
+   
 KALEIDOSCOPE_TESTING_INIT
 
 namespace kaleidoscope {
 namespace testing {
    
-void runTests(Driver &driver) {
+void runTests(Simulator &simulator) {
    
    using namespace assertions;
    
    //***************************************************************************
    {
-      auto test = driver.newTest("0");
+      auto test = simulator.newTest("0");
       
-      // When tapping, we expect one report with the 
-      // key active and then another report with the key inactive. As our
-      // key is the only one, we can use this to check for an empty report.
+      // Assert that the next cycle generates exactly one keyboard report.
       //
-      driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
+      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
       
-      driver.queuedCycleAssertions().add(CycleHasNReports{1});
-      
-      driver.tapKey(2, 1); // A
-      driver.cycle();
-      
-      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
-      driver.cycle();
+      simulator.tapKey(2, 1); // A
+      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
+
+      simulator.cycleExpectKeyboardReports(ReportEmpty{});
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("1");
+      auto test = simulator.newTest("1");
          
-      driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
-      driver.pressKey(2, 1); // A
-      driver.cycle();
+      simulator.pressKey(2, 1); // A
+      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
          
-      driver.queuedKeyboardReportAssertions().add(
+      simulator.queuedKeyboardReportAssertions().add(
          Grouped{
             KeycodesActive{Key_A},
             KeycodesActive{Key_B},
@@ -595,189 +591,185 @@ void runTests(Driver &driver) {
             DumpReport{}
          }
       );
-      driver.pressKey(3, 5); // B
-      driver.cycle();
-      driver.releaseKey(2, 1); // A
-      driver.releaseKey(3, 5); // B
+      simulator.pressKey(3, 5); // B
+      simulator.cycle();
+      simulator.releaseKey(2, 1); // A
+      simulator.releaseKey(3, 5); // B
       
-      driver.cycles(5);
+      simulator.cycles(5);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("2");
-   
-      driver.queuedKeyboardReportAssertions().add(
-         KeycodesActive{Key_A}
-      );
+      auto test = simulator.newTest("2");
          
-      driver.pressKey(2, 1); // A
-      driver.cycle();
+      simulator.pressKey(2, 1); // A
+      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
          
-      driver.queuedKeyboardReportAssertions().addGrouped(
-         KeycodesActive{Key_A},
-         KeycodesActive{Key_B}
+      simulator.pressKey(3, 5); // B
+      simulator.cycleExpectKeyboardReports(
+         Grouped{
+            KeycodesActive{Key_A},
+            KeycodesActive{Key_B}
+         }
       );
-      driver.pressKey(3, 5); // B
-      driver.cycle();
       
-      driver.releaseKey(2, 1);
-      driver.releaseKey(3, 5);
+      simulator.releaseKey(2, 1);
+      simulator.releaseKey(3, 5);
       
-      driver.cycles(5);
+      simulator.cycles(5);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("3");
+      auto test = simulator.newTest("3");
    
-      driver.pressKey(2, 1); // A
-      driver.cycle();
-      driver.pressKey(3, 5); // B
-      driver.queuedKeyboardReportAssertions().add(
-         KeycodesActive{Key_A, Key_B}
-      );
-      driver.cycle();
-      driver.releaseKey(2, 1);
-      driver.releaseKey(3, 5);
-      driver.cycles(5);
+      simulator.pressKey(2, 1); // A
+      simulator.cycle();
+      simulator.pressKey(3, 5); // B
+      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A, Key_B});
+      
+      simulator.releaseKey(2, 1);
+      simulator.releaseKey(3, 5);
+      simulator.cycles(5);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("4");
+      auto test = simulator.newTest("4");
 
       auto layer_check = TopActiveLayerIs{0};
-      driver.permanentCycleAssertions().add(layer_check);
-      driver.cycle();
-      driver.permanentCycleAssertions().remove(layer_check);
+      simulator.permanentCycleAssertions().add(layer_check);
+      simulator.cycle();
+      simulator.permanentCycleAssertions().remove(layer_check);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("5");
+      auto test = simulator.newTest("5");
       
-      driver.queuedKeyboardReportAssertions().add(ModifiersActive{Key_LeftShift});
-      driver.queuedCycleAssertions().add(CycleHasNReports{1});
-      driver.tapKey(3, 7); // left shift
-      driver.cycle();
+      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
+      simulator.tapKey(3, 7); // left shift
+      simulator.cycleExpectKeyboardReports(ModifiersActive{Key_LeftShift});
       
-      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
-      driver.queuedCycleAssertions().add(CycleHasNReports{1});
-      driver.cycle();
+      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
+      simulator.cycleExpectKeyboardReports(ReportEmpty{});
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("6");
-   
-      driver.queuedKeyboardReportAssertions().addGrouped(
-         ModifiersActive{Key_LeftShift},
-         AnyModifierActive{}
+      auto test = simulator.newTest("6");
+
+      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
+      simulator.pressKey(3, 7); // left shift
+      simulator.cycleExpectKeyboardReports(
+         Grouped{
+            ModifiersActive{Key_LeftShift},
+            AnyModifierActive{}
+         }
       );
-      driver.queuedCycleAssertions().add(CycleHasNReports{1});
-      driver.pressKey(3, 7); // left shift
-      driver.cycle();
+        
+      simulator.pressKey(0, 7); // left control
+      simulator.cycleExpectKeyboardReports(
+         Grouped{
+            ModifiersActive{Key_LeftShift, Key_LeftControl},
+            negate(AnyKeycodeActive{})
+         }
+      );
       
-      driver.queuedKeyboardReportAssertions().addGrouped(
-         ModifiersActive{Key_LeftShift, Key_LeftControl},
-         negate(AnyKeycodeActive{})
-      );  
-      driver.queuedKeyboardReportAssertions().add(ReportEmpty{});
-      driver.pressKey(0, 7); // left control
-      driver.cycle();
+      simulator.releaseKey(3, 7); // left shift
+      simulator.releaseKey(0, 7); // left control
+      simulator.cycleExpectKeyboardReports(ReportEmpty{});
       
-      driver.releaseKey(3, 7); // left shift
-      driver.releaseKey(0, 7); // left control
-      driver.cycles(5);
+      simulator.cycles(4);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("7");
+      auto test = simulator.newTest("7");
    
-      driver.queuedCycleAssertions().addGrouped(
-         NumOverallReportsGenerated{16},
+      simulator.queuedCycleAssertions().addGrouped(
+         NumOverallKeyboardReportsGenerated{16},
          CycleIsNth{34},
          ElapsedTimeGreater{160}
       );
-      driver.cycle();
+      simulator.cycle();
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("8");
+      auto test = simulator.newTest("8");
    
-      driver.cycles(10);
+      simulator.cycles(10);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("9");
+      auto test = simulator.newTest("9");
     
-      driver.advanceTimeBy(1000); // ms
+      simulator.advanceTimeBy(1000); // ms
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("10");
-      driver.queuedKeyboardReportAssertions().add(DumpReport{});
-      driver.tapKey(3, 7); // left shift
-      driver.tapKey(2, 1); // A
-      driver.cycle();
+      auto test = simulator.newTest("10");
+      simulator.tapKey(3, 7); // left shift
+      simulator.tapKey(2, 1); // A
+      simulator.cycleExpectKeyboardReports(DumpReport{});
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("11");
-      driver.queuedKeyboardReportAssertions().add(
+      auto test = simulator.newTest("11");
+      
+      simulator.tapKey(3, 7); // left shift
+      simulator.cycleExpectKeyboardReports(
          CustomKeyboardReportAssertion{
             [&](const KeyboardReport &kr) -> bool {
-               driver.log() << "Custom keyboard report assertion triggered";
+               simulator.log() << "Custom keyboard report assertion triggered";
                return true;
             }
          }
       );
-      driver.tapKey(3, 7); // left shift
-      driver.cycles(5);
+      simulator.cycles(5);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("12");
+      auto test = simulator.newTest("12");
       
-      driver.queuedCycleAssertions().add(
+      simulator.tapKey(3, 7); // left shift
+      simulator.cycleExpectKeyboardReports(
          CustomAssertion{
             [&]() -> bool {
-               driver.log() << "Custom cycle assertion triggered";
+               simulator.log() << "Custom cycle assertion triggered";
                return true;
             }
          }
       );
-      driver.tapKey(3, 7); // left shift
-      driver.cycles(5);
+      simulator.cycles(5);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("13");
+      auto test = simulator.newTest("13");
       
-      driver.advanceTimeTo(2000); // ms
+      simulator.advanceTimeTo(2000); // ms
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("14");
+      auto test = simulator.newTest("14");
       
       // Cycle through the color effects and output the keyboard
       // after some cycles.
       //
-      driver.multiTapKey(15 /*num. taps*/, 
+      simulator.multiTapKey(15 /*num. taps*/, 
                          0 /*row*/, 6/*col*/, 
                          50 /* num. cycles after each tap */,
                          CustomAssertion{
                             [&]() -> bool {
-                               renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
+                               renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
                                return true;
                             }
                          }
@@ -786,29 +778,29 @@ void runTests(Driver &driver) {
    
    //***************************************************************************
    {
-      auto test = driver.newTest("15");
+      auto test = simulator.newTest("15");
       
       // LED effect solid red is the fourth LED effect. Tap the 
       // LED effect forward key four times to get there.
       //
-      driver.multiTapKey(4 /*num. taps*/, 
+      simulator.multiTapKey(4 /*num. taps*/, 
                          0 /*row*/, 6/*col*/, 
                          1 /* num. cycles after each tap */,
                          CustomAssertion{
                             [&]() -> bool {
-                               driver.log() << "KeyboardHardware.getCrgbAt(0, 0).r = " 
+                               simulator.log() << "KeyboardHardware.getCrgbAt(0, 0).r = " 
                                  << (int)KeyboardHardware.getCrgbAt(0, 0).r;
                                return true;
                             }
                          }
       );
       
-      KT_ASSERT_CONDITION(driver, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
+      KT_ASSERT_CONDITION(simulator, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
    }
    
    //***************************************************************************
    {
-      auto test = driver.newTest("16");
+      auto test = simulator.newTest("16");
       
       // Use dumpKeyLEDState to generate a representation of the current
       // LED state.
@@ -882,8 +874,66 @@ void runTests(Driver &driver) {
          CRGB(160, 0, 0),
       };
 
-      assertKeyLEDState(driver, key_led_colors);
+      assertKeyLEDState(simulator, key_led_colors);
    }
+   
+#if 0
+
+   //***************************************************************************
+   {
+   // Loop cycle timing
+   //
+   //       auto begin = std::clock();
+//       
+//       static constexpr int n_cycles = 10000;
+//       static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
+//       
+//       // Clear screen
+//       //
+//       std::cout << "\x1b[2J\x1b[1;1H" << std::flush;
+//       
+//       simulator.runRealtime(50000, 
+//          [&]() {
+//             std::cout << "\x1B[0;0H";
+//             renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
+//          }
+//       );
+// 
+//       auto end = std::clock();
+//       double elapsed_secs = double(end - begin)*inv_clocks_per_sec;
+//       double elapsed_secs_per_cycle = elapsed_secs/n_cycles;
+//       
+//       simulator.log() << "elapsed [s]: " << elapsed_secs;
+//       simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
+//   }
+
+   //***************************************************************************
+   {
+      // Enable the following for a real time simulation with input from the real
+      // keyboard.
+      //
+      // Check out https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control
+            
+      auto test = simulator.newTest("Real time simulation");
+      
+      // Activate the rainbow wave LED effect
+      //
+      simulator.multiTapKey(13 /*num. taps*/, 
+                         0 /*row*/, 6/*col*/, 
+                         1 /* num. cycles after each tap */
+      );
+   
+      simulator.permanentKeyboardReportAssertions().add(DumpReport{});
+      std::cout << "\033[2J\033[1;1H";
+      simulator.runRemoteControlled( 
+         [&]() {
+            std::cout << "\x1B[0;0H";
+            renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
+         }
+      );
+   }
+#endif
+
 }
 
 } // namespace testing

@@ -28,7 +28,7 @@
 namespace kaleidoscope {
 namespace testing {
    
-class Driver;
+class Simulator;
    
 /// @brief An abstract assertion.
 /// @details This abstract class serves as base class for any
@@ -74,18 +74,18 @@ class _Assertion {
       ///
       virtual void describeState(const char *add_indent = "") const;
    
-      /// @brief Register the test driver with the assertion.
+      /// @brief Register the test simulator with the assertion.
       ///
-      virtual void setDriver(const Driver *driver) {
-         driver_ = driver;
+      virtual void setDriver(const Simulator *simulator) {
+         driver_ = simulator;
       }
 
-      /// @brief Retreive the test driver object that is associated with
+      /// @brief Retreive the test simulator object that is associated with
       ///        the assertion.
       ///
-      /// @return A pointer to the current test driver.
+      /// @return A pointer to the current test simulator.
       ///
-      const Driver *getDriver() const {
+      const Simulator *getDriver() const {
          return driver_;
       }
      
@@ -127,7 +127,7 @@ class _Assertion {
    protected:
       
       bool valid_ = false;
-      const Driver *driver_ = nullptr;
+      const Simulator *driver_ = nullptr;
       
    private:
       

@@ -42,25 +42,21 @@ KALEIDOSCOPE_TESTING_INIT
 namespace kaleidoscope {
 namespace testing {
    
-void runTests(Driver &driver) {
+void runTests(Simulator &simulator) {
    
    using namespace assertions;
 
-   auto test = driver.newTest("A simple test");
-      
-   // Assert that the letter 'a' is part of the next keyboard report
-   // that is going to be generated.
-   //
-   driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
-      
+   auto test = simulator.newTest("A simple test");
+
    // Have some action in order to trigger a keyboard report.
    //
-   driver.tapKey(2, 1); // (row = 2, col = 1) -> A
+   simulator.tapKey(2, 1); // (row = 2, col = 1) -> A
    
    // Run a single scan cycle (during which the key will be detected as
-   // tapped and a keyboard report will be generated).
+   // tapped and a keyboard report will be generated). Assert that the 
+   // letter 'a' is part of this keyboard report
    //
-   driver.cycle();
+   simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
 }
 
 } // namespace testing
@@ -111,11 +107,11 @@ namespace testing {
 
 The test method as the standardized name `runTest` and a pre-defined signature.
 You are free to structure your tests if necessary by introducing additional
-test methods which can be called from `runTests(...)`. Please note that the `Driver` object
+test methods which can be called from `runTests(...)`. Please note that the `Simulator` object
 is the central object in testing. It e.g. coordinates timing and assertion handling.
 
 ```cpp
-void runTests(Driver &driver) {
+void runTests(Simulator &simulator) {
 ```
    
 The `using` statement is for mere convenience as all assertion classes live in namespace 
@@ -132,31 +128,24 @@ it is generated. It serves to group testing instructions an checks
 if a set of assertions that are associated with a test are valid.
 
 ```cpp
-   auto test = driver.newTest("A simple test");
-```
-
-Then, we add an assertion that will check if key 'a' is active 
-in the next keyboard report that is going to be issued during
-the next keyboard scan cycle.
-      
-```cpp
-   driver.queuedKeyboardReportAssertions().add(KeycodesActive{Key_A});
+   auto test = simulator.newTest("A simple test");
 ```
 
 Tap a key at a given matrix position.
 
 ```cpp
-   driver.tapKey(2, 1); // (row = 2, col = 1) -> A
+   simulator.tapKey(2, 1); // (row = 2, col = 1) -> A
 ```
 
 Finally, we run a scan cycle. This will call Arduinos `loop()`
 function under the hood. During this scan cycle the keyboard matrix
-is checked for keys being pressed or released. It is when our key at
+is checked for keys being pressed or released. That is when our key at
 position (2, 1) is detected as having been tapped and a keyboard report is 
-issued.
+issued. We pass an assertion `KeycodesActive` that will check if key 'a' is active 
+in the generated keyboard report.
 
 ```cpp
-   driver.cycle();
+   simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
 ```
 
 That's it. Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
@@ -213,10 +202,10 @@ Assertions can be queued or permanent both for both keyboard reports
 and cycles. Please, check out the methods
 
 ```cpp
-Driver::queuedKeyboardReportAssertions()
-Driver::permanentKeyboardReportAssertions()
-Driver::queuedCycleAssertions()
-Driver::permanentCycleAssertions()
+Simulator::queuedKeyboardReportAssertions()
+Simulator::permanentKeyboardReportAssertions()
+Simulator::queuedCycleAssertions()
+Simulator::permanentCycleAssertions()
 ```
 
 ### Assertion queueing
@@ -225,7 +214,7 @@ In most cases, the order and content of keyboard reports is known.
 In such cases a set of assertions can be added to the queue via a single command, e.g.
 
 ```cpp
-driver.queuedKeyboardReportAssertions().add(
+simulator.queuedKeyboardReportAssertions().add(
    KeycodesActive{Key_A}, // 1. keyboard report
    ReportEmpty{},         // 2. keyboard report
    KeycodesActive{Key_B}, // 3. keyboard report
@@ -252,7 +241,7 @@ be considered as successful.
 For instance
 
 ```cpp
-driver.queuedKeyboardReportAssertions().addGrouped(
+simulator.queuedKeyboardReportAssertions().addGrouped(
    KeycodesActive{Key_A},
    KeycodesActive{Key_B}
 );
@@ -268,7 +257,7 @@ invert their logic.
 For instance
 
 ```cpp
-driver.queuedKeyboardReportAssertions().addGrouped(
+simulator.queuedKeyboardReportAssertions().addGrouped(
    negate(KeycodesActive{Key_A})
 );
 ```
@@ -282,7 +271,7 @@ If the logic of an entire group of assertions is to be inverted, they can be
 grouped explicitly and negated.
 
 ```cpp
-driver.queuedKeyboardReportAssertions().add(
+simulator.queuedKeyboardReportAssertions().add(
    negate(
       Grouped{
          KeycodesActive{Key_A},
@@ -301,10 +290,10 @@ an assertion. This is easily possible by passing a C++ lambda function to the
 constructor of a special `Custom...Assertion` class, e.g.
 
 ```cpp
-driver.queuedKeyboardReportAssertions().add(
+simulator.queuedKeyboardReportAssertions().add(
    CustomKeyboardReportAssertion{
       [&](const KeyboardReport &kr) -> bool {
-         driver.log() << "Custom keyboard report assertion triggered";
+         simulator.log() << "Custom keyboard report assertion triggered";
          return true;
       }
    }
@@ -318,17 +307,17 @@ But you are free to return the result of any complex test instead.
 In general the lambda function
 passed to the `CustomKeyboardReportAssertion` has a predefined signature
 `bool(const KeyboardReport &kr)`. In the above examples it uses `[&]` to capture 
-all context variables by reference. This also includes the driver object from
+all context variables by reference. This also includes the simulator object from
 the surrounding context that 
 is used to generate additional log output.
 
 Use the assertion class `CustomAssertion` for custom cycle assertions as e.g.
 
 ```cpp
-driver.queuedCycleAssertions().add(
+simulator.queuedCycleAssertions().add(
    CustomAssertion{
       [&]() -> bool {
-         driver.log() << "Custom cycle assertion triggered";
+         simulator.log() << "Custom cycle assertion triggered";
          return true;
       }
    }
@@ -341,7 +330,7 @@ Instead of when a keyboard report occurs or at the end of a cycle,
 assertions may also be evaluated immediately as e.g.
 
 ```cpp
-driver.evaluateAssertions(LayerIsActive{1});
+simulator.evaluateAssertions(LayerIsActive{1});
 ```
 
 This example checks whether a specific layer is active. In most cases this is not 
@@ -359,7 +348,7 @@ that causes the firmware to react.
 
 In contrast to a real experiment where the user hits a key on the keyboard,
 in a virtual keyboard run, keys are hit virtually through key action methods
-of the `Driver` class. 
+of the `Simulator` class. 
 
 While `pressKey(...)` activates
 a key at a given key matrix position, `release(...)` will deactivate it.
@@ -371,7 +360,7 @@ The method `tapKey(...)` simulates a key being tapped instantaneously
 There are scenarios where a key must be tapped multiple times during a test run. 
 This might e.g. be necessary if we want to simulate cycling through the LED effects of
 the keyboard. On the real keyboard we would hit the 'next LED effect' key multiple times.
-To simplify this, the `Driver` class supports a dedicated method `multiTapKey(...)`.
+To simplify this, the `Simulator` class supports a dedicated method `multiTapKey(...)`.
 
 The following example demonstrates cycling
 through LED modes via multiple taps (stock firmware assumed).
@@ -379,13 +368,13 @@ through LED modes via multiple taps (stock firmware assumed).
 ```cpp
 // Cycle through the color effects and visualize the keyboard's LED state
 //
-driver.multiTapKey(
+simulator.multiTapKey(
    15 /*num. taps*/, 
    0 /*row*/, 6/*col*/, 
    50 /* num. cycles after each tap */,
    CustomAssertion{
       [&]() -> bool {
-         renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
+         renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
          return true;
       }
    }
@@ -405,14 +394,19 @@ The virtual hardware comes with simulated timing. As it is impossible to estimat
 the actual runtime of a loop scan cycle on the target hardware, a fixed 
 time increment must be associated with each loop cycle (default = 5 ms).
 
-Use the `Driver` class' methods `setCycleDuration(...)` and `getCycleDuration()` to
+Use the `Simulator` class' methods `setCycleDuration(...)` and `getCycleDuration()` to
 consider cycle duration of a specific keyboard hardware.
 
 There are different methods to progress time.
 
-### `cycle(...)`
+### `cycle()`
 
 This method runs a single firmware cycle and advances time accordingly. 
+
+### `cycleExpectKeyboardReports(...)`
+
+Same as `cycle()` but it accepts a number of assertions that are 
+evaluated for the keyboard reports that are generated during the cycle.
 
 ### `cycles(...)`
 
@@ -430,7 +424,7 @@ Runs a number of cycles with a given total duration.
 
 The testing API supports several logging methods. All log output is written
 to a common `std::ostream` object. This stream object can be queried and registered
-through the `Driver` class' methods `getOStream()` and `setOStream(...)`.
+through the `Simulator` class' methods `getOStream()` and `setOStream(...)`.
 
 Every log line starts with information about the current time and
 firmware cycle ID.
@@ -443,7 +437,7 @@ Line breaks are inserted automatically.
 Standard log text can be generated for instance as
 
 ```cpp
-driver.log() << "Text ... " << 12 << ...;
+simulator.log() << "Text ... " << 12 << ...;
 ```
 
 This will e.g. generate
@@ -458,10 +452,10 @@ Log stream output works exactly as with `std::ostream` of C++'s standard library
 
 ### Error logging
 
-For error logging use `driver.error()` instead, e.g. as
+For error logging use `simulator.error()` instead, e.g. as
 
 ```cpp
-driver.error() << "Something bad happened...";
+simulator.error() << "Something bad happened...";
 ```
 
 This will e.g. generate
@@ -476,10 +470,10 @@ in the log output.
 
 ### Header text
 
-Use `driver.header()` to generate text headers.
+Use `simulator.header()` to generate text headers.
 
 ```cpp
-driver.header() << "And now for something completely different...";
+simulator.header() << "And now for something completely different...";
 ```
 
 This will e.g. generate
@@ -528,10 +522,51 @@ was shipped with Kaleidoscope-Testing (see `vendors/keyboardio/model01.cpp`).
 #include "Kaleidoscope-Testing.h"
 #include "vendors/keyboardio/model01.h"
 ...
-renderKeyboard(driver, keyboardio::model01::ascii_keyboard);
+renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
 ```
 
 ![Keyboard heatmap](/doc/images/Model01_screenshot.png?raw=true)
+
+### Realtime simulation
+
+Despite its name, Kaleidoscope-Testing can also be used to simulate the
+keyboard in realtime. Realtime means that the simulator runs approximately at
+the same speed as the real keyboard hardware would run.
+
+There are two methods of the simulator class that enable this.
+
+#### `runRealtime(...)`
+
+Runs the simulator in pseudo-realtime for a given amount of time. A function
+that is passed as a parameter is executed after every scan cycle.
+
+We refer to _pseudo-realtime_ here as the duration of a cycle is defined
+as a constant via the configuration method `setCycleDuration(...)`.
+
+On the real keyboard, in contrast, the duration of a cycle depends on the actual 
+computational task of each cycle which is unknown to the simulator.
+
+The host hardware is typically much faster than the device hardware. Because of
+this the host inserts idle time after executing a cycle's computational task
+to ensure that the resulting cycle times are as expected.
+
+#### `runRemoteControlled(...)`
+
+In this mode of operation, the simulator reads keyswitch information from stdin at the 
+beginning of every cycle. Keyswitch activation information is typically generated by the
+[Kaleidoscope-Simulator-Control](https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control)
+plugin running on the device. That way it is possible to use the physical 
+keyboard to generate realtime keyswitch input for the simulator.
+
+The simulator waits for new input to arrive at the beginning of each cycle.
+On the other hand, the physical keyboard also sends the state of its keyswitches
+once per cycle. This allows the timing of the simulator
+to be close to that of the real hardware.
+
+Remote controlled simulation is useful to prototype new LED modes that
+react on user input. In contrast to running traditional compile-flash-test-modifiy cycles,
+there is no flashing and all the nice debugging features of the keyboard simulator 
+are available.
 
 ### Custom keyboards
 
@@ -556,16 +591,16 @@ for each test.
 
 ```cpp
 ...
-void test1(Driver &driver) {
+void test1(Simulator &simulator) {
    ...
 }
-void test2(Driver &driver) {
+void test2(Simulator &simulator) {
    ...
 }
 
-void runTests(Driver &driver) {
-   test1(driver);
-   test2(driver);
+void runTests(Simulator &simulator) {
+   test1(simulator);
+   test2(simulator);
 }
 ```
 

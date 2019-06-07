@@ -18,7 +18,7 @@
 
 #include "assertions/_Assertion.h"
 #include "aux/demangle.h"
-#include "Driver.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace testing {

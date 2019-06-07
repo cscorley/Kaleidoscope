@@ -19,53 +19,54 @@
 #pragma once
 
 #include "assertions/_Assertion.h"
-#include "Driver.h"
 
 namespace kaleidoscope {
 namespace testing {
 namespace assertions {
 
-/// @brief Asserts that there was a specific number of keyboard reports generated
-///         within a specific scan cycle.
+/// @brief Checks the number of overall keyboard reports.
+/// @details Asserts that there was a specific number of keyboard reports 
+///          generated since the assertion was instanciated.
 ///
-class CycleHasNReports {
+class NumOverallKeyboardReportsGenerated {
    
    public:
       
       /// @brief Constructor.
-      /// @param n_reports The number of reports that must have been
-      ///        generated.
+      /// @param n_overall_reports The number of reports whose
+      ///        generation is being asserted.
       ///
-      CycleHasNReports(int n_reports) 
-         : CycleHasNReports(DelegateConstruction{}, n_reports) 
+      NumOverallKeyboardReportsGenerated(int n_overall_reports) 
+         : NumOverallKeyboardReportsGenerated(DelegateConstruction{}, n_overall_reports) 
       {}
-   
+         
    private:
       
       class Assertion : public _Assertion {
-         
+      
          public:
-
-            Assertion(int n_reports) : n_reports_(n_reports) {}
+            
+            Assertion(int n_overall_reports) 
+               : n_overall_reports_(n_overall_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
+               driver_->log() << add_indent << n_overall_reports_ << " overall keyboard reports expected";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << driver_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
+               driver_->log() << add_indent << driver_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return driver_->getNumKeyboardReportsInCycle() == n_reports_;
+               return driver_->getNumOverallKeyboardReports() == n_overall_reports_;
             }
             
          private:
             
-            int n_reports_ = -1;      
+            int n_overall_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleHasNReports)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(NumOverallKeyboardReportsGenerated)
 };
 
 } // namespace assertions
