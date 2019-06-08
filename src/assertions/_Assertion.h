@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Testing -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -34,7 +34,7 @@ class Simulator;
 /// @details This abstract class serves as base class for any
 ///        assertions.
 ///
-///        **Important:** This class is not part of Kaleidoscope-Testing's 
+///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
 ///
 class _Assertion {

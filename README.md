@@ -1,10 +1,10 @@
-# Kaleidoscope-Testing
+# Kaleidoscope-Simulator
 
 A development, debugging and testing API for virtual Kaleidoscope firmware builds.
 
 ## Scope of this plugin
 
-The scope of Kaleidoscope-Testing is to provide an API that allows to bundle
+The scope of Kaleidoscope-Simulator is to provide an API that allows to bundle
 integration tests with the keyboard firmware sketch file.
 
 Tests are executed by a virtual firmware which is a firmware 
@@ -17,11 +17,11 @@ For more information, see Kaleidoscope's documentation of virtual builds.
 
 Apart from integration testing, the supported testing-API is also 
 meant to be used as a development tool.
-When e.g. being used together with a debugger like `gdb`, Kaleidoscope-Testing's 
+When e.g. being used together with a debugger like `gdb`, Kaleidoscope-Simulator's 
 unique features can help to deal with complex error scenarios that are otherwise
 hard to debug with the firmware traditionally running on the device.
 
-Additionally, Kaleidoscope-Testing comes with an ASCII 
+Additionally, Kaleidoscope-Simulator comes with an ASCII 
 visualization of the keyboard covering keyboard keycodes and LED colors.
 
 ## A brief example
@@ -35,7 +35,7 @@ a very simple firmware test.
 
 #ifdef ARDUINO_VIRTUAL
 
-#include "Kaleidoscope-Testing.h"
+#include "Kaleidoscope-Simulator.h"
 
 KALEIDOSCOPE_TESTING_INIT
 
@@ -79,7 +79,7 @@ generated.
 ## A simple test in greater detail
 
 Let's look again at the above example, now with focus on the way the test is
-defined using Kaleidoscope-Testing's API. 
+defined using Kaleidoscope-Simulator's API. 
 
 We will walk through the test line by line.
 
@@ -95,7 +95,7 @@ are simply too limited.
 Next, we bring the testing API into scope.
 
 ```cpp
-#include "Kaleidoscope-Testing.h"
+#include "Kaleidoscope-Simulator.h"
 ```
 
 It is good custom to define code in namespaces to avoid symbol naming conflicts.
@@ -160,7 +160,7 @@ That's it. Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
 
 ## Assertions
 
-Assertions are probably the most important aspect of Kaleidoscope-Testings
+Assertions are probably the most important aspect of Kaleidoscope-Simulators
 API. They are boolean conditions that are evaluated at specific
 points during the firmware simulation. If an assertion fails, an error
 message is produced and the test is considered as unsuccessfull.
@@ -488,7 +488,7 @@ in the log output.
 
 ## Testing LED states
 
-Kaleidoscope-Testing comes with functions that help integration testing of 
+Kaleidoscope-Simulator comes with functions that help integration testing of 
 LED modes.
 
 During a reference run the function `dumpKeyLEDState()` may be used 
@@ -505,21 +505,21 @@ time during future test-runs.
 During development and when debugging it may be of great help to visualize
 what the actual keyboard would do, especially when it comes to LED effects.
 
-Kaleidoscope-Testing allows to display an ASCII-text representation of the
+Kaleidoscope-Simulator allows to display an ASCII-text representation of the
 keyboard via the `renderKeyboard(...)` function.
 
 This function is passed a string that is a template of the actual keyboard.
 
 At the time this document was written, only for Keyboardio's model Model01, 
 the first Kaleidoscope-supporting keyboard, a predefined template string
-was shipped with Kaleidoscope-Testing (see `vendors/keyboardio/model01.cpp`).
+was shipped with Kaleidoscope-Simulator (see `vendors/keyboardio/model01.cpp`).
 
 ```cpp
 // In the firmware sketch file
 
 #ifdef ARDUINO_VIRTUAL
 
-#include "Kaleidoscope-Testing.h"
+#include "Kaleidoscope-Simulator.h"
 #include "vendors/keyboardio/model01.h"
 ...
 renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
@@ -529,7 +529,7 @@ renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
 
 ### Realtime simulation
 
-Despite its name, Kaleidoscope-Testing can also be used to simulate the
+Despite its name, Kaleidoscope-Simulator can also be used to simulate the
 keyboard in realtime. Realtime means that the simulator runs approximately at
 the same speed as the real keyboard hardware would run.
 
@@ -610,16 +610,16 @@ tests by uncommenting/commenting the individual test function invokations.
 ## Examples
 
 There is an example sketch `examples/all_assertions/all_assertions.ino`
-that demonstrates most features of Kaleidoscope-Testing's
+that demonstrates most features of Kaleidoscope-Simulator's
 API. 
 
 ## Doxygen documentation
 
-To generate Kaleidoscope-Testing's API documentation with [doxygen](http://doxygen.nl/)
+To generate Kaleidoscope-Simulator's API documentation with [doxygen](http://doxygen.nl/)
 make sure doxygen is installed on you unixoid system (GNU/Linux & macOS) and run
 
 ```
 make doc
 ```
 
-in the root directory of plugin Kaleidoscope-Testing.
+in the root directory of plugin Kaleidoscope-Simulator.

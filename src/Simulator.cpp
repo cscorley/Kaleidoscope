@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Testing -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -352,7 +352,7 @@ void Simulator::headerText() {
    this->log() << "";
    this->log() << "################################################################################";
    this->log() << "";
-   this->log() << "Kaleidoscope-Testing";
+   this->log() << "Kaleidoscope-Simulator";
    this->log() << "";
    this->log() << "author: noseglasses (https://github.com/noseglasses, shinynoseglasses@gmail.com)";
    this->log() << "";

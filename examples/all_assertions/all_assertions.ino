@@ -545,7 +545,7 @@ void loop() {
 
 #ifdef ARDUINO_VIRTUAL
 
-#include "Kaleidoscope-Testing.h"
+#include "Kaleidoscope-Simulator.h"
 #include "vendors/keyboardio/model01.h"
 
 #include <ctime>
@@ -906,6 +906,7 @@ void runTests(Simulator &simulator) {
 //       simulator.log() << "elapsed [s]: " << elapsed_secs;
 //       simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
 //   }
+#endif
 
    //***************************************************************************
    {
@@ -932,7 +933,6 @@ void runTests(Simulator &simulator) {
          }
       );
    }
-#endif
 
 }
 
