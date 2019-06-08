@@ -906,7 +906,6 @@ void runSimulator(Simulator &simulator) {
 //       simulator.log() << "elapsed [s]: " << elapsed_secs;
 //       simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
 //   }
-#endif
 
    //***************************************************************************
    {
@@ -934,6 +933,7 @@ void runSimulator(Simulator &simulator) {
       );
    }
 
+#endif
 }
 
 } // namespace testing
