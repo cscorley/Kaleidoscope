@@ -49,7 +49,7 @@ extern void executeTestFunction();
 /// @details VERY IMPORTANT: Make sure to invoke this macro in your sketch
 ///        to enable testing.
 ///
-#define KALEIDOSCOPE_TESTING_INIT                                              \
+#define KALEIDOSCOPE_SIMULATOR_INIT                                              \
                                                                                \
    namespace kaleidoscope {                                                    \
    namespace testing {                                                         \

@@ -37,7 +37,7 @@ a very simple firmware test.
 
 #include "Kaleidoscope-Simulator.h"
 
-KALEIDOSCOPE_TESTING_INIT
+KALEIDOSCOPE_SIMULATOR_INIT
 
 namespace kaleidoscope {
 namespace testing {

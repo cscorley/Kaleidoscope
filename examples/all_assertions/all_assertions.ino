@@ -550,7 +550,7 @@ void loop() {
 
 #include <ctime>
    
-KALEIDOSCOPE_TESTING_INIT
+KALEIDOSCOPE_SIMULATOR_INIT
 
 namespace kaleidoscope {
 namespace testing {
