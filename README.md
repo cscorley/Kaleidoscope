@@ -42,7 +42,7 @@ KALEIDOSCOPE_TESTING_INIT
 namespace kaleidoscope {
 namespace testing {
    
-void runTests(Simulator &simulator) {
+void runSimulator(Simulator &simulator) {
    
    using namespace assertions;
 
@@ -107,11 +107,11 @@ namespace testing {
 
 The test method as the standardized name `runTest` and a pre-defined signature.
 You are free to structure your tests if necessary by introducing additional
-test methods which can be called from `runTests(...)`. Please note that the `Simulator` object
+test methods which can be called from `runSimulator(...)`. Please note that the `Simulator` object
 is the central object in testing. It e.g. coordinates timing and assertion handling.
 
 ```cpp
-void runTests(Simulator &simulator) {
+void runSimulator(Simulator &simulator) {
 ```
    
 The `using` statement is for mere convenience as all assertion classes live in namespace 
@@ -529,7 +529,7 @@ renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
 
 ### Realtime simulation
 
-Despite its name, Kaleidoscope-Simulator can also be used to simulate the
+Kaleidoscope-Simulator can simulate the
 keyboard in realtime. Realtime means that the simulator runs approximately at
 the same speed as the real keyboard hardware would run.
 
@@ -585,7 +585,7 @@ no matter how wide in terms of characters its appearance in the template string.
 
 ## Structuring tests
 
-In the initial example we just defined a single test function `runTests(...)`.
+In the initial example we just defined a single test function `runSimulator(...)`.
 To structure individual tests, it can be beneficial to define an individual function
 for each test.
 
@@ -598,7 +598,7 @@ void test2(Simulator &simulator) {
    ...
 }
 
-void runTests(Simulator &simulator) {
+void runSimulator(Simulator &simulator) {
    test1(simulator);
    test2(simulator);
 }

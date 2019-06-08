@@ -555,7 +555,7 @@ KALEIDOSCOPE_TESTING_INIT
 namespace kaleidoscope {
 namespace testing {
    
-void runTests(Simulator &simulator) {
+void runSimulator(Simulator &simulator) {
    
    using namespace assertions;
    
