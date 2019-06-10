@@ -19,6 +19,7 @@
 #include "Visualization.h"
 #include "Simulator.h"
 #include "Kaleidoscope.h"
+#include "aux/terminal_escape_sequences.h"
 
 // Undef those stupid Arduino-macros conflicting with stl stuff
 //
@@ -31,7 +32,7 @@
 #include <iostream>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 std::map<uint8_t, const char*> hid_code_to_string = {
    { 0x04 , "A   " }, // HID_KEYBOARD_A_AND_A
@@ -170,6 +171,8 @@ std::map<uint8_t, const char*> hid_code_to_string = {
 typedef std::map<uint8_t, std::string> KeyAddrToKeyString;
 
 std::string generateColorEscSeq(uint8_t row, uint8_t col) {
+   
+   using namespace terminal_escape_sequences;
       
    auto color = KeyboardHardware.getCrgbAt(row, col);
    
@@ -185,10 +188,9 @@ std::string generateColorEscSeq(uint8_t row, uint8_t col) {
    }
    
    static const char * const empty = "";
-   static const char * const framed = "\x1B[4m";
    const char *activation_highlight = empty;
    if(KeyboardHardware.wasKeyswitchPressed(row, col)) {
-      activation_highlight = framed;
+      activation_highlight = underlined;
    }
       
    std::ostringstream o;
@@ -200,7 +202,7 @@ std::string generateColorEscSeq(uint8_t row, uint8_t col) {
    
 void generateLookup(KeyAddrToKeyString &lookup) {
    
-   const char *neutral_string = "\x1B[0m";
+   using namespace terminal_escape_sequences;
    
    for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
       for(uint8_t col = 0; col < KeyboardHardware.matrix_columns; ++col) {
@@ -224,7 +226,7 @@ void generateLookup(KeyAddrToKeyString &lookup) {
          
          //std::cout << (int)pos << ": color: \"" << color_string << "\", key_string: \"" << key_string << "\"\n";
          
-         lookup[pos] = color_string + key_string + neutral_string;
+         lookup[pos] = color_string + key_string + reset_formatting;
       }
    }
 }
@@ -268,5 +270,5 @@ void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard) {
     }
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

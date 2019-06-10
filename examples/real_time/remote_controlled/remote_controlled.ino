@@ -547,6 +547,9 @@ void loop() {
 
 #include "Kaleidoscope-Simulator.h"
 #include "vendors/keyboardio/model01.h"
+#include "aux/terminal_escape_sequences.h"
+
+#include <iostream>
    
 KALEIDOSCOPE_SIMULATOR_INIT
 
@@ -556,324 +559,29 @@ namespace simulator {
 void runSimulator(Simulator &simulator) {
    
    using namespace assertions;
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("0");
-      
-      // Assert that the next cycle generates exactly one keyboard report.
-      //
-      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
-      
-      simulator.tapKey(2, 1); // A
-      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
+   using namespace terminal_escape_sequences;
 
-      simulator.cycleExpectKeyboardReports(ReportEmpty{});
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("1");
+   // Check out https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control
          
-      simulator.pressKey(2, 1); // A
-      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
-         
-      simulator.queuedKeyboardReportAssertions().add(
-         Grouped{
-            KeycodesActive{Key_A},
-            KeycodesActive{Key_B},
-            negate(ReportEmpty{}),
-            negate(AnyModifierActive{}),
-            AnyKeycodeActive{},
-            ReportNthInCycle{1},
-            DumpReport{}
-         }
-      );
-      simulator.pressKey(3, 5); // B
-      simulator.cycle();
-      simulator.releaseKey(2, 1); // A
-      simulator.releaseKey(3, 5); // B
-      
-      simulator.cycles(5);
-   }
+   auto test = simulator.newTest("Real time simulation");
    
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("2");
-         
-      simulator.pressKey(2, 1); // A
-      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
-         
-      simulator.pressKey(3, 5); // B
-      simulator.cycleExpectKeyboardReports(
-         Grouped{
-            KeycodesActive{Key_A},
-            KeycodesActive{Key_B}
-         }
-      );
-      
-      simulator.releaseKey(2, 1);
-      simulator.releaseKey(3, 5);
-      
-      simulator.cycles(5);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("3");
-   
-      simulator.pressKey(2, 1); // A
-      simulator.cycle();
-      simulator.pressKey(3, 5); // B
-      simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A, Key_B});
-      
-      simulator.releaseKey(2, 1);
-      simulator.releaseKey(3, 5);
-      simulator.cycles(5);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("4");
+   // Activate the rainbow wave LED effect
+   //
+   simulator.multiTapKey(2 /*num. taps*/, 
+                        0 /*row*/, 6/*col*/, 
+                        1 /* num. cycles after each tap */
+   );
 
-      auto layer_check = TopActiveLayerIs{0};
-      simulator.permanentCycleAssertions().add(layer_check);
-      simulator.cycle();
-      simulator.permanentCycleAssertions().remove(layer_check);
-   }
+   simulator.permanentKeyboardReportAssertions().add(DumpReport{});
    
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("5");
-      
-      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
-      simulator.tapKey(3, 7); // left shift
-      simulator.cycleExpectKeyboardReports(ModifiersActive{Key_LeftShift});
-      
-      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
-      simulator.cycleExpectKeyboardReports(ReportEmpty{});
-   }
+   std::cout << clear_screen << std::flush;
    
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("6");
-
-      simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
-      simulator.pressKey(3, 7); // left shift
-      simulator.cycleExpectKeyboardReports(
-         Grouped{
-            ModifiersActive{Key_LeftShift},
-            AnyModifierActive{}
-         }
-      );
-        
-      simulator.pressKey(0, 7); // left control
-      simulator.cycleExpectKeyboardReports(
-         Grouped{
-            ModifiersActive{Key_LeftShift, Key_LeftControl},
-            negate(AnyKeycodeActive{})
-         }
-      );
-      
-      simulator.releaseKey(3, 7); // left shift
-      simulator.releaseKey(0, 7); // left control
-      simulator.cycleExpectKeyboardReports(ReportEmpty{});
-      
-      simulator.cycles(4);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("7");
-   
-      simulator.queuedCycleAssertions().addGrouped(
-         NumOverallKeyboardReportsGenerated{16},
-         CycleIsNth{34},
-         ElapsedTimeGreater{160}
-      );
-      simulator.cycle();
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("8");
-   
-      simulator.cycles(10);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("9");
-    
-      simulator.advanceTimeBy(1000); // ms
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("10");
-      simulator.tapKey(3, 7); // left shift
-      simulator.tapKey(2, 1); // A
-      simulator.cycleExpectKeyboardReports(DumpReport{});
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("11");
-      
-      simulator.tapKey(3, 7); // left shift
-      simulator.cycleExpectKeyboardReports(
-         CustomKeyboardReportAssertion{
-            [&](const KeyboardReport &kr) -> bool {
-               simulator.log() << "Custom keyboard report assertion triggered";
-               return true;
-            }
-         }
-      );
-      simulator.cycles(5);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("12");
-      
-      simulator.tapKey(3, 7); // left shift
-      simulator.cycleExpectKeyboardReports(
-         CustomAssertion{
-            [&]() -> bool {
-               simulator.log() << "Custom cycle assertion triggered";
-               return true;
-            }
-         }
-      );
-      simulator.cycles(5);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("13");
-      
-      simulator.advanceTimeTo(2000); // ms
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("14");
-      
-      // Cycle through the color effects and output the keyboard
-      // after some cycles.
-      //
-      simulator.multiTapKey(15 /*num. taps*/, 
-                         0 /*row*/, 6/*col*/, 
-                         50 /* num. cycles after each tap */,
-                         CustomAssertion{
-                            [&]() -> bool {
-                               renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
-                               return true;
-                            }
-                         }
-      );
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("15");
-      
-      // LED effect solid red is the fourth LED effect. Tap the 
-      // LED effect forward key four times to get there.
-      //
-      simulator.multiTapKey(4 /*num. taps*/, 
-                         0 /*row*/, 6/*col*/, 
-                         1 /* num. cycles after each tap */,
-                         CustomAssertion{
-                            [&]() -> bool {
-                               simulator.log() << "KeyboardHardware.getCrgbAt(0, 0).r = " 
-                                 << (int)KeyboardHardware.getCrgbAt(0, 0).r;
-                               return true;
-                            }
-                         }
-      );
-      
-      KT_ASSERT_CONDITION(simulator, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
-   }
-   
-   //***************************************************************************
-   {
-      auto test = simulator.newTest("16");
-      
-      // Use dumpKeyLEDState to generate a representation of the current
-      // LED state.
-      //
-      //dumpKeyLEDState();
-      
-      const cRGB key_led_colors[] = {
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(0, 3, 197),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-         CRGB(160, 0, 0),
-      };
-
-      assertKeyLEDState(simulator, key_led_colors);
-   }
+   simulator.runRemoteControlled( 
+      [&]() {
+         std::cout << cursor_to_upper_left << std::flush;
+         renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
+      }
+   );
 }
 
 } // namespace simulator

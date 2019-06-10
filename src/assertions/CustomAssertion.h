@@ -24,7 +24,7 @@
 #include <functional>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Executes a lambda function of type bool(const Simulator &).
@@ -73,5 +73,5 @@ class CustomAssertion {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

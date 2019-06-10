@@ -40,7 +40,7 @@ a very simple firmware test.
 KALEIDOSCOPE_SIMULATOR_INIT
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 void runSimulator(Simulator &simulator) {
    
@@ -59,7 +59,7 @@ void runSimulator(Simulator &simulator) {
    simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope
 
 #endif
@@ -102,7 +102,7 @@ It is good custom to define code in namespaces to avoid symbol naming conflicts.
 
 ```cpp
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 ```
 
 The test method as the standardized name `runTest` and a pre-defined signature.
@@ -152,7 +152,7 @@ That's it. Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
 
 ```cpp
 }
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope
 
 #endif

@@ -22,7 +22,7 @@
 #include "Simulator.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts that there was a specific number of keyboard reports generated
@@ -69,5 +69,5 @@ class CycleGeneratesNKeyboardReports {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

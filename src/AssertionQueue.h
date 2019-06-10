@@ -27,7 +27,7 @@
 #include <memory>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
 class _Assertion;
@@ -133,5 +133,5 @@ class AssertionQueue
       const char *type_string_ = nullptr;
 };
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

@@ -22,7 +22,7 @@
 #include <typeinfo>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 
 /// @brief Demangles a C++ symbol name.
 ///
@@ -35,5 +35,5 @@ std::string type(const T& t) {
     return demangle(typeid(t).name());
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

@@ -26,7 +26,7 @@
 // #include "aux/demangle.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
    
@@ -144,7 +144,7 @@ std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion)
    return assertion;
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope
       
 #define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                            \

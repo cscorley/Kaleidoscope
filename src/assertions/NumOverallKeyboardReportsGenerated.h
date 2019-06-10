@@ -21,7 +21,7 @@
 #include "assertions/_Assertion.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Checks the number of overall keyboard reports.
@@ -70,5 +70,5 @@ class NumOverallKeyboardReportsGenerated {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

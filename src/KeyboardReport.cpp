@@ -29,7 +29,7 @@
 #include <vector>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 
 bool 
    KeyboardReport
@@ -220,5 +220,5 @@ void
   }
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

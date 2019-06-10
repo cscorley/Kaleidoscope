@@ -21,7 +21,7 @@
 #include "Simulator.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 
 void _Assertion::report(const char *add_indent) const 
 {
@@ -62,5 +62,5 @@ void _Assertion::describeState(const char *add_indent) const {
    }
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

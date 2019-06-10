@@ -24,7 +24,7 @@
 #endif
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 #ifdef __GNUG__
 
@@ -49,5 +49,5 @@ std::string demangle(const char* name) {
 }
 
 #endif
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

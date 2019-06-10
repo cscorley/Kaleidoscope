@@ -52,10 +52,10 @@ extern void executeTestFunction();
 #define KALEIDOSCOPE_SIMULATOR_INIT                                              \
                                                                                \
    namespace kaleidoscope {                                                    \
-   namespace testing {                                                         \
+   namespace simulator {                                                         \
    /* Forward declare the actual test function */                              \
    void runSimulator(Simulator &simulator);                                               \
-   } /* namespace testing */                                                   \
+   } /* namespace simulator */                                                   \
    } /* namespace kaleidoscope */                                              \
                                                                                \
    /* This is an override of the weak function defined in main.cpp             \
@@ -63,6 +63,6 @@ extern void executeTestFunction();
     */                                                                         \
    void executeTestFunction() {                                                \
       setup(); /* setup Kaleidoscope */                                        \
-      kaleidoscope::testing::Simulator simulator(std::cout, false);                  \
-      kaleidoscope::testing::runSimulator(simulator);                                  \
+      kaleidoscope::simulator::Simulator simulator(std::cout, false);                  \
+      kaleidoscope::simulator::runSimulator(simulator);                                  \
    }

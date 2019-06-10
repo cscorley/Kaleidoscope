@@ -21,7 +21,7 @@
 #include "Kaleidoscope.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
    
@@ -30,5 +30,5 @@ void dumpKeyLEDState();
 void assertKeyLEDState(const Simulator &simulator,
                        const cRGB *key_led_colors);
    
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

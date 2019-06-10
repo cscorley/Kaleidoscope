@@ -21,7 +21,7 @@
 #include <sstream>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 void Grouped::Assertion::report(const char *add_indent) const {
@@ -58,6 +58,6 @@ void Grouped::Assertion::describeState(const char *add_indent) const
 }
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope
 

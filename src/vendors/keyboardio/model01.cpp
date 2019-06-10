@@ -19,7 +19,7 @@
 #include "vendors/keyboardio/model01.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace keyboardio {
 namespace model01 {
 const char *ascii_keyboard = 
@@ -43,5 +43,5 @@ const char *ascii_keyboard =
 "                    ┗━━━━━━┛                        ┗━━━━━━┛                    \n";
 } // namespace model01
 } // namespace keyboardio
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

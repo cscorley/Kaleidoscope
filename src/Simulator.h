@@ -25,7 +25,7 @@
 #include <functional>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
 class _Assertion;
@@ -553,5 +553,5 @@ class Simulator {
 #define KT_ASSERT_CONDITION(DRIVER, ...)                                       \
    DRIVER.assertCondition((__VA_ARGS__), #__VA_ARGS__)
       
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

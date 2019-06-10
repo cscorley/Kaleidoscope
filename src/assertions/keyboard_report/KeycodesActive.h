@@ -24,7 +24,7 @@
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 inline
@@ -157,5 +157,5 @@ class KeycodesActive {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

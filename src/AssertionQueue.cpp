@@ -22,7 +22,7 @@
 #include "aux/demangle.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 AssertionQueue &AssertionQueue::add(const std::vector<std::shared_ptr<_Assertion>> &assertions)
 {
@@ -121,5 +121,5 @@ void AssertionQueue::clear() {
    queue_.clear();
 }
  
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

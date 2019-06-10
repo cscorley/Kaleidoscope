@@ -22,7 +22,7 @@
 #include "Simulator.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts that that time that elapsed is greater than a given time in [ms].
@@ -73,5 +73,5 @@ class ElapsedTimeGreater {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

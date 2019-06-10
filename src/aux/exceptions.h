@@ -22,7 +22,7 @@
 #include <exception>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 struct OStringStreamWrapper
 {
@@ -36,5 +36,5 @@ struct OStringStreamWrapper
 
 #define KS_T_EXCEPTION(...)                                                    \
    throw std::runtime_error(OStringStreamWrapper() << __VA_ARGS__);
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

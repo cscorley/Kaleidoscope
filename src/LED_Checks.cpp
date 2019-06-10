@@ -24,7 +24,7 @@
 #include <iostream>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 void dumpKeyLEDState() {
    
@@ -74,5 +74,5 @@ void assertKeyLEDState(const Simulator &simulator,
    }
 }
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

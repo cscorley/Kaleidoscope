@@ -21,7 +21,7 @@
 #include "assertions/_Assertion.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts that any keycodes are active in the current report.
@@ -56,5 +56,5 @@ class AnyKeycodeActive {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

@@ -19,7 +19,7 @@
 #pragma once
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace keyboardio {
 namespace model01 {
    
@@ -30,5 +30,5 @@ namespace model01 {
 extern const char *ascii_keyboard;
 } // namespace model01
 } // namespace keyboardio
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

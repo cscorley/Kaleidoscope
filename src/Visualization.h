@@ -19,7 +19,7 @@
 #pragma once
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
    
@@ -31,5 +31,5 @@ class Simulator;
 ///
 void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard);
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

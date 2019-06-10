@@ -21,7 +21,7 @@
 #include "assertions/_Assertion.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 /// @brief Asserts that the current cycle is the nth.
@@ -68,5 +68,5 @@ class CycleIsNth {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

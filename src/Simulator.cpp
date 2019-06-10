@@ -29,7 +29,7 @@
 #include <sstream>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 
 std::ostream &DriverStream_::getOStream() const
 {
@@ -582,5 +582,5 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_function)
    }
 }
       
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

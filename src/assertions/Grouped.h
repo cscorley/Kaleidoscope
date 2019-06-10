@@ -24,7 +24,7 @@
 #include <vector>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 /// @brief Groups multiple assertions.
@@ -84,5 +84,5 @@ class Grouped {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

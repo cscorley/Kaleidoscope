@@ -26,7 +26,7 @@
 #include <algorithm>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 inline
@@ -158,5 +158,5 @@ class ModifiersActive {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

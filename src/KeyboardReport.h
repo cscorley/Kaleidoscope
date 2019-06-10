@@ -30,7 +30,7 @@
 #include <ostream>
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
    
 class Simulator;
   
@@ -108,5 +108,5 @@ class KeyboardReport {
       HID_KeyboardReport_Data_t report_data_;
 };
 
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

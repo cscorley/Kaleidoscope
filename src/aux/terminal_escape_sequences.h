@@ -20,12 +20,13 @@
 
 namespace kaleidoscope {
 namespace simulator {
-namespace keycodes {
+namespace terminal_escape_sequences {
    
-/// @brief Returns a string representation of a keycode.
-///
-const char *keycodeToName(uint8_t keycode);
+constexpr char reset_formatting[] = "\x1B[0m";
+constexpr char underlined[] = "\x1B[4m";
+constexpr char clear_screen[] = "\033[2J\033[1;1H";
+constexpr char cursor_to_upper_left[] = "\x1B[0;0H";
 
-} // namespace keycodes
+} // namespace terminal_escape_sequences
 } // namespace simulator
-} // namespace kaleidoscope
+} // namespace kaleidoscop

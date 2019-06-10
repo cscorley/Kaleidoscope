@@ -23,7 +23,7 @@
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts nothing but dumps the current report instead.
@@ -59,5 +59,5 @@ class DumpReport {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

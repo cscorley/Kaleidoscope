@@ -21,7 +21,7 @@
 #include "assertions/_Assertion.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts that the current keyboard report is the nth report in the current cycle.
@@ -67,5 +67,5 @@ class ReportNthInCycle {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

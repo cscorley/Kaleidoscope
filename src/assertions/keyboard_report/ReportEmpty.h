@@ -22,7 +22,7 @@
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
 
 /// @brief Asserts that the current keyboard report is empty.
@@ -58,5 +58,5 @@ class ReportEmpty {
 };
 
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

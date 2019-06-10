@@ -25,7 +25,7 @@
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace keycodes {
    
 #define FOR_ALL_KEYBOARD(FUNC) \
@@ -261,5 +261,5 @@ const char *keycodeToName(uint8_t keycode) {
 }
 
 } // namespace keycodes
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

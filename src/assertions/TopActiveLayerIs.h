@@ -23,7 +23,7 @@
 #include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 /// @brief Asserts that a given layer is the current top layer.
@@ -68,5 +68,5 @@ class TopActiveLayerIs {
 };
    
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope

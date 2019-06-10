@@ -23,7 +23,7 @@
 #include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
-namespace testing {
+namespace simulator {
 namespace assertions {
    
 /// @brief Asserts that a given layer is active.
@@ -69,5 +69,5 @@ class LayerIsActive {
 };
    
 } // namespace assertions
-} // namespace testing
+} // namespace simulator
 } // namespace kaleidoscope
