@@ -612,14 +612,12 @@ tests by uncommenting/commenting the individual test function invokations.
 There are several examples demonstrating Kaleidoscope-Simulator's features
 and how to use the API. All examples reside in the `examples` directory tree.
 
-When you build examples using kaleidoscope-builder, make sure to add `VERBOSE=1`
-to the build command line to see the output of the simulation run at the 
-end of the build, e.g.
+To run an example, enter the following in your console window.
 
 ```
-cd examples/all_assertions
+cd examples
 
-VERBOSE=1 make
+make <relative path to subdirectory containing a tests.h file>
 ```
 
 ## Doxygen documentation

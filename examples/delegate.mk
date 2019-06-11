@@ -59,7 +59,7 @@ KALEIDOSCOPE_PLUGIN_MAKEFILE_DIR ?= keyboardio/build-tools/makefiles/
 ifeq ("$(wildcard $(BOARD_HARDWARE_PATH)/keyboardio/build-tools/makefiles/rules.mk)","")
    # Determine the path of this Makefile
    MKFILE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-   BOARD_HARDWARE_PATH = $(MKFILE_DIR)/../../../../../..
+   BOARD_HARDWARE_PATH = $(MKFILE_DIR)/../../../../..
 endif
 
 ifeq ("$(wildcard $(BOARD_HARDWARE_PATH)/keyboardio/build-tools/makefiles/rules.mk)","")
@@ -70,3 +70,4 @@ $(info )
 endif
 
 include $(BOARD_HARDWARE_PATH)/$(KALEIDOSCOPE_PLUGIN_MAKEFILE_DIR)/rules.mk
+
