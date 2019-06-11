@@ -84,7 +84,7 @@ defined using Kaleidoscope-Simulator's API.
 We will walk through the test line by line.
 
 First, we have to make sure that the compiler only sees our test in virtual firmware
-builds. This is important as the testing API can not be used in actual 
+builds. This is important as the simulator API can not be used in actual 
 firmware builds for the target platform. That's because most target platforms resources
 are simply too limited.
 
@@ -92,7 +92,7 @@ are simply too limited.
 #ifdef ARDUINO_VIRTUAL
 ```
 
-Next, we bring the testing API into scope.
+Next, we bring the simulator API into scope.
 
 ```cpp
 #include "Kaleidoscope-Simulator.h"
@@ -108,7 +108,7 @@ namespace simulator {
 The test method as the standardized name `runTest` and a pre-defined signature.
 You are free to structure your tests if necessary by introducing additional
 test methods which can be called from `runSimulator(...)`. Please note that the `Simulator` object
-is the central object in testing. It e.g. coordinates timing and assertion handling.
+is the central object in simulation and testing. It e.g. coordinates timing and assertion handling.
 
 ```cpp
 void runSimulator(Simulator &simulator) {
@@ -124,7 +124,7 @@ instead of the more concise `KeycodesActive{Key_A}`.
 
 Next, we generate a test object. 
 It's only purpose lies in its lifetime that is defined by the scope where
-it is generated. It serves to group testing instructions an checks
+it is generated. It serves to group simulation and testing instructions and checks
 if a set of assertions that are associated with a test are valid.
 
 ```cpp
@@ -227,7 +227,7 @@ Every individual assertion will be applied to an individual report.
 ### Permanent assertions
 
 Permanent assertions can be added and removed at any time during 
-testing execution. They are evaluated whenever a keyboard report arrives
+simulator execution. They are evaluated whenever a keyboard report arrives
 or at the end of every cycle, respectively.
 
 ### Assertion grouping
@@ -284,7 +284,7 @@ simulator.queuedKeyboardReportAssertions().add(
 ### Custom assertions
 
 Despite the numerous predefined assertion classes that come 
-with Kaleidosope-Testing's API, under 
+with Kaleidosope-Simulator's API, under 
 certain cicumstances it might still be desirable to execute custom code that expresses
 an assertion. This is easily possible by passing a C++ lambda function to the 
 constructor of a special `Custom...Assertion` class, e.g.
@@ -338,12 +338,12 @@ necessary as the same condition can be checked programatically through Kaleidosc
 proper firmware API. 
 
 The only difference to doing so is that predefined assertions might
-require less user code to do the same and the generated testing code
+require less user code to do the same and your code
 might be less sensitive against API changes to the Kaleidoscope core.
 
 ## Key activation
 
-When testing, key action (press/release/tap) is the most important input 
+When simulating and testing, key action (press/release/tap) is the most important input 
 that causes the firmware to react. 
 
 In contrast to a real experiment where the user hits a key on the keyboard,
@@ -422,7 +422,7 @@ Runs a number of cycles with a given total duration.
 
 ## Logging
 
-The testing API supports several logging methods. All log output is written
+The simulator API supports several logging methods. All log output is written
 to a common `std::ostream` object. This stream object can be queried and registered
 through the `Simulator` class' methods `getOStream()` and `setOStream(...)`.
 
@@ -486,7 +486,7 @@ t=5770, c=1154: ########################################################
 
 in the log output.
 
-## Testing LED states
+## Verifying LED states
 
 Kaleidoscope-Simulator comes with functions that help integration testing of 
 LED modes.
@@ -609,9 +609,18 @@ tests by uncommenting/commenting the individual test function invokations.
 
 ## Examples
 
-There is an example sketch `examples/all_assertions/all_assertions.ino`
-that demonstrates most features of Kaleidoscope-Simulator's
-API. 
+There are several examples demonstrating Kaleidoscope-Simulator's features
+and how to use the API. All examples reside in the `examples` directory tree.
+
+When you build examples using kaleidoscope-builder, make sure to add `VERBOSE=1`
+to the build command line to see the output of the simulation run at the 
+end of the build, e.g.
+
+```
+cd examples/all_assertions
+
+VERBOSE=1 make
+```
 
 ## Doxygen documentation
 
