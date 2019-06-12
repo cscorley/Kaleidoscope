@@ -39,6 +39,8 @@
 // <protocol_version> ::= (uint8_t)
 // <version_id> ::= (uint8_t)
 // <id_string> ::= (double quoted string)
+// <lbr> ::= '\n'
+// <comment> ::= '#' (any characters except for '\n') <lbr>
 // <start_time> ::= <time>
 // <end_time> ::= <time>
 // <start_cycle> ::= <start_cycle_cmd> <cycle_id> <start_time>
@@ -51,16 +53,16 @@
 // <reaction> ::= <reaction_cmd> <reaction_subcommand>
 // <end_cycle> ::= <end_cycle_cmd> <cycle_id> <end_time>
 // <cycle_ar> ::= <action> | <reaction>
-// <cycle_content> ::= <cycle_ar> | <cycle_ar> <cycle_content>
-// <cycle_long> ::= <cycle_start> <cycle_content> <cycle_end>
+// <cycle_content> ::= <cycle_ar> | <cycle_ar> <lbr> <cycle_content>
+// <cycle_long> ::= <cycle_start> <lbr> <cycle_content> <lbr> <cycle_end>
 // <set_time> ::= <set_time_cmd> <time>
-// <cycle_short> ::= <cycle_cmd> <cycle_id>
+// <cycle_short> ::= <cycle_cmd> <cycle_id> 
 // <cycle> ::= <cycle_short> | <cycle_long>
-// <cycle_data> ::= <cycle> | <cycle> <cycle_data>
+// <cycle_data> ::= <cycle> | <cycle> <lbr> <cycle_data> | <comment>
 // <firmeware_id> ::= <firmeware_id_cmd> <id_string>
 // <header_content> ::= <firmeware_id>
 // <header> ::= <transfer_type> <protocol_version> <header_content>
-// <document> ::= <header> <cycle_data>
+// <document> ::= <header> <lbr> <cycle_data>
 
 // The value of <transfer_type> defines whether string- or 
 // id-versions of commands are used
