@@ -27,13 +27,15 @@
 namespace aglais {
 namespace v1 {
    
+#define COMMA ,
+   
 #define AGLAIS_V1_ARRAY_INIT(NAME, ID) #NAME
 #define AGLAIS_V1_MAP_INIT(NAME, ID) { #NAME, ID}
    
 const char *Parser::commandIdToString(uint8_t command_id)
 {
    static const char *command_strings[] = {
-      AGLAIS_V1_COMMANDS(AGLAIS_V1_ARRAY_INIT)
+      AGLAIS_V1_COMMANDS(AGLAIS_V1_ARRAY_INIT, COMMA,)
    };
    
    if(command_id >= sizeof(command_strings)) {
@@ -46,7 +48,7 @@ const char *Parser::commandIdToString(uint8_t command_id)
 const char *Parser::subCommandIdToString(uint8_t sub_command_id)
 {
    static const char *sub_command_strings[] = {
-      AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_ARRAY_INIT)
+      AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_ARRAY_INIT, COMMA,)
    };
    
    if(sub_command_id >= sizeof(sub_command_strings)) {
@@ -59,7 +61,7 @@ const char *Parser::subCommandIdToString(uint8_t sub_command_id)
 uint8_t Parser::commandStringToId(const char *string)
 {
    static const std::map<const char*, uint8_t> command_ids = {
-      AGLAIS_V1_COMMANDS(AGLAIS_V1_MAP_INIT)
+      AGLAIS_V1_COMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
    };
    
    auto it = command_ids.find(string);
@@ -73,7 +75,7 @@ uint8_t Parser::commandStringToId(const char *string)
 uint8_t Parser::subCommandStringToId(const char *string)
 {
    static const std::map<const char*, uint8_t> sub_command_ids = {
-      AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_MAP_INIT)
+      AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
    };
    
    auto it = sub_command_ids.find(string);

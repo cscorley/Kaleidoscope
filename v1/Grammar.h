@@ -66,32 +66,32 @@
 // id-versions of commands are used
 
 namespace aglais {
-namespace V1 {
+namespace v1 {
    
-#define AGLAIS_V1_COMMANDS(OP)                                                 \
-   OP(none, 0),                                                                \
-   OP(firmware_id, 2),                                                         \
-   OP(start_cycle, 3),                                                         \
-   OP(action, 4),                                                              \
-   OP(reaction, 5),                                                            \
-   OP(end_cycle, 6),                                                           \
-   OP(set_time, 7),                                                            \
-   OP(cycle, 8)
+#define AGLAIS_V1_COMMANDS(OP, SEP, TERM_SEP)                                  \
+   OP(none, 0)SEP                                                              \
+   OP(firmware_id, 2)SEP                                                       \
+   OP(start_cycle, 3)SEP                                                       \
+   OP(action, 4)SEP                                                            \
+   OP(reaction, 5)SEP                                                          \
+   OP(end_cycle, 6)SEP                                                         \
+   OP(set_time, 7)SEP                                                          \
+   OP(cycle, 8)TERM_SEP
    
 #define AGLAIS_UINT8_T_STRUCT_DEF(NAME, ID)                                    \
    static constexpr uint8_t NAME = ID;
 struct Command  {
-   AGLAIS_V1_COMMANDS(AGLAIS_UINT8_T_STRUCT_DEF)
+   AGLAIS_V1_COMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
 };
 
-#define AGLAIS_V1_SUBCOMMANDS(OP)                                              \
-   OP(none, 0),                                                                \
-   OP(key_pressed, 1),                                                         \
-   OP(key_released, 2),                                                        \
-   OP(keyboard_report, 3)
+#define AGLAIS_V1_SUBCOMMANDS(OP, SEP, TERM_SEP)                               \
+   OP(none, 0)SEP                                                              \
+   OP(key_pressed, 1)SEP                                                       \
+   OP(key_released, 2)SEP                                                      \
+   OP(keyboard_report, 3)TERM_SEP
 
 struct SubCommand {
-   AGLAIS_V1_SUBCOMMANDS(AGLAIS_UINT8_T_STRUCT_DEF)
+   AGLAIS_V1_SUBCOMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
 };
    
 struct TransferType {

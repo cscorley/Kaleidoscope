@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef ARDUINO_VIRTUAL
+
 #include "aglais/Parser.h"
 #include "aglais/v1/Parser.h"
 
@@ -67,3 +69,5 @@ void Parser::parserError(const char *program, uint8_t line_id) const
 
    
 } // namespace aglais
+
+#endif
