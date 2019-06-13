@@ -18,46 +18,12 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
-
-#include "kaleidoscope/key_defs.h"
-
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-
-/// @brief Asserts nothing but dumps the current report instead.
-///
-class DumpReport {
    
-   public:
-      
-      KT_ASSERTION_STD_CONSTRUCTOR(DumpReport)
-   
-   private:
-      
-      class Assertion : public _Assertion {
-            
-         public:
+class Simulator;
 
-            virtual void describe(const char *add_indent = "") const override {
-               driver_->getCurrentKeyboardReport().dump(*driver_, add_indent);
-            }
+void parseAglaisScript(const char *code, Simulator &sim);
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
-
-            virtual bool evalInternal() override {
-               this->describe();
-               return true;
-            }
-
-      };
-   
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(DumpReport)
-};
-
-} // namespace assertions
 } // namespace simulator
 } // namespace kaleidoscope

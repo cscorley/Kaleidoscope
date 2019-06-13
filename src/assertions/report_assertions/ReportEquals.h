@@ -18,43 +18,63 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
-#include "kaleidoscope/key_defs.h"
+#include "assertions/ReportAssertion_.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that the current keyboard report is empty.
+/// @brief Asserts that the current report equals another report.
 ///
-class ReportEmpty {
+template<typename _ReportType>
+class ReportEquals {
    
    public:
       
-      KT_ASSERTION_STD_CONSTRUCTOR(ReportEmpty)
+      /// @brief Constructor.
+      ///
+      /// @param report The report to compare with.
+      ///
+      ReportEquals(const _ReportType &report)
+         : ReportEquals(DelegateConstruction{}, report)
+      {}
    
    private:
       
-      class Assertion : public _Assertion {
-            
+      class Assertion : public ReportAssertion_<_ReportType> {
+   
          public:
+      
+            Assertion(const _ReportType &report)
+               :  report_(report)
+            {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Report empty";
+               simulator_->log() << add_indent << "Report equals: ";
+               report_.dump(*simulator_, add_indent);
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Report: ";
-               driver_->getCurrentKeyboardReport().dump(*driver_, add_indent);
+               
+               simulator_->log() << add_indent << "Reports differ: ";
+               simulator_->log() << add_indent << "expected: ";
+               report_.dump(*simulator_, add_indent);
+               simulator_->log() << add_indent << "actual: ";
+               this->getReport().dump(*simulator_, add_indent);
             }
 
             virtual bool evalInternal() override {
-               return !driver_->getCurrentKeyboardReport().isAnyKeyActive()
-                   && !driver_->getCurrentKeyboardReport().isAnyModifierActive();
+               
+               return this->getReport() == report_;
             }
+            
+         private:
+            
+            _ReportType report_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEmpty)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEquals)
 };
 
 } // namespace assertions

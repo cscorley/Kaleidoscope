@@ -18,52 +18,45 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/ReportAssertion_.h"
+
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that the current keyboard report is the nth report in the current cycle.
+/// @brief Asserts nothing but dumps the current report instead.
 ///
-class ReportNthInCycle {
+template<typename _ReportType>
+class DumpReport {
    
    public:
       
-      /// @brief Constructor.
-      /// @param report_id The id of the report to check against.
-      ///
-      ReportNthInCycle(int report_id)
-         : ReportNthInCycle(DelegateConstruction{}, report_id)
-      {}
-      
+      KT_ASSERTION_STD_CONSTRUCTOR(DumpReport)
+   
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public ReportAssertion_<_ReportType> {
             
          public:
 
-            Assertion(int report_id) : report_id_(report_id) {}
-
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Report " << report_id_ << ". in cycle";
+               this->getReport().dump(*simulator_, add_indent);
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Report is " << driver_->getNumKeyboardReportsInCycle()
-                  << ". in cycle";
+               this->describe(add_indent);
             }
 
             virtual bool evalInternal() override {
-               return driver_->getNumKeyboardReportsInCycle() == report_id_;
+               this->describe();
+               return true;
             }
-            
-         private:
-            
-            int report_id_ = -1;
+
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(DumpReport)
 };
 
 } // namespace assertions

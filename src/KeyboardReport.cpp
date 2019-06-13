@@ -31,6 +31,19 @@
 namespace kaleidoscope {
 namespace simulator {
 
+   KeyboardReport
+      ::KeyboardReport(const HID_KeyboardReport_Data_t &report_data) 
+{
+   this->setReportData(report_data);
+}
+      
+bool 
+   KeyboardReport
+      ::operator==(const KeyboardReport &other) const
+{
+   return memcmp(&report_data_, &other.report_data_, sizeof(report_data_)) == 0;
+}
+      
 bool 
    KeyboardReport
       ::isKeycodeActive(uint8_t k) const
@@ -142,7 +155,7 @@ void
    KeyboardReport
       ::setReportData(const HID_KeyboardReport_Data_t &report_data)
 {
-   memcpy(report_data_.allkeys, report_data.allkeys, sizeof(report_data_));
+   memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
 
 // For each bit set in 'bitfield', output the corresponding string to 'stream'
@@ -164,6 +177,7 @@ void
   else for(int i = 0; i < KEY_BYTES; i++) if(report_data_.keys[i]) { anything = true; break; }
   
   auto out = simulator.log();
+  out << "Keyboard report content:";
   if(!anything) {
     out << add_indent << "<none>";
   } else {

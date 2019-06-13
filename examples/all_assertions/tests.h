@@ -30,6 +30,8 @@ void runSimulator(Simulator &simulator) {
    
    using namespace assertions;
    
+   //simulator.permanentKeyboardReportAssertions().add(DumpReport{});
+   
    //***************************************************************************
    {
       auto test = simulator.newTest("0");
@@ -38,9 +40,10 @@ void runSimulator(Simulator &simulator) {
       //
       simulator.queuedCycleAssertions().add(CycleGeneratesNKeyboardReports{1});
       
-      simulator.tapKey(2, 1); // A
+      simulator.pressKey(2, 1); // A
       simulator.cycleExpectKeyboardReports(KeycodesActive{Key_A});
 
+      simulator.releaseKey(2, 1); // A
       simulator.cycleExpectKeyboardReports(ReportEmpty{});
    }
    

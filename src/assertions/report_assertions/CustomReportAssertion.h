@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/ReportAssertion_.h"
 #include "kaleidoscope/key_defs.h"
 
 #include <functional>
@@ -27,11 +27,12 @@ namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Executes a lambda function of type bool(const Simulator &, const KeyboardReport&).
+/// @brief Executes a lambda function of type bool(const Simulator &, const _ReportType&).
 /// @details The lambda must return true to signal that the assertion passed
 ///        and false otherwise.      
 ///
-class CustomKeyboardReportAssertion {
+template<typename _ReportType>
+class CustomReportAssertion {
    
    public:
       
@@ -39,38 +40,40 @@ class CustomKeyboardReportAssertion {
       /// @param func The function to evaluate as a condition for 
       ///        the assertion to pass.
       ///
-      CustomKeyboardReportAssertion(const std::function<bool(const KeyboardReport&)> &func)
-         : CustomKeyboardReportAssertion(DelegateConstruction{}, func)
+      CustomReportAssertion(const std::function<bool(const _ReportType&)> &func)
+         : CustomReportAssertion(DelegateConstruction{}, func)
       {}
    
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public ReportAssertion_<_ReportType> {
             
          public:
             
-            Assertion(const std::function<bool(const KeyboardReport&)> &func)
+            Assertion(const std::function<bool(const _ReportType&)> &func)
                : func_(func)
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Custom keyboard report assertion";
+               simulator_->log() << add_indent << "Custom " 
+                  << _ReportType::getTypeString() << " report assertion";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Custom keyboard report assertion failed";
+               simulator_->log() << add_indent << "Custom "
+                  << _ReportType::getTypeString() << " report assertion failed";
             }
 
             virtual bool evalInternal() override {
-               return func_(driver_->getCurrentKeyboardReport());
+               return func_(this->getReport());
             }
             
          private:
             
-            std::function<bool(const KeyboardReport&)> func_;
+            std::function<bool(const _ReportType&)> func_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomKeyboardReportAssertion)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomReportAssertion)
 };
 
 } // namespace assertions

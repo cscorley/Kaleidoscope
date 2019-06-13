@@ -20,6 +20,11 @@
 
 #include "AssertionQueue.h"
 #include "KeyboardReport.h"
+#include "MouseReport.h"
+#include "AbsoluteMouseReport.h"
+#include "AssertionQueueBundle.h"
+
+#include "HIDReportConsumer_.h"
 
 #include <vector>
 #include <functional>
@@ -28,7 +33,10 @@ namespace kaleidoscope {
 namespace simulator {
    
 class Simulator;
-class _Assertion;
+class Assertion_;
+
+template<typename _T>
+struct Type2Type {};
 
 /// @brief An abstract simulator output stream.
 ///
@@ -38,7 +46,7 @@ class DriverStream_ {
       
       struct Endl {};
       
-      DriverStream_(const Simulator *simulator) : driver_(simulator) {}
+      DriverStream_(const Simulator *simulator) : simulator_(simulator) {}
       
       virtual ~DriverStream_() {}
 
@@ -65,7 +73,7 @@ class DriverStream_ {
       
    protected:
       
-      const Simulator *driver_;
+      const Simulator *simulator_;
       
    private:
       
@@ -141,10 +149,11 @@ class Test {
       
    private:
       
-      Simulator *driver_;
+      Simulator *simulator_;
       const char *name_;
       int error_count_start_;
 };
+
         
 /// @ brief The main test simulator object.
 ///
@@ -162,8 +171,6 @@ class Simulator {
       bool abort_on_first_error_;
       
       bool assertions_passed_ = true;
-      int n_keyboard_reports_in_cycle_ = 0;
-      int n_overall_keyboard_reports_ = 0;
    
       int cycle_id_ = 0;
       TimeType time_ = .0;
@@ -173,29 +180,29 @@ class Simulator {
       
       bool error_if_report_without_queued_assertions_ = false;
       
-      AssertionQueue queued_keyboard_report_assertions_;
-      AssertionQueue permanent_keyboard_report_assertions_;
-      AssertionQueue queued_cycle_assertions_;
-      AssertionQueue permanent_cycle_assertions_;
+      AssertionQueueBundle<KeyboardReport> keyboard_report_assertions_;
+      AssertionQueueBundle<MouseReport> mouse_report_assertions_;
+      AssertionQueueBundle<AbsoluteMouseReport> absolute_mouse_report_assertions_;
       
-      KeyboardReport current_keyboard_report_;
+      AssertionQueue<Assertion_> queued_cycle_assertions_;
+      AssertionQueue<Assertion_> permanent_cycle_assertions_;
       
-      class KeyboardReportConsumer : public KeyboardReportConsumer_
+      class HIDReportConsumer : public HIDReportConsumer_
       {
          public:
             
-            KeyboardReportConsumer(Simulator &simulator) : driver_(simulator) {}
+            HIDReportConsumer(Simulator &simulator) : simulator_(simulator) {}
 
-            virtual void processKeyboardReport(
-                           const HID_KeyboardReport_Data_t &report_data) override;
+            virtual void processHIDReport(uint8_t id, const void* data, 
+                                    int len) override;
                            
          private:
             
-            Simulator &driver_;
+            Simulator &simulator_;
             
-      } keyboard_report_consumer_;
+      } hid_report_consumer_;
       
-      friend class KeyboardReportConsumer;
+      friend class HIDReportConsumer;
       
    public:
       
@@ -231,34 +238,48 @@ class Simulator {
          return error_if_report_without_queued_assertions_;
       }
       
-      /// @brief Retreives the queued keyboard report assertions.
-      /// @details The head of the assertion queue is applied to the
-      ///        next keyboard report. It is removed from the queue afterwards.
+      /// @brief Retreives the keyboard report assertions.
       ///
-      AssertionQueue &queuedKeyboardReportAssertions() {
-         return queued_keyboard_report_assertions_;
+      AssertionQueueBundle<KeyboardReport> &keyboardReportAssertions() {
+         return keyboard_report_assertions_;
       }
       
-      /// @brief Retreives the permanent keyboard report assertions.
-      /// @details Permanent keyboard report assertions are applied to 
-      ///        every keyboard report.
+      /// @brief Retreives the mouse report assertions.
       ///
-      AssertionQueue &permanentKeyboardReportAssertions() {
-         return permanent_keyboard_report_assertions_;
+      AssertionQueueBundle<MouseReport> &mouseReportAssertions() {
+         return mouse_report_assertions_;
+      }
+      
+      /// @brief Retreives the absolute mouse report assertions.
+      ///
+      AssertionQueueBundle<AbsoluteMouseReport> &absoluteMouseReportAssertions() {
+         return absolute_mouse_report_assertions_;
+      }
+      
+      AssertionQueueBundle<KeyboardReport> &getAssertionQueueBundle(Type2Type<KeyboardReport>) {
+         return keyboard_report_assertions_;
+      }
+      
+      AssertionQueueBundle<MouseReport> &getAssertionQueueBundle(Type2Type<MouseReport>) {
+         return mouse_report_assertions_;
+      }
+      
+      AssertionQueueBundle<AbsoluteMouseReport> &getAssertionQueueBundle(Type2Type<AbsoluteMouseReport>) {
+         return absolute_mouse_report_assertions_;
       }
       
       /// @brief Retreives the queued cycle assertions.
       /// @details The head of the assertion queue is applied at the end of
       ///        the next cycle and removed afterwards.
       ///
-      AssertionQueue &queuedCycleAssertions() {
+      AssertionQueue<Assertion_> &queuedCycleAssertions() {
          return queued_cycle_assertions_;
       }
       
       /// @brief Retreives the permanent cycle assertions.
       /// @details Permanent cycle assertions are applied after every cycle.
       ///
-      AssertionQueue &permanentCycleAssertions() {
+      AssertionQueue<Assertion_> &permanentCycleAssertions() {
          return permanent_cycle_assertions_;
       }
       
@@ -299,7 +320,7 @@ class Simulator {
       ///
       void multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                        int tap_interval_cycles = 1,
-                       std::shared_ptr<_Assertion> after_tap_and_cycles_assertion = std::shared_ptr<_Assertion>()
+                       std::shared_ptr<Assertion_> after_tap_and_cycles_assertion = std::shared_ptr<Assertion_>()
                       );
 
       /// @brief Releases all keys that are currently pressed.
@@ -319,16 +340,20 @@ class Simulator {
       template<typename..._Assertions>
       void cycles(int n = 0, _Assertions...assertions) {
          this->cyclesInternal(n,
-            std::vector<std::shared_ptr<_Assertion>>{
+            std::vector<std::shared_ptr<Assertion_>>{
                std::forward<_Assertions>(assertions)...
             }
          );
       }
       
       template<typename..._Assertions>
-      void cycleExpectKeyboardReports(_Assertions...assertions) {
-         this->queuedKeyboardReportAssertions().add(std::forward<_Assertions>(assertions)...);
+      void cycleExpectReports(_Assertions...assertions) {
+         
+         this->keyboardReportAssertions()
+            .queued().add(std::forward<_Assertions>(assertions)...);
+            
          this->cycle();
+         
          if(!queued_keyboard_report_assertions_.empty()) {
             this->error() << "Keyboard report assertions are left in queue";
          }
@@ -353,7 +378,7 @@ class Simulator {
       template<typename..._Assertions>
       void evaluateAssertions(_Assertions...assertions) {
          this->evaluateAssertionsInternal(
-            std::vector<std::shared_ptr<_Assertion>>{
+            std::vector<std::shared_ptr<Assertion_>>{
                std::forward<_Assertions>(assertions)...
             }
          );
@@ -387,30 +412,20 @@ class Simulator {
       /// @brief Resets the keyboard to initial state.
       ///
       void initKeyboard();
-         
-      /// @brief Retreives the current keyboard report.
-      ///
-      const KeyboardReport &getCurrentKeyboardReport() const {
-         return current_keyboard_report_;
-      }
       
       /// @brief Retreives the state of the AbortOnFirstError condition.
       ///
       bool getAbortOnFirstError() const { return abort_on_first_error_; }
       
-      /// @brief Retreives the number of keyboard reports that were generated
-      ///        in the current cycle.
-      ///
-      int getNumKeyboardReportsInCycle() const { return n_keyboard_reports_in_cycle_; }
-      
-      /// @brief Retreives the number of overall keyboard reports that were
-      ///        generated since the start of testing.
-      ///
-      int getNumOverallKeyboardReports() const { return n_overall_keyboard_reports_; }
-      
       /// @brief Retreives the current time [ms].
       ///
       TimeType getTime() const { return time_; }
+      
+      /// @brief Sets time.
+      /// 
+      /// @param time The new value for time in [ms].
+      ///
+      void setTime(TimeType time) { time_ = time; }
       
       /// @brief Retreives the current cycle id.
       ///
@@ -504,10 +519,6 @@ class Simulator {
       void headerText();
       
       void footerText();
-      
-      void processKeyboardReport(const HID_KeyboardReport_Data_t &report_data);
-            
-      void processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion);
                  
       void cycleInternal(bool only_log_reports = false);
       
@@ -542,7 +553,9 @@ class Simulator {
       void skipTimeInternal(TimeType delta_t);
       
       void cyclesInternal(int n, 
-                  const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list);
+                  const std::vector<std::shared_ptr<Assertion_>> &cycle_assertion_list);
+      
+      friend class AssertionQueueBundle_;
 };
 
 /// @brief Asserts a condition.

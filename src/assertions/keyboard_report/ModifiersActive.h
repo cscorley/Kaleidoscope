@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/ReportAssertion_.h"
 #include "aux/keycodes.h"
 
 #include "kaleidoscope/key_defs.h"
@@ -69,7 +69,7 @@ class ModifiersActive {
       
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public ReportAssertion_<KeyboardReport> {
    
          public:
       
@@ -86,44 +86,44 @@ class ModifiersActive {
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Modifiers active: ";
+               simulator_->log() << add_indent << "Modifiers active: ";
                
                if(modifiers_.empty()) {
-                  driver_->log() << "<none>";
+                  simulator_->log() << "<none>";
                   return;
                }
                
                for(auto modifier: modifiers_) {
-                  driver_->log() << keycodes::keycodeToName(modifier) << " ";
+                  simulator_->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 
             virtual void describeState(const char *add_indent = "") const {
                
-               driver_->log() << add_indent << "Modifiers actually active: ";
+               simulator_->log() << add_indent << "Modifiers actually active: ";
                
-               auto active_modifiers = driver_->getCurrentKeyboardReport().getActiveModifiers();
+               auto active_modifiers = this->getReport().getActiveModifiers();
                               
                if(active_modifiers.empty()) {
-                  driver_->log() << "<none>";
+                  simulator_->log() << "<none>";
                   return;
                }
                for(auto modifier: active_modifiers) {
-                  driver_->log() << keycodes::keycodeToName(modifier) << " ";
+                  simulator_->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 
             virtual bool evalInternal() override {
                
                for(auto modifier: modifiers_) {
-                  if(!driver_->getCurrentKeyboardReport().isModifierKeycodeActive(modifier)) {
+                  if(!this->getReport().isModifierKeycodeActive(modifier)) {
                      return false;
                   }
                }
                   
                if(exclusively_) {
                   
-                  auto active_modifiers = driver_->getCurrentKeyboardReport().getActiveModifiers();
+                  auto active_modifiers = this->getReport().getActiveModifiers();
                
                   for(auto modifier: active_modifiers) {
                      

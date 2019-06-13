@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
 #include "Simulator.h"
+#include "assertions/Assertion_.h"
 
 #include <vector>
 
@@ -30,6 +30,7 @@ namespace assertions {
 /// @brief Groups multiple assertions.
 /// @details The Grouped assertion only passes if all of its members pass.
 ///
+template<typename _AssertionType>
 class Grouped {
    
    public:
@@ -44,7 +45,7 @@ class Grouped {
  
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public _AssertionType {
          
          public:
 
@@ -53,17 +54,54 @@ class Grouped {
                :  assertions_{std::forward<_Assertions>(assertions)...}
             {}
 
-            virtual void report(const char *add_indent = "") const override;
-
-            virtual void setDriver(const Simulator *simulator) override;
-
-            virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << "A group of assertions";
+            virtual void report(const char *add_indent = "") const override {
+               simulator_->log() << add_indent << "Assertion group:";
+               std::string indent = std::string(add_indent) + "   ";
+               for(const auto &assertion: assertions_) {
+                  assertion->report(indent.c_str());
+               }
             }
 
-            virtual void describeState(const char *add_indent = "") const override;
+            virtual void setDriver(const Simulator *simulator) override {
+               this->Assertion_::setDriver(simulator);
+               
+               for(auto &assertion: assertions_) {
+                  assertion->setDriver(simulator);
+               }
+            }
 
+            virtual void describe(const char *add_indent = "") const override {
+               simulator_->log() << "A group of assertions";
+            }
+
+            virtual void describeState(const char *add_indent = "") const override {
+               if(valid_) {
+                  simulator_->log() << add_indent << "Assertion group valid";
+                  return;
+               }
+               else {
+                  simulator_->log() << add_indent << "Assertion group failed";
+               }
+               std::string indent = std::string(add_indent) + "   ";
+               for(auto &assertion: assertions_) {
+                  if(!assertion->isValid()) {
+                     assertion->describeState(indent.c_str());
+                  }
+               }
+            }
+
+            virtual void setReport(const typename _AssertionType::ReportType *report) override {
+               for(auto &assertion: assertions_) {
+                  assertion->setReport(report);
+               }
+            }
+            
          private:
+            
+            // Bring the parent class's simulator_ member into scope
+            //
+            using _AssertionType::simulator_;
+            using _AssertionType::valid_;
 
             virtual bool evalInternal() override {
                valid_ = true;
@@ -77,11 +115,18 @@ class Grouped {
             
          private:
             
-            std::vector<std::shared_ptr<_Assertion>> assertions_;
+            std::vector<std::shared_ptr<_AssertionType>> assertions_;
       };
       
    KT_AUTO_DEFINE_ASSERTION_INVENTORY(Grouped)
 };
+
+template<typename _Assertion, typename..._MoreAssertions>
+Grouped<_Assertion> group(_Assertion &&assertion,
+                          _MoreAssertions...more_assertions) {
+   return Grouped<_Assertion>{std::forward<_Assertion>(assertion),
+                              std::forward<_MoreAssertions>(more_assertions)...};
+}
 
 } // namespace assertions
 } // namespace simulator

@@ -40,6 +40,21 @@ class KeyboardReport {
    
    public:
       
+      typedef HID_KeyboardReport_Data_t ReportDataType;
+      
+      KeyboardReport() {}
+      
+      /// @brief Constructs based on a report data object.
+      /// @param report_data The report data object to read.
+      ///
+      KeyboardReport(const HID_KeyboardReport_Data_t &report_data);
+      
+      /// @brief Checks equality with another key report.
+      /// @param other Another key report to compare with.
+      /// @returns [bool] True if both reports are equal.
+      ///
+      bool operator==(const KeyboardReport &other) const;
+      
       /// @brief Checks if a keycode is active in the keyboard report.
       /// @param keycode The keycode to check for.
       /// @returns [bool] True if the given keycode is active.
@@ -102,6 +117,8 @@ class KeyboardReport {
       /// @param report_data The new report data struct.
       ///
       void setReportData(const HID_KeyboardReport_Data_t &report_data);
+      
+      static const char *getTypeString() { return "keyboard"; }
       
    private:
    

@@ -17,7 +17,7 @@
  */
 
 #include "Simulator.h"
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 
 #include "Kaleidoscope.h"
 #include "kaleidoscope/hid.h"
@@ -33,7 +33,7 @@ namespace simulator {
 
 std::ostream &DriverStream_::getOStream() const
 {
-   return driver_->getOStream();
+   return simulator_->getOStream();
 }
 
 void DriverStream_::checkLineStart() {
@@ -47,8 +47,8 @@ void DriverStream_::checkLineStart() {
 
 void DriverStream_::reactOnLineStart()
 {
-   this->getOStream() << "t=" << /*std::fixed << std::setw(4) << */driver_->getTime() 
-                      << ", c=" << /*std::fixed << std::setw(4) << */driver_->getCycleId()
+   this->getOStream() << "t=" << /*std::fixed << std::setw(4) << */simulator_->getTime() 
+                      << ", c=" << /*std::fixed << std::setw(4) << */simulator_->getCycleId()
                       << ": ";
 }
 
@@ -76,7 +76,7 @@ ErrorStream::~ErrorStream() {
    this->DriverStream_::reactOnLineStart();
    this->getOStream() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
    
-   if(driver_->getAbortOnFirstError()) {
+   if(simulator_->getAbortOnFirstError()) {
       this->DriverStream_::reactOnLineStart();
       this->getOStream() << "Bailing out.";
       exit(1);
@@ -130,7 +130,7 @@ void HeaderStream::reactOnLineStart()
 }
 
 Test::Test(Simulator *simulator, const char *name) 
-   :  driver_(simulator),
+   :  simulator_(simulator),
       name_(name),
       error_count_start_(simulator->getErrorCount())
 {
@@ -138,19 +138,39 @@ Test::Test(Simulator *simulator, const char *name)
 }
 
 Test::~Test() {
-   driver_->assertNothingQueued();
+   simulator_->assertNothingQueued();
    
-   auto error_count_end = driver_->getErrorCount();
+   auto error_count_end = simulator_->getErrorCount();
    
    if(error_count_start_ != error_count_end) {
-      driver_->error() << "Test " << name_ << " failed";
+      simulator_->error() << "Test " << name_ << " failed";
    }
 }
 
-void Simulator::KeyboardReportConsumer::processKeyboardReport(
-                           const HID_KeyboardReport_Data_t &report_data)
+void Simulator::HIDReportConsumer::processHIDReport(
+                  uint8_t id, const void* data, int len)
 {
-   driver_.processKeyboardReport(report_data);
+   switch(id) {
+      // TODO: React appropriately on the following
+      //
+      case HID_REPORTID_GAMEPAD:
+      case HID_REPORTID_CONSUMERCONTROL:
+      case HID_REPORTID_MOUSE_ABSOLUTE:
+      case HID_REPORTID_MOUSE:
+      case HID_REPORTID_SYSTEMCONTROL:
+         simulator_.log() << "***Ignoring hid report with id = " << id;
+         break;
+      case HID_REPORTID_NKRO_KEYBOARD:
+         {
+         const HID_KeyboardReport_Data_t &report_data 
+            = *static_cast<const HID_KeyboardReport_Data_t *>(data);
+            
+         simulator_.processKeyboardReport(report_data);
+         }
+         break;
+      default:
+         simulator_.error() << "Encountered unknown HID report with id = " << id;
+   }
 }
 
 Simulator::Simulator(std::ostream &out, 
@@ -168,11 +188,11 @@ Simulator::Simulator(std::ostream &out,
       queued_cycle_assertions_{*this, "queued cycle"},
       permanent_cycle_assertions_{*this, "permanent cycle"},
       
-      keyboard_report_consumer_{*this}
+      hid_report_consumer_{*this}
 {
    KeyboardHardware.setEnableReadMatrix(false);
 
-   Keyboard.setKeyboardReportConsumer(keyboard_report_consumer_);
+   ::kaleidoscope::setHIDReportConsumer(hid_report_consumer_);
 
    this->headerText();
 }
@@ -205,7 +225,7 @@ void Simulator::tapKey(uint8_t row, uint8_t col) {
 
 void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                          int tap_interval_cycles,
-                         std::shared_ptr<_Assertion> after_tap_and_cycles_assertion) {
+                         std::shared_ptr<Assertion_> after_tap_and_cycles_assertion) {
    if(after_tap_and_cycles_assertion) {
       after_tap_and_cycles_assertion->setDriver(this);
    }
@@ -227,7 +247,7 @@ void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col,
       // Check and execute the assertion
       //
       if(after_tap_and_cycles_assertion) {
-         this->log() << "Checking assertion after tap " << i;
+         this->log() << "Checking assertion after tap no. " << i;
          if(!after_tap_and_cycles_assertion->eval()) {
             this->error() << "Assertion after tap " << i << " failed";
             after_tap_and_cycles_assertion->report();
@@ -253,7 +273,7 @@ void Simulator::cycle() {
 }
 
 void Simulator::cyclesInternal(int n, 
-                  const std::vector<std::shared_ptr<_Assertion>> &cycle_assertion_list) {
+                  const std::vector<std::shared_ptr<Assertion_>> &cycle_assertion_list) {
    if(n == 0) {
       n = scan_cycles_default_count_;
    }
@@ -389,53 +409,6 @@ void Simulator::footerText() {
    //
    //this->getOStream() << "\x1B[0m";
    this->getOStream() << "\x1B[0m";
-}
-
-void Simulator::processKeyboardReport(const HID_KeyboardReport_Data_t &report_data) {
-   
-   current_keyboard_report_.setReportData(report_data);
-   
-   ++n_overall_keyboard_reports_;
-   ++n_keyboard_reports_in_cycle_;
-   
-   this->log() << "Processing keyboard report "
-         << n_overall_keyboard_reports_
-         << " (" << n_keyboard_reports_in_cycle_ << ". in cycle "
-         << cycle_id_ << ")";
-                  
-   auto n_assertions_queued = queued_keyboard_report_assertions_.size();
-   
-   this->log() << n_assertions_queued
-      << " queued report assertions";
-   
-   if(!queued_keyboard_report_assertions_.empty()) {
-      this->processKeyboardReportAssertion(queued_keyboard_report_assertions_.popFront());
-   }
-      
-   if(!permanent_keyboard_report_assertions_.empty()) {
-      
-      this->log() << permanent_keyboard_report_assertions_.size()
-         << " permanent report assertions";
-      
-      for(auto &assertion: permanent_keyboard_report_assertions_.directAccess()) {
-         this->processKeyboardReportAssertion(assertion);
-      }
-   }
-         
-   if((n_assertions_queued == 0) && error_if_report_without_queued_assertions_) {
-      this->error() << "Encountered a report without assertions being queued";
-   }
-}
-      
-void Simulator::processKeyboardReportAssertion(const std::shared_ptr<_Assertion> &assertion) {
-   
-   bool assertion_passed = assertion->eval();
-   
-   if(!assertion_passed || debug_) {
-      assertion->report();
-   }
-   
-   assertions_passed_ &= assertion_passed;
 }
             
 void Simulator::cycleInternal(bool only_log_reports) {

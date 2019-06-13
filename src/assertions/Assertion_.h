@@ -18,6 +18,9 @@
 
 #pragma once
 
+#undef min
+#undef max
+
 #include <string>
 #include <ostream>
 #include <memory>
@@ -29,6 +32,8 @@ namespace kaleidoscope {
 namespace simulator {
    
 class Simulator;
+
+class VoidReport {};
    
 /// @brief An abstract assertion.
 /// @details This abstract class serves as base class for any
@@ -37,9 +42,11 @@ class Simulator;
 ///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
 ///
-class _Assertion {
+class Assertion_ {
    
    public:
+      
+      typedef VoidReport ReportType;
       
       /// @brief Reports information about the assertion.
       ///
@@ -77,7 +84,7 @@ class _Assertion {
       /// @brief Register the test simulator with the assertion.
       ///
       virtual void setDriver(const Simulator *simulator) {
-         driver_ = simulator;
+         simulator_ = simulator;
       }
 
       /// @brief Retreive the test simulator object that is associated with
@@ -86,7 +93,7 @@ class _Assertion {
       /// @return A pointer to the current test simulator.
       ///
       const Simulator *getDriver() const {
-         return driver_;
+         return simulator_;
       }
      
       /// @brief Checks validity of an assertion.
@@ -115,6 +122,11 @@ class _Assertion {
          return negate_;
       }
       
+      /// @details This noop method is there to satisfy the interface 
+      ///        of derived classes. It is not meant to be called.
+      ///
+      virtual void setReport(const ReportType *report) {}
+      
    protected:
             
       /// @brief Evaluates the condition that is supposed to be asserted.
@@ -127,7 +139,7 @@ class _Assertion {
    protected:
       
       bool valid_ = false;
-      const Simulator *driver_ = nullptr;
+      const Simulator *simulator_ = nullptr;
       
    private:
       
@@ -139,7 +151,7 @@ class _Assertion {
 ///
 /// @param assertion The assertion to negate.
 inline
-std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion) {
+std::shared_ptr<Assertion_> negate(const std::shared_ptr<Assertion_> &assertion) {
    assertion->setNegate(true);
    return assertion;
 }
@@ -160,7 +172,7 @@ std::shared_ptr<_Assertion> negate(const std::shared_ptr<_Assertion> &assertion)
          : assertion_{new WRAPPER::Assertion{std::forward<_Args>(args)...}}    \
       {}                                                                       \
                                                                                \
-      operator std::shared_ptr<_Assertion> () { return assertion_; }
+      operator std::shared_ptr<Assertion_> () { return assertion_; }
       
 #define KT_ASSERTION_STD_CONSTRUCTOR(WRAPPER)                                  \
       WRAPPER()                                                                \

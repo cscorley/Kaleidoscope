@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 
 namespace kaleidoscope {
 namespace simulator {
@@ -39,24 +39,24 @@ class CycleIsNth {
    
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public Assertion_ {
       
          public:
          
             Assertion(int cycle_id) : cycle_id_(cycle_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+               simulator_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Is " << driver_->getCycleId() << ". cycle";
+               simulator_->log() << add_indent << "Is " << simulator_->getCycleId() << ". cycle";
             }
          
          private:
 
             virtual bool evalInternal() override {
-               return driver_->getCycleId() == cycle_id_;
+               return simulator_->getCycleId() == cycle_id_;
             }
             
          private:

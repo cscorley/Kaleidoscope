@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 #include "kaleidoscope/key_defs.h"
 
 #include <functional>
@@ -44,7 +44,7 @@ class CustomAssertion {
       
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public Assertion_ {
             
          public:
             
@@ -53,11 +53,11 @@ class CustomAssertion {
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Custom keyboard report assertion";
+               simulator_->log() << add_indent << "Custom keyboard report assertion";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Custom keyboard report assertion failed";
+               simulator_->log() << add_indent << "Custom keyboard report assertion failed";
             }
 
             virtual bool evalInternal() override {

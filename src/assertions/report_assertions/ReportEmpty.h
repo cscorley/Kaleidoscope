@@ -18,54 +18,43 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-#include "Simulator.h"
+#include "assertions/ReportAssertion_.h"
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that there was a specific number of keyboard reports generated
-///         within a specific scan cycle.
+/// @brief Asserts that the current report is empty.
 ///
-class CycleGeneratesNKeyboardReports {
+template<typename _ReportType>
+class ReportEmpty {
    
    public:
       
-      /// @brief Constructor.
-      /// @param n_reports The number of reports that must have been
-      ///        generated.
-      ///
-      CycleGeneratesNKeyboardReports(int n_reports) 
-         : CycleGeneratesNKeyboardReports(DelegateConstruction{}, n_reports) 
-      {}
+      KT_ASSERTION_STD_CONSTRUCTOR(ReportEmpty)
    
    private:
       
-      class Assertion : public Assertion_ {
-         
+      class Assertion : public ReportAssertion_<_ReportType> {
+            
          public:
 
-            Assertion(int n_reports) : n_reports_(n_reports) {}
-
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
+               simulator_->log() << add_indent << "Report empty";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << simulator_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
+               simulator_->log() << add_indent << "Report: ";
+               this->getReport().dump(*simulator_, add_indent);
             }
 
             virtual bool evalInternal() override {
-               return simulator_->getNumKeyboardReportsInCycle() == n_reports_;
+               return this->getReport().empty();
             }
-            
-         private:
-            
-            int n_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleGeneratesNKeyboardReports)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEmpty)
 };
 
 } // namespace assertions

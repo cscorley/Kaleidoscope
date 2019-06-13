@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 
 #include "kaleidoscope/layers.h"
 
@@ -41,18 +41,18 @@ class TopActiveLayerIs {
       
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public Assertion_ {
    
          public:
 
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Top active layer is " << layer_id_;
+               simulator_->log() << add_indent << "Top active layer is " << layer_id_;
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Top active layer is " << Layer.top();
+               simulator_->log() << add_indent << "Top active layer is " << Layer.top();
             }
 
             virtual bool evalInternal() override {

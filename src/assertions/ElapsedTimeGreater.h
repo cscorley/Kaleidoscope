@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 #include "Simulator.h"
 
 namespace kaleidoscope {
@@ -41,7 +41,7 @@ class ElapsedTimeGreater {
       
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public Assertion_ {
       
          public:
 
@@ -51,16 +51,16 @@ class ElapsedTimeGreater {
             {}
             
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
+               simulator_->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << "Actual time elapsed " 
-                  << driver_->getTime() << " ms";
+               simulator_->log() << add_indent << "Actual time elapsed " 
+                  << simulator_->getTime() << " ms";
             }
 
             virtual bool evalInternal() override {
-               return driver_->getTime() - start_t_ > delta_t_;
+               return simulator_->getTime() - start_t_ > delta_t_;
             }
          
          private:

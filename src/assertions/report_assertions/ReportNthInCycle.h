@@ -18,54 +18,55 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-#include "Simulator.h"
+#include "assertions/ReportAssertion_.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that there was a specific number of keyboard reports generated
-///         within a specific scan cycle.
+/// @brief Asserts that the current report is the nth report in the current cycle.
 ///
-class CycleGeneratesNKeyboardReports {
+template<typename _ReportType>
+class ReportNthInCycle {
    
    public:
       
       /// @brief Constructor.
-      /// @param n_reports The number of reports that must have been
-      ///        generated.
+      /// @param report_id The id of the report to check against.
       ///
-      CycleGeneratesNKeyboardReports(int n_reports) 
-         : CycleGeneratesNKeyboardReports(DelegateConstruction{}, n_reports) 
+      ReportNthInCycle(int report_id)
+         : ReportNthInCycle(DelegateConstruction{}, report_id)
       {}
-   
+      
    private:
       
-      class Assertion : public Assertion_ {
-         
+      class Assertion : public ReportAssertion_<_ReportType> {
+            
          public:
 
-            Assertion(int n_reports) : n_reports_(n_reports) {}
+            Assertion(int report_id) : report_id_(report_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
+               simulator_->log() << add_indent << "Report " << report_id_ << ". in cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << simulator_->getNumKeyboardReportsInCycle() << " keyboard reports encountered";
+               simulator_->log() << add_indent << "Report is " 
+                  << simulator_->getAssertionQueueBundle(Type2Type<_ReportType>{})
+                     .getNumReportsInCycle() << ". in cycle";
             }
 
             virtual bool evalInternal() override {
-               return simulator_->getNumKeyboardReportsInCycle() == n_reports_;
+               return simulator_->getAssertionQueueBundle(
+                  Type2Type<ReportType>{}).getNumReportsInCycle() == report_id_;
             }
             
          private:
             
-            int n_reports_ = -1;      
+            int report_id_ = -1;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleGeneratesNKeyboardReports)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
 };
 
 } // namespace assertions

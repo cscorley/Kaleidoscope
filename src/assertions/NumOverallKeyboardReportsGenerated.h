@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/_Assertion.h"
+#include "assertions/Assertion_.h"
 
 namespace kaleidoscope {
 namespace simulator {
@@ -42,7 +42,7 @@ class NumOverallKeyboardReportsGenerated {
          
    private:
       
-      class Assertion : public _Assertion {
+      class Assertion : public Assertion_ {
       
          public:
             
@@ -50,15 +50,15 @@ class NumOverallKeyboardReportsGenerated {
                : n_overall_reports_(n_overall_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               driver_->log() << add_indent << n_overall_reports_ << " overall keyboard reports expected";
+               simulator_->log() << add_indent << n_overall_reports_ << " overall keyboard reports expected";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               driver_->log() << add_indent << driver_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
+               simulator_->log() << add_indent << simulator_->getNumOverallKeyboardReports() << " overall keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return driver_->getNumOverallKeyboardReports() == n_overall_reports_;
+               return simulator_->getNumOverallKeyboardReports() == n_overall_reports_;
             }
             
          private:
