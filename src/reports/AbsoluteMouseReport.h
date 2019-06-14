@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "MultiReport/Mouse.h"
-#include "Report_.h"
+#include "DeviceAPIs/AbsoluteMouseAPI.h"
+#include "reports/Report_.h"
 
 // Undefine some macros defined by Arduino
 //
@@ -35,30 +35,37 @@ namespace simulator {
    
 class Simulator;
   
-/// @brief An interface hat facilitates analyzing mouse reports.
+/// @brief An interface hat facilitates analyzing absolute mouse reports.
 ///
-class MouseReport : public Report_ {
+class AbsoluteMouseReport : public Report_ {
    
    public:
       
-      typedef HID_MouseReport_Data_t ReportDataType;
+      typedef HID_MouseAbsoluteReport_Data_t ReportDataType;
       
-      static constexpr uint8_t hid_report_type_ = HID_REPORTID_MOUSE;
+      static constexpr uint8_t hid_report_type_ = HID_REPORTID_MOUSE_ABSOLUTE;
       
-      MouseReport() {}
+      /// @brief Default consturctor.
+      /// @details Creates an empty report.
+      ///
+      AbsoluteMouseReport();
       
-      MouseReport(const void *data);
+      /// @brief Constructs based on a raw pointer to report data.
+      /// @details Only use this if you know what you are doning!
+      /// @param data The address where the report data starts.
+      ///
+      AbsoluteMouseReport(const void *);
       
       /// @brief Constructs based on a report data object.
       /// @param report_data The report data object to read.
       ///
-      MouseReport(const HID_MouseReport_Data_t &report_data);
+      AbsoluteMouseReport(const HID_MouseAbsoluteReport_Data_t &report_data);
       
       /// @brief Checks equality with another report.
       /// @param other Another report to compare with.
       /// @returns [bool] True if both reports are equal.
       ///
-      bool operator==(const MouseReport &other) const;
+      bool operator==(const AbsoluteMouseReport &other) const;
       
       /// @brief Checks if a set of buttons is pressed.
       /// @param button_state The state of the mouse buttons to check.
@@ -79,27 +86,22 @@ class MouseReport : public Report_ {
       /// @brief Queries if the right button is pressed.
       /// @returns True if the right button is pressed.
       ///
-      bool isRightButtonPressed() const;
+      bool isRightButtonPressed() const;  
       
-      /// @brief Queries the x-movement stored in the report.
-      /// @returns The x-movement.
+      /// @brief Queries the absolute x-position.
+      /// @returns The absolute x-position.
       ///
-      signed char getMovementX() const;
+      uint16_t getXPosition() const;
       
-      /// @brief Queries the y-movement stored in the report.
-      /// @returns The y-movement.
+      /// @brief Queries the absolute y-position.
+      /// @returns The absolute y-position.
       ///
-      signed char getMovementY() const;
-      
-      /// @brief Queries the verical wheel movement.
-      /// @returns The vertical wheel movement.
+      uint16_t getYPosition() const;
+            
+      /// @brief Queries the absolute wheel-position.
+      /// @returns The absolute wheel-position.
       ///
-      signed char getVerticalWheel() const;  
-      
-      /// @brief Queries the horizontal wheel movement.
-      /// @returns The horizontal wheel movement.
-      ///
-      signed char getHorizontalWheel() const;
+      uint16_t getWheelPosition() const;
           
       /// @brief Checks if the report is empty.
       /// @details Empty means that no buttons are active and
@@ -116,14 +118,14 @@ class MouseReport : public Report_ {
       /// @brief Associates the object with new report data.
       /// @param report_data The new report data struct.
       ///
-      void setReportData(const HID_MouseReport_Data_t &report_data);
+      void setReportData(const HID_MouseAbsoluteReport_Data_t &report_data);
       
-      static const char *typeString() { return "mouse"; }
+      static const char *typeString() { return "absolute mouse"; }
       virtual const char *getTypeString() const override { return typeString(); }
       
    private:
    
-      HID_MouseReport_Data_t report_data_;
+      HID_MouseAbsoluteReport_Data_t report_data_;
 };
 
 } // namespace simulator

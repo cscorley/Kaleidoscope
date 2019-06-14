@@ -121,6 +121,9 @@ class Grouped
          :  Grouped<_AssertionType>(DelegateConstruction{}, std::forward<_Assertions>(assertions)...)
       {}
       
+      /// @brief Constructor.
+      /// @tparam assertions A vector with assertions to group.
+      ///
       Grouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions)
          :  Grouped<_AssertionType>(DelegateConstruction{}, assertions)
       {}
@@ -140,16 +143,25 @@ class Grouped
    KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(Grouped<_AssertionType>)
 };
 
+/// @brief Groups multiple generic report assertions.
+/// @details The Grouped assertion only passes if all of its members pass.
+///
 template<>
 class Grouped<ReportAssertion_>
 {
    public:
       
+      /// @brief Constructor.
+      /// @tparam assertion_ptrs A list of assertions to group.
+      ///
       template<typename..._Assertions>
       Grouped(_Assertions...assertions)
          :  Grouped<ReportAssertion_>(DelegateConstruction{}, std::forward<_Assertions>(assertions)...)
       {}
       
+      /// @brief Constructor.
+      /// @tparam assertions A vector with assertions to group.
+      ///
       Grouped(const std::vector<std::shared_ptr<ReportAssertion_>> &assertions)
          :  Grouped<ReportAssertion_>(DelegateConstruction{}, assertions)
       {}
@@ -181,6 +193,10 @@ class Grouped<ReportAssertion_>
    KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(Grouped<ReportAssertion_>)
 };
 
+/// @brief Groups multiple assertions.
+/// @param assertion A first assertion.
+/// @param more_assertions More assertions.
+///
 template<typename..._MoreAssertions>
 Grouped<Assertion_> group(const std::shared_ptr<Assertion_> &assertion,
                           _MoreAssertions...more_assertions) {
@@ -188,6 +204,10 @@ Grouped<Assertion_> group(const std::shared_ptr<Assertion_> &assertion,
                               std::forward<_MoreAssertions>(more_assertions)...};
 }
 
+/// @brief Groups multiple generic report assertions.
+/// @param assertion A first assertion.
+/// @param more_assertions More assertions.
+///
 template<typename..._MoreAssertions>
 Grouped<ReportAssertion_> group(const std::shared_ptr<ReportAssertion_> &assertion,
                           _MoreAssertions...more_assertions) {

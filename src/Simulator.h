@@ -18,10 +18,11 @@
 
 #pragma once
 
-#include "AssertionQueue.h"
-#include "KeyboardReport.h"
-#include "MouseReport.h"
-#include "AbsoluteMouseReport.h"
+#include "AssertionContainer.h"
+#include "AssertionQueueAdaptor.h"
+#include "reports/KeyboardReport.h"
+#include "reports/MouseReport.h"
+#include "reports/AbsoluteMouseReport.h"
 #include "assertions/generic_report/ReportAssertion.h"
 
 #include "HIDReportConsumer_.h"
@@ -190,7 +191,7 @@ class Simulator {
    
    public:
       
-      typedef int TimeType;
+      typedef unsigned long TimeType;
    
    private:
       
@@ -202,7 +203,7 @@ class Simulator {
       bool assertions_passed_ = true;
    
       int cycle_id_ = 0;
-      TimeType time_ = .0;
+      TimeType time_ = 0;
       int scan_cycles_default_count_ = 5;
       
       mutable int error_count_ = 0;
@@ -215,15 +216,15 @@ class Simulator {
       int n_reports_in_cycle_ = 0;
       int n_overall_reports_ = 0;
       
-      AssertionQueue<ReportAssertion_> queued_report_assertions_;
+      AssertionContainer<ReportAssertion_> queued_report_assertions_;
       
-      AssertionQueue<ReportAssertion<KeyboardReport>> permanent_keyboard_report_assertions_;
-      AssertionQueue<ReportAssertion<MouseReport>> permanent_mouse_report_assertions_;
-      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> permanent_absolute_mouse_report_assertions_;
-      AssertionQueue<ReportAssertion_> permanent_generic_report_assertions_;
+      AssertionContainer<ReportAssertion<KeyboardReport>> permanent_keyboard_report_assertions_;
+      AssertionContainer<ReportAssertion<MouseReport>> permanent_mouse_report_assertions_;
+      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> permanent_absolute_mouse_report_assertions_;
+      AssertionContainer<ReportAssertion_> permanent_generic_report_assertions_;
       
-      AssertionQueue<Assertion_> queued_cycle_assertions_;
-      AssertionQueue<Assertion_> permanent_cycle_assertions_;
+      AssertionContainer<Assertion_> queued_cycle_assertions_;
+      AssertionContainer<Assertion_> permanent_cycle_assertions_;
       
       class HIDReportConsumer : public HIDReportConsumer_
       {
@@ -276,31 +277,31 @@ class Simulator {
          return error_if_report_without_queued_assertions_;
       }
       
-      AssertionQueue<ReportAssertion_> &queuedReportAssertions() {
-         return queued_report_assertions_;
+      AssertionQueueAdaptor<AssertionContainer<ReportAssertion_>> reportAssertionsQueue() {
+         return AssertionQueueAdaptor<AssertionContainer<ReportAssertion_>>{queued_report_assertions_};
       }
       
       /// @brief Retreives the permanent keyboard report assertions.
       ///
-      AssertionQueue<ReportAssertion<KeyboardReport>> &peramentKeyboardReportAssertions() {
+      AssertionContainer<ReportAssertion<KeyboardReport>> &permanentKeyboardReportAssertions() {
          return permanent_keyboard_report_assertions_;
       }
       
       /// @brief Retreives the permanent mouse report assertions.
       ///
-      AssertionQueue<ReportAssertion<MouseReport>> &permanentMouseReportAssertions() {
+      AssertionContainer<ReportAssertion<MouseReport>> &permanentMouseReportAssertions() {
          return permanent_mouse_report_assertions_;
       }
       
       /// @brief Retreives the absolute mouse report assertions.
       ///
-      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> &permanentAbsoluteMouseReportAssertions() {
+      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> &permanentAbsoluteMouseReportAssertions() {
          return permanent_absolute_mouse_report_assertions_;
       }
       
       /// @brief Retreives the generic report assertions.
       ///
-      AssertionQueue<ReportAssertion_> &permanentGenericReportAssertions() {
+      AssertionContainer<ReportAssertion_> &permanentReportAssertions() {
          return permanent_generic_report_assertions_;
       }
       
@@ -308,14 +309,14 @@ class Simulator {
       /// @details The head of the assertion queue is applied at the end of
       ///        the next cycle and removed afterwards.
       ///
-      AssertionQueue<Assertion_> &queuedCycleAssertions() {
-         return queued_cycle_assertions_;
+      AssertionQueueAdaptor<AssertionContainer<Assertion_>> cycleAssertionsQueue() {
+         return AssertionQueueAdaptor<AssertionContainer<Assertion_>>{queued_cycle_assertions_};
       }
       
       /// @brief Retreives the permanent cycle assertions.
       /// @details Permanent cycle assertions are applied after every cycle.
       ///
-      AssertionQueue<Assertion_> &permanentCycleAssertions() {
+      AssertionContainer<Assertion_> &permanentCycleAssertions() {
          return permanent_cycle_assertions_;
       }
       
@@ -351,8 +352,10 @@ class Simulator {
       /// @param num_taps The number of taps.
       /// @param row The keyboard matrix row.
       /// @param col The keyboard matrix col.
-      /// @param tap_interval_cycles The number of cycles that are made 
-      ///        elapsing between individual taps.
+      /// @param tap_interval_cycles The number of cycles that   
+      ///        elapse between individual taps.
+      /// @param after_tap_and_cycles_assertion An assertion
+      ///        that is evaluated after every tap.
       ///
       void multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                        int tap_interval_cycles = 1,
@@ -385,8 +388,8 @@ class Simulator {
       template<typename..._Assertions>
       void cycleExpectReports(_Assertions...assertions) {
          
-         this->queuedReportAssertions()
-            .add(std::forward<_Assertions>(assertions)...);
+         this->reportAssertionsQueue()
+            .queue(std::forward<_Assertions>(assertions)...);
             
          this->cycle();
          
@@ -582,15 +585,15 @@ class Simulator {
       
       void checkCycleDurationSet();
       
-      AssertionQueue<ReportAssertion<KeyboardReport>> &getPermanentReportAssertions(Type2Type<KeyboardReport>) {
+      AssertionContainer<ReportAssertion<KeyboardReport>> &getPermanentReportAssertions(Type2Type<KeyboardReport>) {
          return permanent_keyboard_report_assertions_;
       }
       
-      AssertionQueue<ReportAssertion<MouseReport>> &getPermanentReportAssertions(Type2Type<MouseReport>) {
+      AssertionContainer<ReportAssertion<MouseReport>> &getPermanentReportAssertions(Type2Type<MouseReport>) {
          return permanent_mouse_report_assertions_;
       }
       
-      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> &getPermanentReportAssertions(Type2Type<AbsoluteMouseReport>) {
+      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> &getPermanentReportAssertions(Type2Type<AbsoluteMouseReport>) {
          return permanent_absolute_mouse_report_assertions_;
       }
       
@@ -681,7 +684,10 @@ class Simulator {
          }
 
          for(auto &assertion: permanent_generic_report_assertions_.directAccess()) {
-            this->processReportAssertion(*assertion, report);
+            if(   (assertion->getReportTypeId() == _ReportType::hid_report_type_)
+               || (assertion->getReportTypeId() == GenericReportTypeId)) {
+               this->processReportAssertion(*assertion, report);
+            }
          }
                
          if((n_assertions_queued == 0) && this->getErrorIfReportWithoutQueuedAssertions()) {

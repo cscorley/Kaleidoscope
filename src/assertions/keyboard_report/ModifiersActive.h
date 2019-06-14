@@ -35,7 +35,7 @@ uint8_t toModifier(uint8_t modifier) { return modifier; }
 inline
 uint8_t toModifier(Key key) { return key.keyCode; }
 
-/// @brief Asserts that a specific list of keys is active in the keyboard report.
+/// @brief Asserts that a specific list of modifiers is active in the keyboard report.
 ///
 class ModifiersActive {
    

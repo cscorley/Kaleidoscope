@@ -21,7 +21,7 @@
 #include "Simulator.h"
 #include "Visualization.h"
 #include "aux/keycodes.h"
-#include "KeyboardReport.h"
+#include "reports/KeyboardReport.h"
 #include "LED_Checks.h"
 
 #include "assertions/Grouped.h"
@@ -53,13 +53,13 @@ extern void executeTestFunction();
 /// @details VERY IMPORTANT: Make sure to invoke this macro in your sketch
 ///        to enable testing.
 ///
-#define KALEIDOSCOPE_SIMULATOR_INIT                                              \
+#define KALEIDOSCOPE_SIMULATOR_INIT                                            \
                                                                                \
    namespace kaleidoscope {                                                    \
-   namespace simulator {                                                         \
+   namespace simulator {                                                       \
    /* Forward declare the actual test function */                              \
-   void runSimulator(Simulator &simulator);                                               \
-   } /* namespace simulator */                                                   \
+   void runSimulator(Simulator &simulator);                                    \
+   } /* namespace simulator */                                                 \
    } /* namespace kaleidoscope */                                              \
                                                                                \
    /* This is an override of the weak function defined in main.cpp             \
@@ -67,6 +67,6 @@ extern void executeTestFunction();
     */                                                                         \
    void executeTestFunction() {                                                \
       setup(); /* setup Kaleidoscope */                                        \
-      kaleidoscope::simulator::Simulator simulator(std::cout, false);                  \
-      kaleidoscope::simulator::runSimulator(simulator);                                  \
+      kaleidoscope::simulator::Simulator simulator(std::cout, false);          \
+      kaleidoscope::simulator::runSimulator(simulator);                        \
    }

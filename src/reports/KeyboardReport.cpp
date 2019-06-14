@@ -22,7 +22,7 @@
 //
 #include <stdint.h>
 
-#include "KeyboardReport.h"
+#include "reports/KeyboardReport.h"
 #include "aux/exceptions.h"
 #include "Simulator.h"
 
@@ -30,6 +30,12 @@
 
 namespace kaleidoscope {
 namespace simulator {
+
+   KeyboardReport
+      ::KeyboardReport()
+   :  report_data_{}
+{
+}
 
    KeyboardReport
       ::KeyboardReport(const HID_KeyboardReport_Data_t &report_data) 

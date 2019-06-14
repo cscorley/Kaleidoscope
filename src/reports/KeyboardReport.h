@@ -19,7 +19,7 @@
 #pragma once
 
 #include "kaleidoscope/key_defs.h"
-#include "Report_.h"
+#include "reports/Report_.h"
 
 // Undefine some macros defined by Arduino
 //
@@ -45,8 +45,15 @@ class KeyboardReport : public Report_ {
       
       static constexpr uint8_t hid_report_type_ = HID_REPORTID_NKRO_KEYBOARD;
       
-      KeyboardReport() {}
+      /// @brief Default consturctor.
+      /// @details Creates an empty report.
+      ///
+      KeyboardReport();
       
+      /// @brief Constructs based on a raw pointer to report data.
+      /// @details Only use this if you know what you are doning!
+      /// @param data The address where the report data starts.
+      ///
       KeyboardReport(const void *data);
       
       /// @brief Constructs based on a report data object.

@@ -34,32 +34,32 @@ namespace simulator {
    
 class Simulator;
    
-/// @brief An auxiliary class that represents a queue of assertion objects.
+/// @brief An auxiliary class that represents a container of assertion objects.
 ///
-
 template<typename _AssertionType>
-class AssertionQueue
+class AssertionContainer
 {
    public:
       
-      typedef AssertionQueue<_AssertionType> ThisType;
+      typedef AssertionContainer<_AssertionType> ThisType;
+      typedef _AssertionType AssertionType;
       
       /// @brief Constructor.
       /// @param simulator The associated Simulator object.
       ///
-      AssertionQueue(Simulator &simulator) 
+      AssertionContainer(Simulator &simulator) 
          :  simulator_(simulator)
       {}
       
-      /// @brief Queues assertions.
+      /// @brief Adds assertions.
       ///
-      /// @param assertions The assertions to be added to the queue.
+      /// @param assertions The assertions to be added to the container.
       ///
       ThisType &add(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
-      /// @brief Queues assertions.
+      /// @brief Adds assertions.
       ///
-      /// @tparam assertions The assertions to be added to the queue.
+      /// @tparam assertions The assertions to be added to the container.
       ///
       template<typename..._Assertions>
       ThisType &add(_Assertions...assertions) {
@@ -67,15 +67,15 @@ class AssertionQueue
          return *this;
       }
       
-      /// @brief Queues a list of assertion.
+      /// @brief Adds a list of assertion.
       ///
-      /// @param assertions The assertions to be added to the queue.
+      /// @param assertions The assertions to be added to the container.
       ///
       ThisType &addGrouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
-      /// @brief Queues a list of assertion.
+      /// @brief Adds a list of assertion.
       ///
-      /// @tparam assertions The assertions to be added to the queue.
+      /// @tparam assertions The assertions to be added to the container.
       ///
       template<typename..._Assertions>
       ThisType &addGrouped(_Assertions...assertions) {
@@ -86,45 +86,45 @@ class AssertionQueue
       
       /// @brief Removes an assertion.
       ///
-      /// @param assertion The assertion to be removed from the queue.
+      /// @param assertion The assertion to be removed from the container.
       ///
       ThisType &remove(const std::shared_ptr<_AssertionType> &assertion);
       
       /// @brief Removes a list of assertions.
       ///
-      /// @param assertions The assertions to be removed from the queue.
+      /// @param assertions The assertions to be removed from the container.
       /// 
       ThisType &remove(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
-      /// @brief Removes the assertion at the head of the queue and returns it.
+      /// @brief Removes the assertion at the head of the container and returns it.
       ///
-      /// @returns The former front element of the queue.
+      /// @returns The former front element of the container.
       ///
       std::shared_ptr<_AssertionType> popFront();
       
-      /// @brief Retreives the number of entries in the queue.
+      /// @brief Retreives the number of entries in the container.
       ///
       std::size_t size() const {
-         return queue_.size();
+         return container_.size();
       }
-      /// @brief Checks the queue for being empty.
+      /// @brief Checks the container for being empty.
       ///
-      /// @returns True if the queue is empty, false otherwise.
+      /// @returns True if the container is empty, false otherwise.
       ///
       bool empty() const { 
-         return queue_.empty();
+         return container_.empty();
       }
       
-      /// @brief Clear the entire queue.
+      /// @brief Clear the entire container.
       ///
       void clear() {
-         queue_.clear();
+         container_.clear();
       }
       
       /// @brief Enables direct access to the undelying std::deque object.
       ///
       const std::deque<std::shared_ptr<_AssertionType>> &directAccess() {
-         return queue_;
+         return container_;
       }
       
    private:
@@ -137,7 +137,7 @@ class AssertionQueue
    private:
       
       Simulator &simulator_;
-      std::deque<std::shared_ptr<_AssertionType>> queue_;
+      std::deque<std::shared_ptr<_AssertionType>> container_;
 };
 
 } // namespace simulator

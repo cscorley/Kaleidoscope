@@ -31,6 +31,8 @@ namespace simulator {
    
 void runSimulator(Simulator &simulator) {
 
+   using namespace terminal_escape_sequences;
+   
    // Activate the rainbow wave LED effect
    //
    simulator.multiTapKey(2 /*num. taps*/, 

@@ -112,7 +112,17 @@ class Assertion_ {
       ///
       /// @param state The negation state.
       ///
-      void setNegate(bool state) {
+      void negate(bool state = true) {
+         negate_ = state;
+      }
+      
+      /// @brief Set the boolean negation state of the assertion validity check.
+      /// @details If negation is enabled, an assertion is assumed to be correct
+      ///        if the non negated version would fail.
+      ///
+      /// @param state The negation state.
+      ///
+      void setNegate(bool state = true) {
          negate_ = state;
       }
       
@@ -156,16 +166,6 @@ class Assertion_ {
       bool negate_ = false;
 };
 
-/// @brief Negates an assertion.
-/// @details Inverts the meaning of the assertion.
-///
-/// @param assertion The assertion to negate.
-template<typename _AssertionType>
-std::shared_ptr<_AssertionType> negate(const std::shared_ptr<_AssertionType> &assertion) {
-   assertion->setNegate(true);
-   return assertion;
-}
-
 } // namespace simulator
 } // namespace kaleidoscope
       
@@ -185,7 +185,7 @@ std::shared_ptr<_AssertionType> negate(const std::shared_ptr<_AssertionType> &as
       operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> () { return assertion_; }                                                           \
       std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> ptr() { return assertion_; }                                                           \
                                                                                \
-      WRAPPER &negate() { assertion_->setNegate(true); return *this; }
+      WRAPPER &negate(bool state = true) { assertion_->negate(state); return *this; }
       
 #define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                   \
    KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER,)

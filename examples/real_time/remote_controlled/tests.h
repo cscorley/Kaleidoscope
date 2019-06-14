@@ -51,7 +51,7 @@ void runSimulator(Simulator &simulator) {
                         1 /* num. cycles after each tap */
    );
 
-   simulator.permanentKeyboardReportAssertions().add(DumpReport{});
+   simulator.permanentReportAssertions().add(DumpReport{});
    
    std::cout << clear_screen << std::flush;
    std::cout << cursor_to_upper_left << std::flush;

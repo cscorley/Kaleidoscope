@@ -28,6 +28,7 @@ namespace model01 {
 /// @details Use this string with the renderKeyboard(...) function.
 ///
 extern const char *ascii_keyboard;
+
 } // namespace model01
 } // namespace keyboardio
 } // namespace simulator

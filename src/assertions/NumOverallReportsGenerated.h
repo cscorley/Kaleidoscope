@@ -24,9 +24,9 @@ namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Checks the number of overall reports.
+/// @brief Checks the number of overall reports of a specific type.
 /// @details Asserts that there was a specific number of reports 
-///          generated since the assertion was instanciated.
+///          generated since testing started.
 ///
 template<typename _ReportType>
 class NumOverallReportsGenerated {
@@ -34,8 +34,8 @@ class NumOverallReportsGenerated {
    public:
       
       /// @brief Constructor.
-      /// @param n_overall_reports The number of reports whose
-      ///        generation is being asserted.
+      /// @param n_overall_reports The expected overall number of reports 
+      ///                          of type _ReportType
       ///
       NumOverallReportsGenerated(int n_overall_reports) 
          : NumOverallReportsGenerated(DelegateConstruction{}, n_overall_reports) 

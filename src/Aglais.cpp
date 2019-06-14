@@ -44,7 +44,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
       virtual void onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) override {
          simulator_.cycle();
          
-         if(!simulator_.queuedReportAssertions().empty()) {
+         if(!simulator_.reportAssertionsQueue().empty()) {
             simulator_.error() << "Report assertions are left in queue";
          }
          
@@ -68,21 +68,21 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
                break;
             case HID_REPORTID_MOUSE_ABSOLUTE:
                {
-                  simulator_.queuedReportAssertions().add(
+                  simulator_.reportAssertionsQueue().queue(
                      assertions::ReportEquals<AbsoluteMouseReport>{data}
                   );
                }
                break;
             case HID_REPORTID_MOUSE:
                {
-                  simulator_.queuedReportAssertions().add(
+                  simulator_.reportAssertionsQueue().queue(
                      assertions::ReportEquals<MouseReport>{data}
                   );
                }
                break;
             case HID_REPORTID_NKRO_KEYBOARD:
                {
-                  simulator_.queuedReportAssertions().add(
+                  simulator_.reportAssertionsQueue().queue(
                      assertions::ReportEquals<KeyboardReport>{data}
                   );
                }

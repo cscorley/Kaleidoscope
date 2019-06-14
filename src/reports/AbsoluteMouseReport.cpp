@@ -16,94 +16,92 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MouseReport.h"
+#include "reports/AbsoluteMouseReport.h"
 #include "Simulator.h"
- 
+
 namespace kaleidoscope {
 namespace simulator {
    
-   MouseReport::MouseReport(const HID_MouseReport_Data_t &report_data)
+   AbsoluteMouseReport::AbsoluteMouseReport()
+   :  report_data_{}
+{
+}
+
+   AbsoluteMouseReport::AbsoluteMouseReport(const HID_MouseAbsoluteReport_Data_t &report_data)
 {
    this->setReportData(report_data);
 }
 
-   MouseReport::MouseReport(const void *data)
+   AbsoluteMouseReport::AbsoluteMouseReport(const void *data)
 {
-   const ReportDataType &report_data 
+   const ReportDataType &report_data
             = *static_cast<const ReportDataType *>(data);
    
    this->setReportData(report_data);
 }
 
-bool MouseReport::operator==(const MouseReport &other) const
+bool AbsoluteMouseReport::operator==(const AbsoluteMouseReport &other) const
 {
    return memcmp(&report_data_, &other.report_data_, sizeof(report_data_)) == 0;
 }
-      
-bool MouseReport::areButtonsPressed(uint8_t button_state) const
+
+bool AbsoluteMouseReport::areButtonsPressed(uint8_t button_state) const
 {
    return report_data_.buttons == button_state;
 }
 
-bool MouseReport::isLeftButtonPressed() const
+bool AbsoluteMouseReport::isLeftButtonPressed() const
 {
    return report_data_.buttons & MOUSE_LEFT;
 } 
 
-bool MouseReport::isMiddleButtonPressed() const
+bool AbsoluteMouseReport::isMiddleButtonPressed() const
 {
    return report_data_.buttons & MOUSE_MIDDLE;
 }  
 
-bool MouseReport::isRightButtonPressed() const
+bool AbsoluteMouseReport::isRightButtonPressed() const
 {
    return report_data_.buttons & MOUSE_RIGHT;
 }
 
-signed char MouseReport::getMovementX() const
+uint16_t AbsoluteMouseReport::getXPosition() const
 {
    return report_data_.xAxis;
 }
 
-signed char MouseReport::getMovementY() const
+uint16_t AbsoluteMouseReport::getYPosition() const
 {
    return report_data_.yAxis;
 }
 
-signed char MouseReport::getVerticalWheel() const
+uint16_t AbsoluteMouseReport::getWheelPosition() const
 {
-   return report_data_.vWheel;
-}  
-
-signed char MouseReport::getHorizontalWheel() const
-{
-   return report_data_.hWheel;
+   return report_data_.wheel;
 }
 
-bool MouseReport::isEmpty() const
+bool AbsoluteMouseReport::isEmpty() const
 {
    return (report_data_.buttons == 0)
        && (report_data_.xAxis == 0)
        && (report_data_.yAxis == 0)
-       && (report_data_.vWheel == 0)
-       && (report_data_.hWheel == 0);
+       && (report_data_.wheel == 0);
 }
 
-void MouseReport::dump(const Simulator &simulator, const char *add_indent) const
+void AbsoluteMouseReport::dump(const Simulator &simulator, const char *add_indent) const
 {
-  simulator.log() << add_indent << "Mouse report content:";
+  simulator.log() << add_indent << "Absolute mouse report content:";
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
   simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
-  simulator.log() << add_indent << "  x-axis motion: " << this->getMovementX();
-  simulator.log() << add_indent << "  y-axis motion: " << this->getMovementY();
-  simulator.log() << add_indent << "  horizontal wheel motion: " << this->getHorizontalWheel();
-  simulator.log() << add_indent << "  vertical wheel motion: " << this->getVerticalWheel();
+  simulator.log() << add_indent << "  x-axis position: " << this->getXPosition();
+  simulator.log() << add_indent << "  y-axis position: " << this->getYPosition();
+  simulator.log() << add_indent << "  wheel position: " << this->getWheelPosition();
 }
 
-void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data)
+void AbsoluteMouseReport::setReportData(const HID_MouseAbsoluteReport_Data_t &report_data)
 {
-   memcpy(&report_data_, &report_data, sizeof(report_data_));
+   memcpy(&report_data_, &report_data_, sizeof(report_data_));
 }
 
 } // namespace simulator

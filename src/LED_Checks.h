@@ -24,9 +24,16 @@ namespace kaleidoscope {
 namespace simulator {
    
 class Simulator;
-   
+
+/// @brief Dumps the state of the key LEDs as C++ code
+///
 void dumpKeyLEDState();
 
+/// @brief Compares the current state of the key LEDs to a representation
+///        stored in an array.
+/// @param key_led_colors An array of key LED state data to compare the current
+///                       state with.
+///
 void assertKeyLEDState(const Simulator &simulator,
                        const cRGB *key_led_colors);
    

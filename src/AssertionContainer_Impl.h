@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "AssertionQueue.h"
+#include "AssertionContainer.h"
 #include "assertions/Grouped.h"
 #include "aux/demangle.h"
 
@@ -34,13 +34,13 @@ namespace kaleidoscope {
 namespace simulator {
 
 template<typename _AssertionType>
-AssertionQueue<_AssertionType> &
-   AssertionQueue<_AssertionType>
+AssertionContainer<_AssertionType> &
+   AssertionContainer<_AssertionType>
       ::add(const std::vector<std::shared_ptr<_AssertionType>> &assertions) 
 {
    for(auto &assertion: assertions) {
       this->configureAssertion(assertion);
-      queue_.push_back(assertion);
+      container_.push_back(assertion);
       simulator_.log() << "Adding " << _AssertionType::typeString() << " assertion: " 
          << type(*assertion);
    }
@@ -48,11 +48,11 @@ AssertionQueue<_AssertionType> &
 }
 
 template<typename _AssertionType>
-AssertionQueue<_AssertionType> &
-   AssertionQueue<_AssertionType>
+AssertionContainer<_AssertionType> &
+   AssertionContainer<_AssertionType>
       ::addGrouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions)
 {
-   queue_.push_back(
+   container_.push_back(
       this->generateAssertionGroup(assertions)
    );
    
@@ -65,15 +65,15 @@ AssertionQueue<_AssertionType> &
 }
 
 template<typename _AssertionType>
-AssertionQueue<_AssertionType> &
-   AssertionQueue<_AssertionType>
+AssertionContainer<_AssertionType> &
+   AssertionContainer<_AssertionType>
       ::remove(const std::shared_ptr<_AssertionType> &assertion)
 {
    bool remove_success = false;
    
-   for (auto iter = queue_.begin(); iter != queue_.end() ; ) {
+   for (auto iter = container_.begin(); iter != container_.end() ; ) {
    if(*iter == assertion) {
-      iter = queue_.erase(iter);
+      iter = container_.erase(iter);
       remove_success = true;
       break;
    }
@@ -93,8 +93,8 @@ AssertionQueue<_AssertionType> &
 }
 
 template<typename _AssertionType>
-AssertionQueue<_AssertionType> &
-   AssertionQueue<_AssertionType>
+AssertionContainer<_AssertionType> &
+   AssertionContainer<_AssertionType>
       ::remove(const std::vector<std::shared_ptr<_AssertionType>> &assertions)
 {
    for(auto &assertion: assertions) {
@@ -105,17 +105,17 @@ AssertionQueue<_AssertionType> &
 
 template<typename _AssertionType>
 std::shared_ptr<_AssertionType> 
-   AssertionQueue<_AssertionType>
+   AssertionContainer<_AssertionType>
       ::popFront()
 {
-   auto front_element = queue_.front();
-   queue_.pop_front();
+   auto front_element = container_.front();
+   container_.pop_front();
    return front_element;
 }
 
 template<typename _AssertionType>
 void 
-   AssertionQueue<_AssertionType>
+   AssertionContainer<_AssertionType>
       ::configureAssertion(const std::shared_ptr<_AssertionType> &assertion)
 {
    assertion->setSimulator(&simulator_);
@@ -123,7 +123,7 @@ void
 
 template<typename _AssertionType>
 std::shared_ptr<_AssertionType>
-   AssertionQueue<_AssertionType>
+   AssertionContainer<_AssertionType>
       ::generateAssertionGroup(
       const std::vector<std::shared_ptr<_AssertionType>> &assertions)
 {

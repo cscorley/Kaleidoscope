@@ -17,7 +17,7 @@
  */
 
 #include "Simulator.h"
-#include "AssertionQueue_Impl.h"
+#include "AssertionContainer_Impl.h"
 #include "assertions/Assertion_.h"
 
 #include "Kaleidoscope.h"
@@ -31,14 +31,16 @@
 
 namespace kaleidoscope {
 namespace simulator {
+   
+unsigned long millis = 0;
 
 // Explicit template instanciations
 //
-template class AssertionQueue<ReportAssertion<KeyboardReport>>;
-template class AssertionQueue<ReportAssertion<MouseReport>>;
-template class AssertionQueue<ReportAssertion<AbsoluteMouseReport>>;
-template class AssertionQueue<ReportAssertion_>;
-template class AssertionQueue<Assertion_>;
+template class AssertionContainer<ReportAssertion<KeyboardReport>>;
+template class AssertionContainer<ReportAssertion<MouseReport>>;
+template class AssertionContainer<ReportAssertion<AbsoluteMouseReport>>;
+template class AssertionContainer<ReportAssertion_>;
+template class AssertionContainer<Assertion_>;
 
 std::ostream &SimulatorStream_::getOStream() const
 {
@@ -445,6 +447,10 @@ void Simulator::cycleInternal(bool only_log_reports) {
    if(!only_log_reports) {
       this->log() << "Scan cycle " << cycle_id_;
    }
+   
+   // Set the global simulator time.
+   //
+   millis = time_;
 
    ::loop();
    
@@ -509,7 +515,7 @@ void Simulator::runRealtime(TimeType duration,
    
    static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
       
-   for(int i = 0; i < n_cycles; ++i) {
+   for(decltype(n_cycles) i = 0; i < n_cycles; ++i) {
       
       auto begin_cycle = std::clock();
       
@@ -583,3 +589,7 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_function)
       
 } // namespace simulator
 } // namespace kaleidoscope
+
+unsigned long millis(void) {
+  return kaleidoscope::simulator::millis;
+}

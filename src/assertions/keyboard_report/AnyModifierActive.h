@@ -24,7 +24,7 @@ namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that any modifiers are active in the current report.
+/// @brief Asserts that any modifiers are active in the current keyboard report.
 ///
 class AnyModifierActive {
    

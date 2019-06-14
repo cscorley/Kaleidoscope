@@ -38,12 +38,11 @@ void runSimulator(Simulator &simulator) {
       
       // Assert that the next cycle generates exactly one keyboard report.
       //
-      simulator.queuedCycleAssertions().add(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
       
-      simulator.pressKey(2, 1); // A
+      simulator.tapKey(2, 1); // A
       simulator.cycleExpectReports(KeycodesActive{Key_A});
 
-      simulator.releaseKey(2, 1); // A
       simulator.cycleExpectReports(ReportEmpty{});
    }
    
@@ -54,7 +53,7 @@ void runSimulator(Simulator &simulator) {
       simulator.pressKey(2, 1); // A
       simulator.cycleExpectReports(KeycodesActive{Key_A});
          
-      simulator.queuedReportAssertions().add(
+      simulator.reportAssertionsQueue().queue(
          group(
             KeycodesActive{Key_A},
             KeycodesActive{Key_B},
@@ -122,11 +121,11 @@ void runSimulator(Simulator &simulator) {
    {
       auto test = simulator.newTest("5");
       
-      simulator.queuedCycleAssertions().add(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
       simulator.tapKey(3, 7); // left shift
       simulator.cycleExpectReports(ModifiersActive{Key_LeftShift});
       
-      simulator.queuedCycleAssertions().add(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
       simulator.cycleExpectReports(ReportEmpty{});
    }
    
@@ -134,7 +133,7 @@ void runSimulator(Simulator &simulator) {
    {
       auto test = simulator.newTest("6");
 
-      simulator.queuedCycleAssertions().add(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
       simulator.pressKey(3, 7); // left shift
       simulator.cycleExpectReports(
          group(
@@ -162,7 +161,7 @@ void runSimulator(Simulator &simulator) {
    {
       auto test = simulator.newTest("7");
    
-      simulator.queuedCycleAssertions().addGrouped(
+      simulator.cycleAssertionsQueue().queueGrouped(
          NumOverallReportsGenerated<KeyboardReport>{16},
          CycleIsNth{34},
          ElapsedTimeGreater{160}

@@ -19,13 +19,20 @@
 #pragma once
 
 #include "assertions/Assertion_.h"
-#include "Report_.h"
+#include "reports/Report_.h"
 
 #include <cassert>
 
 namespace kaleidoscope {
 namespace simulator {
    
+/// @brief An abstract report assertion.
+/// @details This abstract class serves as base class for any
+///        report assertions.
+///
+///        **Important:** This class is not part of Kaleidoscope-Simulator's 
+///                   public API. It is meant for internal use only.
+///
 class ReportAssertion_ : public Assertion_
 {
    public:
@@ -51,9 +58,7 @@ class ReportAssertion_ : public Assertion_
       const Report_ *report_ = nullptr;
 };
    
-/// @brief An abstract report assertion.
-/// @details This abstract class serves as base class for any
-///        report assertions.
+/// @brief A report assertion.
 ///
 ///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
