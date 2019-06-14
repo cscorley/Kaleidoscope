@@ -26,15 +26,18 @@
 #include <istream>
 
 namespace aglais {
+   
+class Consumer_;
+
 namespace v1 {
 
 class Parser {
 
    public:
       
-      constexpr uint8_t protocol_version = aglais::V1::protocol_version;
+      static constexpr uint8_t protocol_version = aglais::v1::protocol_version;
       
-      Parser(uint8_t transfer_type, int start_line_id) :
+      Parser(uint8_t transfer_type, int start_line_id)
          :  transfer_type_(transfer_type),
             line_id_(start_line_id)
       {}
@@ -51,6 +54,8 @@ class Parser {
       
       uint8_t readCommandId(std::istream &line_stream) const;
       uint8_t readSubCommandId(std::istream &line_stream) const;
+      
+      bool readNextLine(std::istream &in, std::string &line);
       
       bool parseHeaderLine(std::string &line, Consumer_ &consumer) const;
       void parseAction(std::istream &line_stream, Consumer_ &consumer) const;

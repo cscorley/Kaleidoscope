@@ -103,6 +103,8 @@ struct TransferType {
 };
 
 constexpr uint8_t protocol_version = 1;
+
+constexpr char comment_symbol = '#';
    
 } // namespace V1
 } // namespace aglais

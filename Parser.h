@@ -36,7 +36,7 @@ class Parser {
       
    private:
       
-      uint8_t transfer_type = 0;
+      uint8_t transfer_type_ = 0;
       uint8_t protocol_version_ = 0;
 };
    

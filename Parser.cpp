@@ -35,14 +35,14 @@ void Parser::parse(const char *program, Consumer_ &consumer)
    
    {
       if(!std::getline(in, line)) {
-         this->parserError(program, line);
+         this->parserError(program, line_id);
       }
       ++line_id;
       
       std::istringstream tt_in(line);
       tt_in >> transfer_type_ >> protocol_version_;
 
-      if(transfer_type_ == TransferType::none) {
+      if(transfer_type_ == 0) {
          this->parserError(program, line_id);
       }
       
@@ -54,7 +54,7 @@ void Parser::parse(const char *program, Consumer_ &consumer)
    switch(protocol_version_) {
       case 1:
       {
-         V1::Parser delegate_parser(transfer_type_, line_);
+         v1::Parser delegate_parser(transfer_type_, line_id);
          delegate_parser.parse(in, consumer);
       }
    }

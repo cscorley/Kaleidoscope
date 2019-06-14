@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace aglais {
    
    class Consumer_ {
@@ -26,14 +28,14 @@ namespace aglais {
          
          virtual ~Consumer_() {}
          
-         virtual onFirmwareId(const char *firmware_id) {}
-         virtual onStartCycle(uint16_t cycle_id, uint16_t cycle_start_time) {}
-         virtual onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) {}
-         virtual onKeyPressed(uint8_t row, uint8_t col) {}
-         virtual onKeyReleased(uint8_t row, uint8_t col) {}
-         virtual onKeyboardReport(uint8_t id, int length, const uint8_t *data) {}
-         virtual onSetTime(uint16_t time) {}
-         virtual onCycle(uint16_t cycle_id, uint16_t cycle_start_time, uint16_t cycle_end_time) {}
+         virtual void onFirmwareId(const char *firmware_id) {}
+         virtual void onStartCycle(uint16_t cycle_id, uint16_t cycle_start_time) {}
+         virtual void onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) {}
+         virtual void onKeyPressed(uint8_t row, uint8_t col) {}
+         virtual void onKeyReleased(uint8_t row, uint8_t col) {}
+         virtual void onKeyboardReport(uint8_t id, int length, const void *data) {}
+         virtual void onSetTime(uint16_t time) {}
+         virtual void onCycle(uint16_t cycle_id, uint16_t cycle_start_time, uint16_t cycle_end_time) {}
          
    };
 } // namespace aglais

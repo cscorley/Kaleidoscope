@@ -19,6 +19,7 @@
 #ifdef ARDUINO_VIRTUAL
 
 #include "aglais/v1/Parser.h"
+#include "aglais/Consumer_.h"
 
 #include <map>
 #include <exception>
@@ -91,7 +92,7 @@ uint8_t Parser::readCommandId(std::istream &line_stream) const
    uint8_t command_id = 0;
    
    if(transfer_type_ == TransferType::verbose) {
-      static constexpr buf_length = 1024;
+      static constexpr int buf_length = 1024;
       char buffer[buf_length];
       
       line_stream.get(buffer, buf_length, ' ');
@@ -114,7 +115,7 @@ uint8_t Parser::readSubCommandId(std::istream &line_stream) const
    uint8_t sub_command_id = 0;
    
    if(transfer_type_ == TransferType::verbose) {
-      static constexpr buf_length = 1024;
+      static constexpr int buf_length = 1024;
       char buffer[buf_length];
       
       line_stream.get(buffer, buf_length, ' ');
@@ -142,11 +143,11 @@ bool Parser::parseHeaderLine(std::string &line, Consumer_ &consumer) const
    switch(command_id) {
       case Command::firmware_id:
       {
-         std::string firmware_id;
+         static constexpr int buf_length = 1024;
+         char buffer[buf_length];
          line_stream.get(buffer, buf_length, '\"');
-         line_stream.skip();
-         int n_read = line_stream.get(buffer, buf_length, '\"');
-         buffer[n_read] = '\0';
+         line_stream.ignore();
+         line_stream.get(buffer, buf_length, '\"');
          consumer.onFirmwareId(buffer);
          return true;
       }
@@ -236,7 +237,7 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
          {
             uint16_t time = 0;
             line_stream >> time;
-            consumer.onSetTime(cycle_id, time);
+            consumer.onSetTime(time);
          }
          break;
       case Command::cycle:
@@ -253,22 +254,38 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
    }
    
    return false;
+}
+
+bool Parser::readNextLine(std::istream &in, std::string &line)
+{
+   bool read_success = false;
+   do {      
+      if(!std::getline(in, line)) {
+         return false;
+      }
+      ++line_id_;
+      
+      if(!line.empty() && (line[0] != comment_symbol)) {
+         break;
+      }         
+   } while(1);
+   
+   return true;
+}
    
 void Parser::parse(std::istream &in, Consumer_ &consumer)
 {
    std::string line;
    
-   if(!std::getline(in, line)) {
-      this->parserError();
-   }
-   ++line_id_;
-   bool is_header_line = this->parseHeader(line, consumer);
+   this->readNextLine(in, line);
+   
+   bool is_header_line = this->parseHeaderLine(line, consumer);
    
    if(!is_header_line) {
       this->parseBodyLine(line, consumer);
    }
    
-   while(std::getline(in, line)) {
+   while(this->readNextLine(in, line)) {
       ++line_id_;
       this->parseBodyLine(line, consumer);
    }
