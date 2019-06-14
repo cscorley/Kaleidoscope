@@ -36,6 +36,15 @@ namespace simulator {
 {
    this->setReportData(report_data);
 }
+
+   KeyboardReport
+      ::KeyboardReport(const void *data)
+{
+   const ReportDataType &report_data 
+            = *static_cast<const ReportDataType *>(data);
+   
+   this->setReportData(report_data);
+}
       
 bool 
    KeyboardReport

@@ -48,11 +48,11 @@ class TopActiveLayerIs {
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Top active layer is " << layer_id_;
+               this->getSimulator()->log() << add_indent << "Top active layer is " << layer_id_;
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Top active layer is " << Layer.top();
+               this->getSimulator()->log() << add_indent << "Top active layer is " << Layer.top();
             }
 
             virtual bool evalInternal() override {

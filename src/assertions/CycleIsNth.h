@@ -46,17 +46,17 @@ class CycleIsNth {
             Assertion(int cycle_id) : cycle_id_(cycle_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+               this->getSimulator()->log() << add_indent << "Is " << cycle_id_ << ". cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Is " << simulator_->getCycleId() << ". cycle";
+               this->getSimulator()->log() << add_indent << "Is " << this->getSimulator()->getCycleId() << ". cycle";
             }
          
          private:
 
             virtual bool evalInternal() override {
-               return simulator_->getCycleId() == cycle_id_;
+               return this->getSimulator()->getCycleId() == cycle_id_;
             }
             
          private:

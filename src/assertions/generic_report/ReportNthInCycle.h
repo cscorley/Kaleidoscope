@@ -18,58 +18,52 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-#include "Simulator.h"
+#include "assertions/generic_report/ReportAssertion.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that that time that elapsed is greater than a given time in [ms].
+/// @brief Asserts that the current report is the nth report in the current cycle.
 ///
-class ElapsedTimeGreater {
+class ReportNthInCycle {
    
    public:
-   
+      
       /// @brief Constructor.
-      /// @param delta_t The amount of time that is asserted being elapsed.
-      /// @param start_t An optional start point in time as reference (defaults to zero).
+      /// @param report_id The id of the report to check against.
       ///
-      ElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
-         :  ElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
+      ReportNthInCycle(int report_id)
+         : ReportNthInCycle(DelegateConstruction{}, report_id)
       {}
       
    private:
       
-      class Assertion : public Assertion_ {
-      
+      class Assertion : public ReportAssertion_ {
+            
          public:
 
-            Assertion(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
-               :  start_t_(start_t),
-                  delta_t_(delta_t)
-            {}
-            
+            Assertion(int report_id) : report_id_(report_id) {}
+
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
+               this->getSimulator()->log() << add_indent << "Report " << report_id_ << ". in cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Actual time elapsed " 
-                  << this->getSimulator()->getTime() << " ms";
+               this->getSimulator()->log() << add_indent << "Report is " 
+                  << this->getSimulator()->getNumReportsInCycle() << ". in cycle";
             }
 
             virtual bool evalInternal() override {
-               return this->getSimulator()->getTime() - start_t_ > delta_t_;
+               return this->getSimulator()->getNumReportsInCycle() == report_id_;
             }
-         
+            
          private:
             
-            Simulator::TimeType start_t_ = .0;
-            Simulator::TimeType delta_t_ = .0;
+            int report_id_ = -1;
       };
-      
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ElapsedTimeGreater)
+   
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
 };
 
 } // namespace assertions

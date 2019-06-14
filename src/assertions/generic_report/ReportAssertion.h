@@ -19,11 +19,37 @@
 #pragma once
 
 #include "assertions/Assertion_.h"
+#include "Report_.h"
 
 #include <cassert>
 
 namespace kaleidoscope {
 namespace simulator {
+   
+class ReportAssertion_ : public Assertion_
+{
+   public:
+      
+      typedef Report_ ReportType;
+      typedef ReportAssertion_ AssertionBaseType;
+      
+      virtual uint8_t getReportTypeId() const { return GenericReportTypeId; }
+      
+      virtual void setReport(const Report_ *report) override {
+         report_ = report;
+      }
+      
+   protected:
+      
+      virtual const Report_ &getReport() const { 
+         assert(report_);
+         return *report_;
+      }
+      
+   protected:
+      
+      const Report_ *report_ = nullptr;
+};
    
 /// @brief An abstract report assertion.
 /// @details This abstract class serves as base class for any
@@ -33,26 +59,30 @@ namespace simulator {
 ///                   public API. It is meant for internal use only.
 ///
 template<typename _ReportType>
-class ReportAssertion_ : public Assertion_
+class ReportAssertion : public ReportAssertion_
 {
    public:
       
       typedef _ReportType ReportType;
       
-      virtual void setReport(const _ReportType *report) {
-         report_ = report;
+      virtual uint8_t getReportTypeId() const override {
+         return _ReportType::hid_report_type_;
+      }
+      
+      static const char *typeString() { 
+         return _ReportType::typeString();
+      }
+      
+      virtual const char *getTypeString() const override {
+         return _ReportType::typeString();
       }
       
    protected:
       
-      const _ReportType &getReport() const {
+      virtual const _ReportType &getReport() const override {
          assert(report_);
-         return *report_;
+         return *static_cast<const _ReportType *>(report_);
       }
-      
-   private:
-      
-      const _ReportType *report_ = nullptr;
 };
 
 } // namespace simulator

@@ -22,7 +22,7 @@
 #include "KeyboardReport.h"
 #include "MouseReport.h"
 #include "AbsoluteMouseReport.h"
-#include "AssertionQueueBundle.h"
+#include "assertions/generic_report/ReportAssertion.h"
 
 #include "HIDReportConsumer_.h"
 
@@ -38,17 +38,46 @@ class Assertion_;
 template<typename _T>
 struct Type2Type {};
 
+template<typename _ReportType>
+struct ReportTraits {};
+
+enum {
+   AnyTypeReportSid = 0,
+   KeyboardReportSid = 1,
+   MouseReportSid = 2,
+   AbsoluteMouseReportSid = 3
+};
+
+template<>
+struct ReportTraits<KeyboardReport>
+{
+   static constexpr int sid = KeyboardReportSid;
+};
+
+template<>
+struct ReportTraits<MouseReport>
+{
+   static constexpr int sid = MouseReportSid;
+};
+
+template<>
+struct ReportTraits<AbsoluteMouseReport>
+{
+   static constexpr int sid = AbsoluteMouseReportSid;
+};
+
+
 /// @brief An abstract simulator output stream.
 ///
-class DriverStream_ {
+class SimulatorStream_ {
    
    public:
       
       struct Endl {};
       
-      DriverStream_(const Simulator *simulator) : simulator_(simulator) {}
+      SimulatorStream_(const Simulator *simulator) : simulator_(simulator) {}
       
-      virtual ~DriverStream_() {}
+      virtual ~SimulatorStream_() {}
 
    protected:
       
@@ -82,7 +111,7 @@ class DriverStream_ {
    
 /// @brief A stream class for error output.
 ///
-class ErrorStream : public DriverStream_ {
+class ErrorStream : public SimulatorStream_ {
    
    public:
       
@@ -103,7 +132,7 @@ class ErrorStream : public DriverStream_ {
 
 /// @brief A stream class for log output.
 ///
-class LogStream : public DriverStream_ {
+class LogStream : public SimulatorStream_ {
    
    public:
       
@@ -119,7 +148,7 @@ class LogStream : public DriverStream_ {
 
 /// @brief A stream class that generates formatted text headers in log output.
 ///
-class HeaderStream : public DriverStream_ {
+class HeaderStream : public SimulatorStream_ {
    
    public:
       
@@ -180,9 +209,18 @@ class Simulator {
       
       bool error_if_report_without_queued_assertions_ = false;
       
-      AssertionQueueBundle<KeyboardReport> keyboard_report_assertions_;
-      AssertionQueueBundle<MouseReport> mouse_report_assertions_;
-      AssertionQueueBundle<AbsoluteMouseReport> absolute_mouse_report_assertions_;
+      int n_typed_reports_in_cycle_[4] = {};
+      int n_typed_overall_reports_[4] = {};
+      
+      int n_reports_in_cycle_ = 0;
+      int n_overall_reports_ = 0;
+      
+      AssertionQueue<ReportAssertion_> queued_report_assertions_;
+      
+      AssertionQueue<ReportAssertion<KeyboardReport>> permanent_keyboard_report_assertions_;
+      AssertionQueue<ReportAssertion<MouseReport>> permanent_mouse_report_assertions_;
+      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> permanent_absolute_mouse_report_assertions_;
+      AssertionQueue<ReportAssertion_> permanent_generic_report_assertions_;
       
       AssertionQueue<Assertion_> queued_cycle_assertions_;
       AssertionQueue<Assertion_> permanent_cycle_assertions_;
@@ -238,34 +276,32 @@ class Simulator {
          return error_if_report_without_queued_assertions_;
       }
       
-      /// @brief Retreives the keyboard report assertions.
-      ///
-      AssertionQueueBundle<KeyboardReport> &keyboardReportAssertions() {
-         return keyboard_report_assertions_;
+      AssertionQueue<ReportAssertion_> &queuedReportAssertions() {
+         return queued_report_assertions_;
       }
       
-      /// @brief Retreives the mouse report assertions.
+      /// @brief Retreives the permanent keyboard report assertions.
       ///
-      AssertionQueueBundle<MouseReport> &mouseReportAssertions() {
-         return mouse_report_assertions_;
+      AssertionQueue<ReportAssertion<KeyboardReport>> &peramentKeyboardReportAssertions() {
+         return permanent_keyboard_report_assertions_;
+      }
+      
+      /// @brief Retreives the permanent mouse report assertions.
+      ///
+      AssertionQueue<ReportAssertion<MouseReport>> &permanentMouseReportAssertions() {
+         return permanent_mouse_report_assertions_;
       }
       
       /// @brief Retreives the absolute mouse report assertions.
       ///
-      AssertionQueueBundle<AbsoluteMouseReport> &absoluteMouseReportAssertions() {
-         return absolute_mouse_report_assertions_;
+      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> &permanentAbsoluteMouseReportAssertions() {
+         return permanent_absolute_mouse_report_assertions_;
       }
       
-      AssertionQueueBundle<KeyboardReport> &getAssertionQueueBundle(Type2Type<KeyboardReport>) {
-         return keyboard_report_assertions_;
-      }
-      
-      AssertionQueueBundle<MouseReport> &getAssertionQueueBundle(Type2Type<MouseReport>) {
-         return mouse_report_assertions_;
-      }
-      
-      AssertionQueueBundle<AbsoluteMouseReport> &getAssertionQueueBundle(Type2Type<AbsoluteMouseReport>) {
-         return absolute_mouse_report_assertions_;
+      /// @brief Retreives the generic report assertions.
+      ///
+      AssertionQueue<ReportAssertion_> &permanentGenericReportAssertions() {
+         return permanent_generic_report_assertions_;
       }
       
       /// @brief Retreives the queued cycle assertions.
@@ -349,12 +385,12 @@ class Simulator {
       template<typename..._Assertions>
       void cycleExpectReports(_Assertions...assertions) {
          
-         this->keyboardReportAssertions()
-            .queued().add(std::forward<_Assertions>(assertions)...);
+         this->queuedReportAssertions()
+            .add(std::forward<_Assertions>(assertions)...);
             
          this->cycle();
          
-         if(!queued_keyboard_report_assertions_.empty()) {
+         if(!queued_report_assertions_.empty()) {
             this->error() << "Keyboard report assertions are left in queue";
          }
       }
@@ -479,7 +515,7 @@ class Simulator {
          return cycle_duration_;
       }
       
-      /// @brief Resets the drivers output stream.
+      /// @brief Resets the simulator output stream.
       /// @details This might serve to redirect output to a file
       ///        by using a std::ofstream.
       /// @param out The new ostream object.
@@ -512,6 +548,28 @@ class Simulator {
       ///
       void runRemoteControlled(const std::function<void()> &cycle_function);
       
+      int getNumReportsInCycle() const { return n_typed_reports_in_cycle_[AnyTypeReportSid]; }
+      int getNumOverallReports() const { return n_typed_overall_reports_[AnyTypeReportSid]; }
+      
+      int getNumKeyboardReportsInCycle() const { return n_typed_reports_in_cycle_[KeyboardReportSid]; }
+      int getNumOverallKeyboardReports() const { return n_typed_overall_reports_[KeyboardReportSid]; }
+      
+      int getNumMouseReportsInCycle() const { return n_typed_reports_in_cycle_[MouseReportSid]; }
+      int getNumOverallMouseReports() const { return n_typed_overall_reports_[MouseReportSid]; }
+      
+      int getNumAbsoluteMouseReportsInCycle() const { return n_typed_reports_in_cycle_[AbsoluteMouseReportSid]; }
+      int getNumOverallAbsoluteMouseReports() const { return n_typed_overall_reports_[AbsoluteMouseReportSid]; }
+      
+      template<typename _ReportType>
+      int getNumTypedReportsInCycle() const {
+         return n_typed_reports_in_cycle_[ReportTraits<_ReportType>::sid];
+      }
+      
+      template<typename _ReportType>
+      int getNumTypedOverallReports() const {
+         return n_typed_overall_reports_[ReportTraits<_ReportType>::sid];
+      }
+      
    private:
       
       bool checkStatus() const;
@@ -523,6 +581,18 @@ class Simulator {
       void cycleInternal(bool only_log_reports = false);
       
       void checkCycleDurationSet();
+      
+      AssertionQueue<ReportAssertion<KeyboardReport>> &getPermanentReportAssertions(Type2Type<KeyboardReport>) {
+         return permanent_keyboard_report_assertions_;
+      }
+      
+      AssertionQueue<ReportAssertion<MouseReport>> &getPermanentReportAssertions(Type2Type<MouseReport>) {
+         return permanent_mouse_report_assertions_;
+      }
+      
+      AssertionQueue<ReportAssertion<AbsoluteMouseReport>> &getPermanentReportAssertions(Type2Type<AbsoluteMouseReport>) {
+         return permanent_absolute_mouse_report_assertions_;
+      }
       
       // This method is templated to enable it being used for std::vector
       // and std::deque.
@@ -536,7 +606,7 @@ class Simulator {
       
             // Just in case we haven't done that before
             //
-            assertion->setDriver(this);
+            assertion->setSimulator(this);
             
             bool assertion_passed = assertion->eval();
             
@@ -548,14 +618,83 @@ class Simulator {
          }
       }
       
+      void processReportAssertion(ReportAssertion_ &assertion, 
+                                  const Report_ &report) {
+         
+         assertion.setReport(&report);
+         
+         bool assertion_passed = assertion.eval();
+         
+         if(!assertion_passed || debug_) {
+            assertion.report();
+         }
+         
+         assertions_passed_ &= assertion_passed;
+         assertion.setReport(nullptr);
+      }
+      
+      template<typename _ReportType>
+      void processReport(const _ReportType &report) {
+         
+         ++n_typed_overall_reports_[AnyTypeReportSid];
+         ++n_typed_reports_in_cycle_[AnyTypeReportSid];
+         
+         static constexpr int sid = ReportTraits<_ReportType>::sid;
+         
+         ++n_typed_overall_reports_[sid];
+         ++n_typed_reports_in_cycle_[sid];
+         
+         this->log() << "Processing " << _ReportType::typeString() << " report "
+               << n_typed_overall_reports_[AnyTypeReportSid]
+               << " (" << n_typed_reports_in_cycle_[AnyTypeReportSid] << ". in cycle "
+               << this->getCycleId() << ")";
+                        
+         auto n_assertions_queued = queued_report_assertions_.size();
+         
+         this->log() << n_assertions_queued
+            << " queued " << _ReportType::typeString() << " report assertions";
+         
+         if(!queued_report_assertions_.empty()) {
+            auto assertion = queued_report_assertions_.popFront();
+            
+            auto report_type = assertion->getReportTypeId();
+            
+            if(report_type == Report_::hid_report_type_) {
+               // Generic report
+               //
+               this->processReportAssertion(*assertion, report);
+            }
+            else if(report_type == _ReportType::hid_report_type_) {
+               auto &typed_assertion = static_cast<ReportAssertion<_ReportType>&>(*assertion);
+               this->processReportAssertion(typed_assertion, report);
+            }
+            else {
+               this->error() << "Expected a "
+                  << assertion->getTypeString() << " assertion but encountered a "
+                  << _ReportType::typeString() << " assertion";
+            }
+         }
+         
+         auto &permanent_assertions = this->getPermanentReportAssertions(Type2Type<_ReportType>{});
+         for(auto &assertion: permanent_assertions.directAccess()) {
+            this->processReportAssertion(*assertion, report);
+         }
+
+         for(auto &assertion: permanent_generic_report_assertions_.directAccess()) {
+            this->processReportAssertion(*assertion, report);
+         }
+               
+         if((n_assertions_queued == 0) && this->getErrorIfReportWithoutQueuedAssertions()) {
+            this->error() << "Encountered a " << _ReportType::typeString() << " report without assertions being queued";
+         }
+      }
+      
       std::string generateCycleInfo() const;
       
       void skipTimeInternal(TimeType delta_t);
       
       void cyclesInternal(int n, 
                   const std::vector<std::shared_ptr<Assertion_>> &cycle_assertion_list);
-      
-      friend class AssertionQueueBundle_;
 };
 
 /// @brief Asserts a condition.

@@ -16,14 +16,37 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Simulator.h"
+#pragma once
 
 namespace kaleidoscope {
 namespace simulator {
    
-void AssertionQueueBundle_::registerResult(bool result) {
-   simulator_.assertions_passed_ &= result;
-} 
+class Simulator;
+
+static constexpr uint8_t GenericReportTypeId = 255;
+  
+/// @brief A common base class for HID reports.
+///
+class Report_ {
+   
+   public:
+      
+      static constexpr uint8_t hid_report_type_ = GenericReportTypeId;
+      
+      /// @brief Checks if the report is empty.
+      /// @details Empty means neither key nor modifier keycodes are active.
+      ///
+      virtual bool isEmpty() const = 0;
+      
+      /// @brief Writes a formatted representation of the keyboard report 
+      ///        to the simulator's log stream.
+      /// @param add_indent An additional indentation string.
+      ///
+      virtual void dump(const Simulator &simulator, const char *add_indent = "") const = 0;
+      
+      static const char *typeString() { return "generic report"; }
+      virtual const char *getTypeString() const { return typeString(); }
+};
 
 } // namespace simulator
 } // namespace kaleidoscope

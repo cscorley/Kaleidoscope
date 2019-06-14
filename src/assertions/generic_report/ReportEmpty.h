@@ -18,45 +18,42 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
-
+#include "assertions/generic_report/ReportAssertion.h"
 #include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts nothing but dumps the current report instead.
+/// @brief Asserts that the current report is empty.
 ///
-template<typename _ReportType>
-class DumpReport {
+class ReportEmpty {
    
    public:
       
-      KT_ASSERTION_STD_CONSTRUCTOR(DumpReport)
+      KT_ASSERTION_STD_CONSTRUCTOR(ReportEmpty)
    
    private:
       
-      class Assertion : public ReportAssertion_<_ReportType> {
+      class Assertion : public ReportAssertion_ {
             
          public:
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getReport().dump(*simulator_, add_indent);
+               this->getSimulator()->log() << add_indent << "Report empty";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
+               this->getSimulator()->log() << add_indent << "Report: ";
+               this->getReport().dump(*this->getSimulator(), add_indent);
             }
 
             virtual bool evalInternal() override {
-               this->describe();
-               return true;
+               return this->getReport().isEmpty();
             }
-
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(DumpReport)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEmpty)
 };
 
 } // namespace assertions

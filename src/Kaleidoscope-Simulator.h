@@ -23,24 +23,27 @@
 #include "aux/keycodes.h"
 #include "KeyboardReport.h"
 #include "LED_Checks.h"
+
 #include "assertions/Grouped.h"
 #include "assertions/LayerIsActive.h"
 #include "assertions/TopActiveLayerIs.h"
-#include "assertions/CycleGeneratesNKeyboardReports.h"
 #include "assertions/CustomAssertion.h"
-#include "assertions/report_assertions/ReportEmpty.h"
-#include "assertions/report_assertions/ReportEquals.h"
-#include "assertions/report_assertions/DumpReport.h"
-#include "assertions/report_assertions/ReportNthInCycle.h"
-#include "assertions/report_assertions/CustomReportAssertion.h"
+#include "assertions/NumOverallReportsGenerated.h"
+#include "assertions/Assertion_.h"
+#include "assertions/CycleIsNth.h"
+#include "assertions/ElapsedTimeGreater.h"
+
+#include "assertions/generic_report/ReportEmpty.h"
+#include "assertions/generic_report/ReportEquals.h"
+#include "assertions/generic_report/DumpReport.h"
+#include "assertions/generic_report/ReportNthInCycle.h"
+#include "assertions/generic_report/CustomReportAssertion.h"
+#include "assertions/generic_report/CycleGeneratesNReports.h"
+
 #include "assertions/keyboard_report/ModifiersActive.h"
 #include "assertions/keyboard_report/AnyKeycodeActive.h"
 #include "assertions/keyboard_report/KeycodesActive.h"
 #include "assertions/keyboard_report/AnyModifierActive.h"
-#include "assertions/Assertion_.h"
-#include "assertions/NumOverallKeyboardReportsGenerated.h"
-#include "assertions/CycleIsNth.h"
-#include "assertions/ElapsedTimeGreater.h"
 
 #include <iostream>
 

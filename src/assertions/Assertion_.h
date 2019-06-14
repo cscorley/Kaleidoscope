@@ -32,6 +32,7 @@ namespace kaleidoscope {
 namespace simulator {
    
 class Simulator;
+class Report_;
 
 class VoidReport {};
    
@@ -47,6 +48,7 @@ class Assertion_ {
    public:
       
       typedef VoidReport ReportType;
+      typedef Assertion_ AssertionBaseType;
       
       /// @brief Reports information about the assertion.
       ///
@@ -83,7 +85,7 @@ class Assertion_ {
    
       /// @brief Register the test simulator with the assertion.
       ///
-      virtual void setDriver(const Simulator *simulator) {
+      virtual void setSimulator(const Simulator *simulator) {
          simulator_ = simulator;
       }
 
@@ -92,7 +94,7 @@ class Assertion_ {
       ///
       /// @return A pointer to the current test simulator.
       ///
-      const Simulator *getDriver() const {
+      const Simulator *getSimulator() const {
          return simulator_;
       }
      
@@ -125,7 +127,15 @@ class Assertion_ {
       /// @details This noop method is there to satisfy the interface 
       ///        of derived classes. It is not meant to be called.
       ///
-      virtual void setReport(const ReportType *report) {}
+      virtual void setReport(const Report_ *report) {}
+      
+      static const char *typeString() { 
+         return "generic";
+      }
+      
+      virtual const char *getTypeString() const {
+         return typeString();
+      }
       
    protected:
             
@@ -150,8 +160,8 @@ class Assertion_ {
 /// @details Inverts the meaning of the assertion.
 ///
 /// @param assertion The assertion to negate.
-inline
-std::shared_ptr<Assertion_> negate(const std::shared_ptr<Assertion_> &assertion) {
+template<typename _AssertionType>
+std::shared_ptr<_AssertionType> negate(const std::shared_ptr<_AssertionType> &assertion) {
    assertion->setNegate(true);
    return assertion;
 }
@@ -159,7 +169,7 @@ std::shared_ptr<Assertion_> negate(const std::shared_ptr<Assertion_> &assertion)
 } // namespace simulator
 } // namespace kaleidoscope
       
-#define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                            \
+#define KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER, TYPENAME_KEYWORD)                            \
                                                                                \
    private:                                                                    \
       std::shared_ptr<WRAPPER::Assertion> assertion_;                          \
@@ -172,8 +182,17 @@ std::shared_ptr<Assertion_> negate(const std::shared_ptr<Assertion_> &assertion)
          : assertion_{new WRAPPER::Assertion{std::forward<_Args>(args)...}}    \
       {}                                                                       \
                                                                                \
-      operator std::shared_ptr<Assertion_> () { return assertion_; }
+      operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> () { return assertion_; }                                                           \
+      std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> ptr() { return assertion_; }                                                           \
+                                                                               \
+      WRAPPER &negate() { assertion_->setNegate(true); return *this; }
       
+#define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                   \
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER,)
+   
+#define KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(WRAPPER)                   \
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER, typename)
+   
 #define KT_ASSERTION_STD_CONSTRUCTOR(WRAPPER)                                  \
       WRAPPER()                                                                \
          : WRAPPER(DelegateConstruction{})                                     \

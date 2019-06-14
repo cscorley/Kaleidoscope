@@ -19,7 +19,7 @@
 #include "Aglais.h"
 #include "aglais/Parser.h"
 #include "aglais/Consumer_.h"
-#include "assertions/report_assertions/ReportEquals.h"
+#include "assertions/generic_report/ReportEquals.h"
 
 namespace kaleidoscope {
 namespace simulator {
@@ -44,8 +44,8 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
       virtual void onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) override {
          simulator_.cycle();
          
-         if(!simulator_.queuedKeyboardReportAssertions().empty()) {
-            simulator_.error() << "Keyboard report assertions are left in queue";
+         if(!simulator_.queuedReportAssertions().empty()) {
+            simulator_.error() << "Report assertions are left in queue";
          }
          
          simulator_.setTime(cycle_end_time);
@@ -57,11 +57,39 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
          simulator_.releaseKey(row, col);
       }
       virtual void onKeyboardReport(uint8_t id, int length, const void *data) override {
-         simulator_.queuedKeyboardReportAssertions().add(
-            assertions::ReportEquals(
-               KeyboardReport(*static_cast<const HID_KeyboardReport_Data_t*>(data))
-            )
-         );
+         
+         switch(id) {
+            // TODO: React appropriately on the following
+            //
+            case HID_REPORTID_GAMEPAD:
+            case HID_REPORTID_CONSUMERCONTROL:
+            case HID_REPORTID_SYSTEMCONTROL:
+               simulator_.log() << "***Ignoring hid report with id = " << id;
+               break;
+            case HID_REPORTID_MOUSE_ABSOLUTE:
+               {
+                  simulator_.queuedReportAssertions().add(
+                     assertions::ReportEquals<AbsoluteMouseReport>{data}
+                  );
+               }
+               break;
+            case HID_REPORTID_MOUSE:
+               {
+                  simulator_.queuedReportAssertions().add(
+                     assertions::ReportEquals<MouseReport>{data}
+                  );
+               }
+               break;
+            case HID_REPORTID_NKRO_KEYBOARD:
+               {
+                  simulator_.queuedReportAssertions().add(
+                     assertions::ReportEquals<KeyboardReport>{data}
+                  );
+               }
+               break;
+            default:
+               simulator_.error() << "Aglais encountered unknown HID report with id = " << id;
+         }
       }
       virtual void onSetTime(uint16_t time) override {
          simulator_.setTime(time);

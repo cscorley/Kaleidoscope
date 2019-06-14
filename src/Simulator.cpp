@@ -17,6 +17,7 @@
  */
 
 #include "Simulator.h"
+#include "AssertionQueue_Impl.h"
 #include "assertions/Assertion_.h"
 
 #include "Kaleidoscope.h"
@@ -31,12 +32,20 @@
 namespace kaleidoscope {
 namespace simulator {
 
-std::ostream &DriverStream_::getOStream() const
+// Explicit template instanciations
+//
+template class AssertionQueue<ReportAssertion<KeyboardReport>>;
+template class AssertionQueue<ReportAssertion<MouseReport>>;
+template class AssertionQueue<ReportAssertion<AbsoluteMouseReport>>;
+template class AssertionQueue<ReportAssertion_>;
+template class AssertionQueue<Assertion_>;
+
+std::ostream &SimulatorStream_::getOStream() const
 {
    return simulator_->getOStream();
 }
 
-void DriverStream_::checkLineStart() {
+void SimulatorStream_::checkLineStart() {
    
    if(!line_start_) { return; }
    
@@ -45,20 +54,20 @@ void DriverStream_::checkLineStart() {
    this->reactOnLineStart();
 }
 
-void DriverStream_::reactOnLineStart()
+void SimulatorStream_::reactOnLineStart()
 {
    this->getOStream() << "t=" << /*std::fixed << std::setw(4) << */simulator_->getTime() 
                       << ", c=" << /*std::fixed << std::setw(4) << */simulator_->getCycleId()
                       << ": ";
 }
 
-void DriverStream_::reactOnLineEnd() 
+void SimulatorStream_::reactOnLineEnd() 
 {
    this->getOStream() << "\n";
 }
    
 ErrorStream::ErrorStream(const Simulator *simulator) 
-   :  DriverStream_(simulator)
+   :  SimulatorStream_(simulator)
 {
    auto &out = this->getOStream();
    
@@ -66,18 +75,18 @@ ErrorStream::ErrorStream(const Simulator *simulator)
    //
    out << "\x1B[31;1m";
    
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    out << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 }
       
 ErrorStream::~ErrorStream() {
    
    this->getOStream() << "\n";
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
    
    if(simulator_->getAbortOnFirstError()) {
-      this->DriverStream_::reactOnLineStart();
+      this->SimulatorStream_::reactOnLineStart();
       this->getOStream() << "Bailing out.";
       exit(1);
    }
@@ -89,12 +98,12 @@ ErrorStream::~ErrorStream() {
 
 void ErrorStream::reactOnLineStart()
 {
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "!!! ";
 }
 
 LogStream::LogStream(const Simulator *simulator) 
-   :  DriverStream_(simulator)
+   :  SimulatorStream_(simulator)
 {
 }
 
@@ -103,19 +112,19 @@ LogStream::~LogStream() {
 }
 
 HeaderStream::HeaderStream(const Simulator *simulator) 
-   :  DriverStream_(simulator)
+   :  SimulatorStream_(simulator)
 {  
    // Foreground color red
    //
    this->getOStream() << "\x1B[32;1m";
    
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "########################################################\n";
 }
 
 HeaderStream::~HeaderStream() {
    this->getOStream() << "\n";
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "########################################################\n";
    
    // Restore color to neutral.
@@ -125,7 +134,7 @@ HeaderStream::~HeaderStream() {
 
 void HeaderStream::reactOnLineStart()
 {
-   this->DriverStream_::reactOnLineStart();
+   this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "### ";
 }
 
@@ -155,17 +164,22 @@ void Simulator::HIDReportConsumer::processHIDReport(
       //
       case HID_REPORTID_GAMEPAD:
       case HID_REPORTID_CONSUMERCONTROL:
-      case HID_REPORTID_MOUSE_ABSOLUTE:
-      case HID_REPORTID_MOUSE:
       case HID_REPORTID_SYSTEMCONTROL:
          simulator_.log() << "***Ignoring hid report with id = " << id;
          break;
+      case HID_REPORTID_MOUSE_ABSOLUTE:
+         {
+            simulator_.processReport(AbsoluteMouseReport{data});
+         }
+         break;
+      case HID_REPORTID_MOUSE:
+         {
+            simulator_.processReport(MouseReport{data});
+         }
+         break;
       case HID_REPORTID_NKRO_KEYBOARD:
          {
-         const HID_KeyboardReport_Data_t &report_data 
-            = *static_cast<const HID_KeyboardReport_Data_t *>(data);
-            
-         simulator_.processKeyboardReport(report_data);
+            simulator_.processReport(KeyboardReport{data});
          }
          break;
       default:
@@ -183,10 +197,15 @@ Simulator::Simulator(std::ostream &out,
       cycle_duration_{cycle_duration}, // ms
       abort_on_first_error_{abort_on_first_error},
       
-      queued_keyboard_report_assertions_{*this, "queued keyboard report"},
-      permanent_keyboard_report_assertions_{*this, "permanent keyboard report"},
-      queued_cycle_assertions_{*this, "queued cycle"},
-      permanent_cycle_assertions_{*this, "permanent cycle"},
+      queued_report_assertions_{*this},
+      
+      permanent_keyboard_report_assertions_{*this},
+      permanent_mouse_report_assertions_{*this},
+      permanent_absolute_mouse_report_assertions_{*this},
+      permanent_generic_report_assertions_{*this},
+      
+      queued_cycle_assertions_{*this},
+      permanent_cycle_assertions_{*this},
       
       hid_report_consumer_{*this}
 {
@@ -227,7 +246,7 @@ void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col,
                          int tap_interval_cycles,
                          std::shared_ptr<Assertion_> after_tap_and_cycles_assertion) {
    if(after_tap_and_cycles_assertion) {
-      after_tap_and_cycles_assertion->setDriver(this);
+      after_tap_and_cycles_assertion->setSimulator(this);
    }
    
    this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ") " 
@@ -337,8 +356,8 @@ bool Simulator::checkStatus() const {
    
    bool success = true;
    
-   if(!queued_keyboard_report_assertions_.empty()) {
-      this->error() << "There are " << queued_keyboard_report_assertions_.size()
+   if(!queued_report_assertions_.empty()) {
+      this->error() << "There are " << queued_report_assertions_.size()
          << " left over assertions in the queue.";
       success = false;
    }
@@ -401,7 +420,10 @@ void Simulator::footerText() {
    this->log() << "duration: " << time_ << " ms = " << cycle_id_ << " cycles";
    this->log() << "error_count: " << error_count_;
    this->log() << "";
-   this->log() << "num. keyboard reports processed: " << n_overall_keyboard_reports_;
+   this->log() << "num. overall reports processed: " << n_typed_reports_in_cycle_[AnyTypeReportSid];
+   this->log() << "num. keyboard reports processed: " << n_typed_reports_in_cycle_[KeyboardReportSid];
+   this->log() << "num. mouse reports processed: " << n_typed_reports_in_cycle_[MouseReportSid];
+   this->log() << "num. absolute mouse reports processed: " << n_typed_reports_in_cycle_[AbsoluteMouseReportSid];
    this->log() << "################################################################################";
    this->log() << "";
    
@@ -414,7 +436,11 @@ void Simulator::footerText() {
 void Simulator::cycleInternal(bool only_log_reports) {
    
    ++cycle_id_;
-   n_keyboard_reports_in_cycle_ = 0;
+   n_reports_in_cycle_ = 0;
+   
+   for(int i = 0; i < 3; ++i) {
+      n_typed_reports_in_cycle_[i] = 0;
+   }
    
    if(!only_log_reports) {
       this->log() << "Scan cycle " << cycle_id_;
@@ -422,13 +448,13 @@ void Simulator::cycleInternal(bool only_log_reports) {
 
    ::loop();
    
-   if(n_keyboard_reports_in_cycle_ == 0) {
+   if(n_reports_in_cycle_ == 0) {
       if(!only_log_reports) {
          this->log() << "No keyboard reports processed";
       }
    }
    else {
-      this->log() << n_keyboard_reports_in_cycle_ << " keyboard reports processed";
+      this->log() << n_reports_in_cycle_ << " keyboard reports processed";
    }
    
    time_ += cycle_duration_;
@@ -460,7 +486,7 @@ void Simulator::checkCycleDurationSet() {
 
 void Simulator::assertNothingQueued() const
 {
-   if(!queued_keyboard_report_assertions_.empty()) {
+   if(!queued_report_assertions_.empty()) {
       this->error() << "Keyboard report assertions are left in queue";
    }
    

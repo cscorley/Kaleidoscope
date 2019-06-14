@@ -53,11 +53,11 @@ class CustomAssertion {
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Custom keyboard report assertion";
+               this->getSimulator()->log() << add_indent << "Custom keyboard report assertion";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Custom keyboard report assertion failed";
+               this->getSimulator()->log() << add_indent << "Custom keyboard report assertion failed";
             }
 
             virtual bool evalInternal() override {

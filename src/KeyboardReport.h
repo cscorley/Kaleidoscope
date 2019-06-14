@@ -19,6 +19,7 @@
 #pragma once
 
 #include "kaleidoscope/key_defs.h"
+#include "Report_.h"
 
 // Undefine some macros defined by Arduino
 //
@@ -36,13 +37,17 @@ class Simulator;
   
 /// @brief An interface hat facilitates analyzing keyboard reports.
 ///
-class KeyboardReport {
+class KeyboardReport : public Report_ {
    
    public:
       
       typedef HID_KeyboardReport_Data_t ReportDataType;
       
+      static constexpr uint8_t hid_report_type_ = HID_REPORTID_NKRO_KEYBOARD;
+      
       KeyboardReport() {}
+      
+      KeyboardReport(const void *data);
       
       /// @brief Constructs based on a report data object.
       /// @param report_data The report data object to read.
@@ -105,20 +110,21 @@ class KeyboardReport {
       /// @brief Checks if the report is empty.
       /// @details Empty means neither key nor modifier keycodes are active.
       ///
-      bool isEmpty() const;
+      virtual bool isEmpty() const override;
       
       /// @brief Writes a formatted representation of the keyboard report 
       ///        to the simulator's log stream.
       /// @param add_indent An additional indentation string.
       ///
-      void dump(const Simulator &simulator, const char *add_indent = "") const;
+      virtual void dump(const Simulator &simulator, const char *add_indent = "") const override;
       
       /// @brief Associates the object with new report data.
       /// @param report_data The new report data struct.
       ///
       void setReportData(const HID_KeyboardReport_Data_t &report_data);
       
-      static const char *getTypeString() { return "keyboard"; }
+      static const char *typeString() { return "keyboard"; }
+      virtual const char *getTypeString() const override { return typeString(); }
       
    private:
    

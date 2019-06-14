@@ -19,6 +19,7 @@
 #pragma once
 
 #include "assertions/Grouped.h"
+#include "aux/demangle.h"
 
 // Undefine some macros that are defined by Arduino
 #undef min
@@ -45,27 +46,16 @@ class AssertionQueue
       
       /// @brief Constructor.
       /// @param simulator The associated Simulator object.
-      /// @param type_string The type of assertion queue (queued keyboard reports,
-      ///        permanent keyboard reports, ...).
       ///
-      AssertionQueue(Simulator &simulator, const char *type_string) 
-         :  simulator_(simulator),
-            type_string_(type_string)
+      AssertionQueue(Simulator &simulator) 
+         :  simulator_(simulator)
       {}
       
       /// @brief Queues assertions.
       ///
       /// @param assertions The assertions to be added to the queue.
       ///
-      ThisType &add(const std::vector<std::shared_ptr<_AssertionType>> &assertions) {
-         for(auto &assertion: assertions) {
-            this->configureAssertion(assertion);
-            queue_.push_back(assertion);
-            simulator_.log() << "Adding " << type_string_ << " assertion: " 
-               << type(*assertion);
-         }
-         return *this;
-      }
+      ThisType &add(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
       /// @brief Queues assertions.
       ///
@@ -81,18 +71,7 @@ class AssertionQueue
       ///
       /// @param assertions The assertions to be added to the queue.
       ///
-      ThisType &addGrouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions) {
-         queue_.push_back(
-            this->generateAssertionGroup(assertions)
-         );
-         
-         simulator_.log() << "Adding grouped " << type_string_ << " assertions";
-         for(const auto &assertion: assertions) {
-            simulator_.log() << "   " << type(*assertion);
-         }   
-         
-         return *this;
-      }
+      ThisType &addGrouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
       /// @brief Queues a list of assertion.
       ///
@@ -109,50 +88,19 @@ class AssertionQueue
       ///
       /// @param assertion The assertion to be removed from the queue.
       ///
-      ThisType &remove(const std::shared_ptr<_AssertionType> &assertion) {
-         bool remove_success = false;
-         
-         for (auto iter = queue_.begin(); iter != queue_.end() ; ) {
-         if(*iter == assertion) {
-            iter = queue_.erase(iter);
-            remove_success = true;
-            break;
-         }
-         else {
-            ++iter;
-         }
-         }
-         if(remove_success) {
-            simulator_.log() << "Removed " << type_string_ << " assertion: " 
-               << type(*assertion);
-         }
-         else {
-            simulator_.error() << "Failed to remove " << type_string_ << " assertion: " 
-               << type(*assertion);
-         }
-         return *this;
-      }
+      ThisType &remove(const std::shared_ptr<_AssertionType> &assertion);
       
       /// @brief Removes a list of assertions.
       ///
       /// @param assertions The assertions to be removed from the queue.
       /// 
-      ThisType &remove(const std::vector<std::shared_ptr<_AssertionType>> &assertions) {
-         for(auto &assertion: assertions) {
-            this->remove(assertion);
-         }
-         return *this;
-      }
+      ThisType &remove(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
       /// @brief Removes the assertion at the head of the queue and returns it.
       ///
       /// @returns The former front element of the queue.
       ///
-      std::shared_ptr<_AssertionType> popFront() {
-         auto front_element = queue_.front();
-         queue_.pop_front();
-         return front_element;
-      }
+      std::shared_ptr<_AssertionType> popFront();
       
       /// @brief Retreives the number of entries in the queue.
       ///
@@ -181,28 +129,15 @@ class AssertionQueue
       
    private:
       
-      void configureAssertion(const std::shared_ptr<_AssertionType> &assertion) {
-         assertion->setDriver(&simulator_);
-      }
+      void configureAssertion(const std::shared_ptr<_AssertionType> &assertion);
       
       std::shared_ptr<_AssertionType> generateAssertionGroup(
-            const std::vector<std::shared_ptr<_AssertionType>> &assertions) {
-         for(auto &assertion: assertions) {
-            this->configureAssertion(assertion);
-         } 
-         
-         std::shared_ptr<_AssertionType> grouped_assertions = assertions::group(assertions);
-         
-         this->configureAssertion(grouped_assertions);
-         
-         return grouped_assertions;
-      }
+            const std::vector<std::shared_ptr<_AssertionType>> &assertions);
       
    private:
       
       Simulator &simulator_;
       std::deque<std::shared_ptr<_AssertionType>> queue_;
-      const char *type_string_ = nullptr;
 };
 
 } // namespace simulator

@@ -17,6 +17,7 @@
  */
 
 #include "MouseReport.h"
+#include "Simulator.h"
  
 namespace kaleidoscope {
 namespace simulator {
@@ -26,73 +27,84 @@ namespace simulator {
    this->setReportData(report_data);
 }
 
-bool operator==(const MouseReport &other) const
+   MouseReport::MouseReport(const void *data)
+{
+   const ReportDataType &report_data 
+            = *static_cast<const ReportDataType *>(data);
+   
+   this->setReportData(report_data);
+}
+
+bool MouseReport::operator==(const MouseReport &other) const
 {
    return memcmp(&report_data_, &other.report_data_, sizeof(report_data_)) == 0;
 }
       
 bool MouseReport::areButtonsPressed(uint8_t button_state) const
 {
-   return report_data.buttons == button_state;
+   return report_data_.buttons == button_state;
 }
 
 bool MouseReport::isLeftButtonPressed() const
 {
-   return report_data.buttons & MOUSE_LEFT;
+   return report_data_.buttons & MOUSE_LEFT;
 } 
 
 bool MouseReport::isMiddleButtonPressed() const
 {
-   return report_data.buttons & MOUSE_MIDDLE;
+   return report_data_.buttons & MOUSE_MIDDLE;
 }  
 
 bool MouseReport::isRightButtonPressed() const
 {
-   return report_data.buttons & MOUSE_RIGHT;
+   return report_data_.buttons & MOUSE_RIGHT;
 }
 
 signed char MouseReport::getMovementX() const
 {
-   return report_data.xAxis;
+   return report_data_.xAxis;
 }
 
 signed char MouseReport::getMovementY() const
 {
-   return report_data.yAxis;
+   return report_data_.yAxis;
 }
 
 signed char MouseReport::getVerticalWheel() const
 {
-   return report_data.vWheel;
+   return report_data_.vWheel;
 }  
 
 signed char MouseReport::getHorizontalWheel() const
 {
-   return report_data.hWheel;
+   return report_data_.hWheel;
 }
 
-bool isEmpty() const
+bool MouseReport::isEmpty() const
 {
-   return (buttons == 0)
-       && (xAxis == 0)
-       && (yAxis == 0)
-       && (vWheel == 0)
-       && (hWheel == 0);
+   return (report_data_.buttons == 0)
+       && (report_data_.xAxis == 0)
+       && (report_data_.yAxis == 0)
+       && (report_data_.vWheel == 0)
+       && (report_data_.hWheel == 0);
 }
 
 void MouseReport::dump(const Simulator &simulator, const char *add_indent) const
 {
-  out << add_intent_ << "Mouse report content:";
-  out << add_intent_ << "  left button: " << this->isLeftButtonPressed();
-  out << add_intent_ << "  middle button: " << this->isMiddleButtonPressed();
-  out << add_intent_ << "  right button: " << this->isRightButtonPressed();
-  out << add_intent_ << "  x-axis motion: " << this->getMovementX();
-  out << add_intent_ << "  y-axis motion: " << this->getMovementY();
-  out << add_intent_ << "  horizontal wheel motion: " << this->getHorizontalWheel();
-  out << add_intent_ << "  vertical wheel motion: " << this->getVerticalWheel();
+  simulator.log() << add_indent << "Mouse report content:";
+  simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
+  simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
+  simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
+  simulator.log() << add_indent << "  x-axis motion: " << this->getMovementX();
+  simulator.log() << add_indent << "  y-axis motion: " << this->getMovementY();
+  simulator.log() << add_indent << "  horizontal wheel motion: " << this->getHorizontalWheel();
+  simulator.log() << add_indent << "  vertical wheel motion: " << this->getVerticalWheel();
 }
 
 void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data)
 {
    memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
+
+} // namespace simulator
+} // namespace kaleidoscope

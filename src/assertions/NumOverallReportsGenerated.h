@@ -18,55 +18,56 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
+#include "assertions/Assertion_.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @brief Asserts that the current report is the nth report in the current cycle.
+/// @brief Checks the number of overall reports.
+/// @details Asserts that there was a specific number of reports 
+///          generated since the assertion was instanciated.
 ///
 template<typename _ReportType>
-class ReportNthInCycle {
+class NumOverallReportsGenerated {
    
    public:
       
       /// @brief Constructor.
-      /// @param report_id The id of the report to check against.
+      /// @param n_overall_reports The number of reports whose
+      ///        generation is being asserted.
       ///
-      ReportNthInCycle(int report_id)
-         : ReportNthInCycle(DelegateConstruction{}, report_id)
+      NumOverallReportsGenerated(int n_overall_reports) 
+         : NumOverallReportsGenerated(DelegateConstruction{}, n_overall_reports) 
       {}
-      
+         
    private:
       
-      class Assertion : public ReportAssertion_<_ReportType> {
-            
+      class Assertion : public Assertion_ {
+      
          public:
-
-            Assertion(int report_id) : report_id_(report_id) {}
+            
+            Assertion(int n_overall_reports) 
+               : n_overall_reports_(n_overall_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Report " << report_id_ << ". in cycle";
+               this->getSimulator()->log() << add_indent << n_overall_reports_ << " overall " << _ReportType::typeString() << " reports expected";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Report is " 
-                  << simulator_->getAssertionQueueBundle(Type2Type<_ReportType>{})
-                     .getNumReportsInCycle() << ". in cycle";
+               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedOverallReports<_ReportType>() << " overall " << _ReportType::typeString() << " reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return simulator_->getAssertionQueueBundle(
-                  Type2Type<ReportType>{}).getNumReportsInCycle() == report_id_;
+               return this->getSimulator()->getNumTypedOverallReports<_ReportType>() == n_overall_reports_;
             }
             
          private:
             
-            int report_id_ = -1;
+            int n_overall_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(NumOverallReportsGenerated<_ReportType>)
 };
 
 } // namespace assertions

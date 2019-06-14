@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
+#include "assertions/generic_report/ReportAssertion.h"
 #include "kaleidoscope/key_defs.h"
 
 #include <functional>
@@ -46,22 +46,24 @@ class CustomReportAssertion {
    
    private:
       
-      class Assertion : public ReportAssertion_<_ReportType> {
+      class Assertion : public ReportAssertion<_ReportType> {
             
          public:
+            
+            using ReportAssertion<_ReportType>::AssertionBaseType;
             
             Assertion(const std::function<bool(const _ReportType&)> &func)
                : func_(func)
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Custom " 
-                  << _ReportType::getTypeString() << " report assertion";
+               this->getSimulator()->log() << add_indent << "Custom " 
+                  << _ReportType::typeString() << " report assertion";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Custom "
-                  << _ReportType::getTypeString() << " report assertion failed";
+               this->getSimulator()->log() << add_indent << "Custom "
+                  << _ReportType::typeString() << " report assertion failed";
             }
 
             virtual bool evalInternal() override {
@@ -73,7 +75,7 @@ class CustomReportAssertion {
             std::function<bool(const _ReportType&)> func_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomReportAssertion)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(CustomReportAssertion<_ReportType>)
 };
 
 } // namespace assertions

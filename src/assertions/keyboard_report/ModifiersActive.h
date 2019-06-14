@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
+#include "assertions/generic_report/ReportAssertion.h"
 #include "aux/keycodes.h"
 
 #include "kaleidoscope/key_defs.h"
@@ -69,7 +69,7 @@ class ModifiersActive {
       
    private:
       
-      class Assertion : public ReportAssertion_<KeyboardReport> {
+      class Assertion : public ReportAssertion<KeyboardReport> {
    
          public:
       
@@ -86,30 +86,30 @@ class ModifiersActive {
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Modifiers active: ";
+               this->getSimulator()->log() << add_indent << "Modifiers active: ";
                
                if(modifiers_.empty()) {
-                  simulator_->log() << "<none>";
+                  this->getSimulator()->log() << "<none>";
                   return;
                }
                
                for(auto modifier: modifiers_) {
-                  simulator_->log() << keycodes::keycodeToName(modifier) << " ";
+                  this->getSimulator()->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 
             virtual void describeState(const char *add_indent = "") const {
                
-               simulator_->log() << add_indent << "Modifiers actually active: ";
+               this->getSimulator()->log() << add_indent << "Modifiers actually active: ";
                
                auto active_modifiers = this->getReport().getActiveModifiers();
                               
                if(active_modifiers.empty()) {
-                  simulator_->log() << "<none>";
+                  this->getSimulator()->log() << "<none>";
                   return;
                }
                for(auto modifier: active_modifiers) {
-                  simulator_->log() << keycodes::keycodeToName(modifier) << " ";
+                  this->getSimulator()->log() << keycodes::keycodeToName(modifier) << " ";
                }
             }
 

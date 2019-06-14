@@ -49,11 +49,11 @@ class LayerIsActive {
             Assertion(int layer_id) : layer_id_(layer_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
+               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
+               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
             }
 
             virtual bool evalInternal() override {

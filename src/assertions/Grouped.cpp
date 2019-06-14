@@ -16,47 +16,35 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include "assertions/ReportAssertion_.h"
-#include "kaleidoscope/key_defs.h"
+#include "Grouped.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
-
-/// @brief Asserts that the current report is empty.
-///
-template<typename _ReportType>
-class ReportEmpty {
    
-   public:
+void Grouped<ReportAssertion_>::Assertion::determineGroupType()
+{
+   auto report_type_ = assertions_[0]->getReportTypeId();
+   
+   for(const auto &assertion: assertions_) {
       
-      KT_ASSERTION_STD_CONSTRUCTOR(ReportEmpty)
-   
-   private:
+      auto new_type = assertion->getReportTypeId();
       
-      class Assertion : public ReportAssertion_<_ReportType> {
-            
-         public:
-
-            virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Report empty";
-            }
-
-            virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Report: ";
-               this->getReport().dump(*simulator_, add_indent);
-            }
-
-            virtual bool evalInternal() override {
-               return this->getReport().empty();
-            }
-      };
-   
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEmpty)
-};
-
+      if(new_type != GenericReportTypeId) {
+         if(report_type_ == GenericReportTypeId) {
+            report_type_ = new_type;
+         }
+         else if(report_type_ != new_type) {
+            this->getSimulator()->error()
+               << "Error grouping report assertions. Trying to group non-generic assertions of different type";
+            assertions_.clear();
+            report_type_ = GenericReportTypeId;
+            break;
+         }
+      }
+   }
+}
 } // namespace assertions
 } // namespace simulator
 } // namespace kaleidoscope

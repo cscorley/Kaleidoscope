@@ -17,12 +17,21 @@
  */
 
 #include "AbsoluteMouseReport.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
    
    AbsoluteMouseReport::AbsoluteMouseReport(const HID_MouseAbsoluteReport_Data_t &report_data)
 {
+   this->setReportData(report_data);
+}
+
+   AbsoluteMouseReport::AbsoluteMouseReport(const void *data)
+{
+   const ReportDataType &report_data
+            = *static_cast<const ReportDataType *>(data);
+   
    this->setReportData(report_data);
 }
 
@@ -33,61 +42,61 @@ bool AbsoluteMouseReport::operator==(const AbsoluteMouseReport &other) const
 
 bool AbsoluteMouseReport::areButtonsPressed(uint8_t button_state) const
 {
-   return report_data.buttons == button_state;
+   return report_data_.buttons == button_state;
 }
 
 bool AbsoluteMouseReport::isLeftButtonPressed() const
 {
-   return report_data.buttons & MOUSE_LEFT;
+   return report_data_.buttons & MOUSE_LEFT;
 } 
 
 bool AbsoluteMouseReport::isMiddleButtonPressed() const
 {
-   return report_data.buttons & MOUSE_MIDDLE;
+   return report_data_.buttons & MOUSE_MIDDLE;
 }  
 
 bool AbsoluteMouseReport::isRightButtonPressed() const
 {
-   return report_data.buttons & MOUSE_RIGHT;
+   return report_data_.buttons & MOUSE_RIGHT;
 }
 
 uint16_t AbsoluteMouseReport::getXPosition() const
 {
-   return report_data.xAxis;
+   return report_data_.xAxis;
 }
 
 uint16_t AbsoluteMouseReport::getYPosition() const
 {
-   return report_data.yAxis;
+   return report_data_.yAxis;
 }
 
 uint16_t AbsoluteMouseReport::getWheelPosition() const
 {
-   return report_data.wheel;
+   return report_data_.wheel;
 }
 
 bool AbsoluteMouseReport::isEmpty() const
 {
-   return (buttons == 0)
-       && (xAxis == 0)
-       && (yAxis == 0)
-       && (wheel == 0);
+   return (report_data_.buttons == 0)
+       && (report_data_.xAxis == 0)
+       && (report_data_.yAxis == 0)
+       && (report_data_.wheel == 0);
 }
 
 void AbsoluteMouseReport::dump(const Simulator &simulator, const char *add_indent) const
 {
-  out << add_intent_ << "Absolute mouse report content:";
-  out << add_intent_ << "  left button: " << this->isLeftButtonPressed();
-  out << add_intent_ << "  middle button: " << this->isMiddleButtonPressed();
-  out << add_intent_ << "  right button: " << this->isRightButtonPressed();
-  out << add_intent_ << "  x-axis position: " << this->getXPosition();
-  out << add_intent_ << "  y-axis position: " << this->getYPosition();
-  out << add_intent_ << "  wheel position: " << this->getWheelPosition();
+  simulator.log() << add_indent << "Absolute mouse report content:";
+  simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
+  simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
+  simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
+  simulator.log() << add_indent << "  x-axis position: " << this->getXPosition();
+  simulator.log() << add_indent << "  y-axis position: " << this->getYPosition();
+  simulator.log() << add_indent << "  wheel position: " << this->getWheelPosition();
 }
 
 void AbsoluteMouseReport::setReportData(const HID_MouseAbsoluteReport_Data_t &report_data)
 {
-   memcpy(&report_data_, &report_data, sizeof(report_data_));
+   memcpy(&report_data_, &report_data_, sizeof(report_data_));
 }
 
 } // namespace simulator

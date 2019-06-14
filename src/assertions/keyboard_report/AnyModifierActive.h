@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
+#include "assertions/generic_report/ReportAssertion.h"
 
 namespace kaleidoscope {
 namespace simulator {
@@ -34,17 +34,17 @@ class AnyModifierActive {
    
    private:
       
-      class Assertion : public ReportAssertion_<KeyboardReport> {
+      class Assertion : public ReportAssertion<KeyboardReport> {
             
          public:
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Any modifiers active";
+               this->getSimulator()->log() << add_indent << "Any modifiers active";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               simulator_->log() << add_indent << "Any modifiers active: ";
-               simulator_->log() << this->getReport().isAnyModifierActive();
+               this->getSimulator()->log() << add_indent << "Any modifiers active: ";
+               this->getSimulator()->log() << this->getReport().isAnyModifierActive();
             }
 
             virtual bool evalInternal() override {

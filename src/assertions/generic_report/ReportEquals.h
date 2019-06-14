@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/ReportAssertion_.h"
+#include "assertions/generic_report/ReportAssertion.h"
 #include "Simulator.h"
 
 namespace kaleidoscope {
@@ -39,29 +39,41 @@ class ReportEquals {
       ReportEquals(const _ReportType &report)
          : ReportEquals(DelegateConstruction{}, report)
       {}
+      
+      /// @brief Constructor.
+      ///
+      /// @param data The data of the report to compare with.
+      ///
+      ReportEquals(const void *data)
+         : ReportEquals(DelegateConstruction{}, data)
+      {}
    
    private:
       
-      class Assertion : public ReportAssertion_<_ReportType> {
+      class Assertion : public ReportAssertion<_ReportType> {
    
          public:
-      
+            
             Assertion(const _ReportType &report)
                :  report_(report)
             {}
+      
+            Assertion(const void *data)
+               :  report_(data)
+            {}
 
             virtual void describe(const char *add_indent = "") const override {
-               simulator_->log() << add_indent << "Report equals: ";
-               report_.dump(*simulator_, add_indent);
+               this->getSimulator()->log() << add_indent << "Report equals: ";
+               report_.dump(*this->getSimulator(), add_indent);
             }
 
             virtual void describeState(const char *add_indent = "") const {
                
-               simulator_->log() << add_indent << "Reports differ: ";
-               simulator_->log() << add_indent << "expected: ";
-               report_.dump(*simulator_, add_indent);
-               simulator_->log() << add_indent << "actual: ";
-               this->getReport().dump(*simulator_, add_indent);
+               this->getSimulator()->log() << add_indent << "Reports differ: ";
+               this->getSimulator()->log() << add_indent << "expected: ";
+               report_.dump(*this->getSimulator(), add_indent);
+               this->getSimulator()->log() << add_indent << "actual: ";
+               this->getReport().dump(*this->getSimulator(), add_indent);
             }
 
             virtual bool evalInternal() override {
@@ -74,7 +86,7 @@ class ReportEquals {
             _ReportType report_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEquals)
+   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(ReportEquals<_ReportType>)
 };
 
 } // namespace assertions
