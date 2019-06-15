@@ -50,6 +50,8 @@ class Parser {
       
       uint8_t getDocumentType() const { return document_type_; }
       
+      void setDebug(bool state = true) { debug_ = state; }
+      
       void parse(std::istream &in, Consumer_ &consumer);
       void compress(std::istream &in, std::ostream &out);
    
@@ -65,12 +67,11 @@ class Parser {
       void parseReaction(std::istream &line_stream, Consumer_ &consumer) const;
       bool parseBodyLine(std::string &line, Consumer_ &consumer) const;
       
-      void parserError() const;
-      
    private:
       
       uint8_t document_type_ = DocumentType::none;
       int line_id_ = 0;
+      bool debug_ = false;
 };
    
 } // namespace V1

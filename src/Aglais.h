@@ -34,6 +34,12 @@ struct DocumentType {
 
 #include <istream>
 #include <ostream>
+#include <iostream>
+
+#define AGLAIS_DEBUG(...)                                                      \
+   if(debug_) {                                                                \
+      std::cout << "aglais-debug: " << __VA_ARGS__ << std::endl;               \
+   }
 
 namespace aglais {
    
@@ -49,16 +55,18 @@ class Aglais {
       void compress(std::istream &in, std::ostream &out);
       void compress(const char *document, std::ostream &out);
       
+      void setDebug(bool state = true) { debug_ = state; }
+      
    private:
       
-      void parserError() const;
       void determineDocumentVersion(std::istream &in);
       
    private:
       
-      uint8_t transfer_type_ = 0;
-      uint8_t protocol_version_ = 0;
+      int transfer_type_ = 0;
+      int protocol_version_ = 0;
       int line_id_ = 0;
+      bool debug_ = false;
 };
    
 } // namespace aglais

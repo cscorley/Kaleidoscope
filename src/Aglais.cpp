@@ -25,60 +25,91 @@
 #include <sstream>
 #include <exception>
 
+#define PARSER_ERROR(...)                                                      \
+   {                                                                           \
+      std::ostringstream o;                                                    \
+      o << "Aglais parser error: " << __VA_ARGS__;                             \
+      throw std::runtime_error{o.str()};                                       \
+   }
+
 namespace aglais {
    
 void Aglais::determineDocumentVersion(std::istream &in) {
    
    std::string line;   
-   {
-      if(!std::getline(in, line)) {
-         this->parserError();
-      }
-      ++line_id_;
-      
-      std::istringstream tt_in(line);
-      tt_in >> transfer_type_ >> protocol_version_;
 
-      if(transfer_type_ == DocumentType::none) {
-         this->parserError();
-      }
-      
-      if(protocol_version_ == 0) {
-         this->parserError();
-      }
+   if(!std::getline(in, line)) {
+      PARSER_ERROR("Premature end of file after line " << line_id_)
    }
+   ++line_id_;
+   
+   std::istringstream tt_in(line);
+   tt_in >> transfer_type_ >> protocol_version_;
+
+   if(!(   (transfer_type_ == TransferType::verbose)
+        || (transfer_type_ == TransferType::compressed)))
+   {
+      PARSER_ERROR("Unknown transfer type " << (int)transfer_type_ << " recieved")
+   }
+   
+   if(protocol_version_ != 1) {
+      PARSER_ERROR("Unknown protocol version " << (int)protocol_version_ << " recieved")
+   }
+   
+   AGLAIS_DEBUG("transfer_type: " << transfer_type_
+            << ", protocol_version: " << protocol_version_)
 }
 
 void Aglais::parse(std::istream &in, Consumer_ &consumer)
 {
-   this->determineDocumentVersion(in);
-   
-   switch(protocol_version_) {
-      case 1:
-      {
-         v1::Parser delegate_parser(transfer_type_, line_id_);
-         delegate_parser.parse(in, consumer);
+   try {
+      AGLAIS_DEBUG("Starting to parse")
+      this->determineDocumentVersion(in);
+      
+      switch(protocol_version_) {
+         case 1:
+         {
+            AGLAIS_DEBUG("Delegating to v1 parser")
+            v1::Parser delegate_parser(transfer_type_, line_id_);
+            delegate_parser.setDebug(debug_);
+            delegate_parser.parse(in, consumer);
+         }
       }
+   }
+   catch(const std::runtime_error &e) {
+      std::ostringstream o;
+      o << "Aglais failed parsing document. " << e.what();
+      throw std::runtime_error(o.str());
    }
 }
 
 void Aglais::parse(const char *document, Consumer_ &consumer)
 {
    std::istringstream in(document);
- 
+
    this->parse(in, consumer);
 }
 
 void Aglais::compress(std::istream &in, std::ostream &out) 
 {
-   this->determineDocumentVersion(in);
-   
-   switch(protocol_version_) {
-      case 1:
-      {
-         v1::Parser delegate_parser(transfer_type_, line_id_);
-         delegate_parser.compress(in, out);
+   try {
+      AGLAIS_DEBUG("Starting compression")
+      this->determineDocumentVersion(in);
+      
+      switch(protocol_version_) {
+         case 1:
+         {
+            AGLAIS_DEBUG("Delegating to v1 parser")
+            v1::Parser delegate_parser(transfer_type_, line_id_);
+            delegate_parser.setDebug(debug_);
+            delegate_parser.compress(in, out);
+         }
       }
+   }
+   catch(const std::runtime_error &e) {
+      std::ostringstream o;
+      o << "Aglais failed compressing document. " << e.what();
+      throw std::runtime_error(o.str());
    }
 }
 
@@ -88,14 +119,6 @@ void Aglais::compress(const char *document, std::ostream &out)
    
    this->compress(in, out);
 }
-
-void Aglais::parserError() const
-{   
-   std::ostringstream error_stream;
-   error_stream << "Aglais parser error in line " << line_id_;
-   throw std::runtime_error(error_stream.str());
-}
-
    
 } // namespace aglais
 

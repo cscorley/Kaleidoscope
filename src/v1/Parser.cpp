@@ -27,6 +27,13 @@
 #include <exception>
 #include <sstream>
 
+#define PARSER_ERROR(...)                                                      \
+   {                                                                           \
+      std::ostringstream o;                                                    \
+      o << "Aglais v1 parser error: " << __VA_ARGS__;                          \
+      throw std::runtime_error{o.str()};                                       \
+   }
+
 namespace aglais {
 namespace v1 {
    
@@ -42,7 +49,7 @@ const char *Parser::commandIdToString(uint8_t command_id)
    };
    
    if(command_id >= sizeof(command_strings)) {
-      return "";
+      PARSER_ERROR("Unable to find command for id " << (int)command_id)
    }
    
    return command_strings[command_id];
@@ -55,35 +62,36 @@ const char *Parser::subCommandIdToString(uint8_t sub_command_id)
    };
    
    if(sub_command_id >= sizeof(sub_command_strings)) {
-      return "";
+      PARSER_ERROR("Unable to find subcommand for id " << (int)sub_command_id)
    }
    
    return sub_command_strings[sub_command_id];
 }
 
-uint8_t Parser::commandStringToId(const char *string)
+uint8_t Parser::commandStringToId(const char *s)
 {
-   static const std::map<const char*, uint8_t> command_ids = {
+   static const std::map<std::string, uint8_t> command_ids = {
       AGLAIS_V1_COMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
    };
    
-   auto it = command_ids.find(string);
+   auto it = command_ids.find(std::string{s});
    if(it == command_ids.end()) {
       return Command::none;
+      PARSER_ERROR("Unable to find command id for command string \'" << s << '\'')
    }
    
    return it->second;
 }
 
-uint8_t Parser::subCommandStringToId(const char *string)
+uint8_t Parser::subCommandStringToId(const char *s)
 {
-   static const std::map<const char*, uint8_t> sub_command_ids = {
+   static const std::map<std::string, uint8_t> sub_command_ids = {
       AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
    };
    
-   auto it = sub_command_ids.find(string);
+   auto it = sub_command_ids.find(std::string{s});
    if(it == sub_command_ids.end()) {
-      return SubCommand::none;
+      PARSER_ERROR("Unable to find subcommand id for command string \'" << s << '\'')
    }
    
    return it->second;
@@ -98,16 +106,17 @@ uint8_t Parser::readCommandId(std::istream &line_stream) const
       char buffer[buf_length];
       
       line_stream.get(buffer, buf_length, ' ');
+      line_stream.ignore();
+      
+      AGLAIS_DEBUG("Command string: \'" <<  buffer << "\'")
       
       command_id = this->commandStringToId(buffer);
    }
    else {
       line_stream >> command_id;
    }
-      
-   if(command_id == Command::none) {
-      this->parserError();
-   }
+   
+   AGLAIS_DEBUG("Command id: " << (int)command_id)
    
    return command_id;
 }
@@ -121,16 +130,17 @@ uint8_t Parser::readSubCommandId(std::istream &line_stream) const
       char buffer[buf_length];
       
       line_stream.get(buffer, buf_length, ' ');
+      line_stream.ignore();
+      
+      AGLAIS_DEBUG("Subcommand string: \'" <<  buffer << "\'")
       
       sub_command_id = this->subCommandStringToId(buffer);
    }
    else {
       line_stream >> sub_command_id;
    }
-      
-   if(sub_command_id == SubCommand::none) {
-      this->parserError();
-   }
+   
+   AGLAIS_DEBUG("Subcommand id: " << (int)sub_command_id)
    
    return sub_command_id;
 }
@@ -150,6 +160,8 @@ bool Parser::parseHeaderLine(std::string &line, Consumer_ &consumer) const
          line_stream.get(buffer, buf_length, '\"');
          line_stream.ignore();
          line_stream.get(buffer, buf_length, '\"');
+         
+         AGLAIS_DEBUG("firmware_id: " << buffer)
          consumer.onFirmwareId(buffer);
          return true;
       }
@@ -162,22 +174,24 @@ void Parser::parseAction(std::istream &line_stream, Consumer_ &consumer) const
 {   
    uint8_t sub_command_id = this->readSubCommandId(line_stream);
    
-   uint8_t row = 255, col = 255;
+   int row = 255, col = 255;
    line_stream >> row >> col;
              
    switch(sub_command_id) {
       case SubCommand::key_pressed:
          {
-             consumer.onKeyPressed(row, col);
+            AGLAIS_DEBUG("action key_pressed " << row << " " << col)
+            consumer.onKeyPressed(row, col);
          }
          break;
       case SubCommand::key_released:
          {
-             consumer.onKeyReleased(row, col);
+            AGLAIS_DEBUG("action key_released " << row << " " << col)
+            consumer.onKeyReleased(row, col);
          }
          break;
       default:
-         this->parserError();
+         PARSER_ERROR("Insuitable action subcommand id " << (int)sub_command_id << " encountered")
    }
 }
 
@@ -188,20 +202,29 @@ void Parser::parseReaction(std::istream &line_stream, Consumer_ &consumer) const
    switch(sub_command_id) {
       case SubCommand::hid_report:
          {
-            uint8_t id = 255;
-            uint8_t length = 0;
+            int id = 255;
+            int length = 0;
             line_stream >> id >> length;
             
             uint8_t data[255];
             for(uint8_t i = 0; i < length; ++i) {
-               line_stream >> data[i];
+               int tmp;
+               line_stream >> tmp;
+               data[i] = tmp;
             }
                
+            AGLAIS_DEBUG("reaction hid_report " << id << ' ' << length)
+            if(debug_) {
+               for(int i = 0; i < length; ++i) {
+                  std::cout << (int)data[i] << ' ';
+               }
+               std::cout << std::endl;
+            }
             consumer.onHIDReport(id, length, data);
          }
          break;
       default:
-         this->parserError();
+         PARSER_ERROR("Insuitable reaction subcommand " << (int)sub_command_id << " encountered")
    }
 }
 
@@ -218,6 +241,7 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
             uint32_t cycle_id = 0;
             uint32_t start_time = 0;
             line_stream >> cycle_id >> start_time;
+            AGLAIS_DEBUG("start_cycle " << cycle_id << ' ' << start_time)
             consumer.onStartCycle(cycle_id, start_time);
          }
          break;
@@ -232,6 +256,7 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
             uint32_t cycle_id = 0;
             uint32_t end_time = 0;
             line_stream >> cycle_id >> end_time;
+            AGLAIS_DEBUG("end_cycle " << cycle_id << ' ' << end_time)
             consumer.onEndCycle(cycle_id, end_time);
          }
          break;
@@ -239,6 +264,7 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
          {
             uint32_t time = 0;
             line_stream >> time;
+            AGLAIS_DEBUG("set_time " << time)
             consumer.onSetTime(time);
          }
          break;
@@ -248,6 +274,7 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
             uint32_t start_time = 0;
             uint32_t end_time = 0;
             line_stream >> cycle_id >> start_time >> end_time;
+            AGLAIS_DEBUG("cycle " << cycle_id << ' ' << start_time << ' ' << end_time)
             consumer.onStartCycle(cycle_id, start_time);
             consumer.onStartCycle(cycle_id, end_time);
          }
@@ -258,6 +285,8 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
             uint32_t start_cycles_time = 0;
             uint16_t n_cycles = 0;
             line_stream >> start_cycles_id >> start_cycles_time >> n_cycles;
+            AGLAIS_DEBUG("cycles " << start_cycles_id << ' ' << start_cycles_time
+               << ' ' << n_cycles)
             
             uint16_t last_time_offset = 0;
             for(uint16_t i = 0; i < n_cycles; ++i) {
@@ -268,13 +297,19 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
                uint32_t end_time = start_cycles_time + time_offset;
                last_time_offset = time_offset;
                
+               if(debug_) {
+                  std::cout << time_offset << ' ';
+               }
                consumer.onStartCycle(cycle_id, start_time);
                consumer.onEndCycle(cycle_id, end_time);
+            }
+            if(debug_) {
+               std::cout << std::endl;
             }
          }
          break;
       default:
-         this->parserError();
+         PARSER_ERROR("Unknown command id " << (int)command_id << " encountered")
    }
    
    return false;
@@ -455,13 +490,6 @@ void Parser::compress(std::istream &in, std::ostream &out) {
    CompressionConsumer cc{*this, out};
    
    this->parse(in, cc);
-}
-
-void Parser::parserError() const
-{
-   std::ostringstream error_stream;
-   error_stream << "Aglais parser error in line " << line_id_;
-   throw std::runtime_error(error_stream.str());
 }
    
 } // namespace V1

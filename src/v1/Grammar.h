@@ -69,7 +69,7 @@
 // <cycle_data> ::= <cycle> | <cycle> <lbr> <cycle_data> | <comment>
 // <firmeware_id> ::= <firmeware_id_cmd> <id_string>
 // <header_content> ::= <firmeware_id>
-// <header> ::= <transfer_type> <protocol_version> <header_content>
+// <header> ::= <transfer_type> <lbr> <protocol_version> <lbr> <header_content>
 // <document> ::= <header> <lbr> <cycle_data>
 
 // The value of <transfer_type> defines whether string- or 
