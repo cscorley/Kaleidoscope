@@ -287,7 +287,7 @@ void runSimulator(Simulator &simulator) {
          CRGB(160, 0, 0),
          CRGB(160, 0, 0),
          CRGB(160, 0, 0),
-         CRGB(0, 3, 197),
+         CRGB(0, 3, 196),
          CRGB(160, 0, 0),
          CRGB(160, 0, 0),
          CRGB(160, 0, 0),
