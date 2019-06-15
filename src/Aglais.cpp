@@ -16,54 +16,83 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "aglais/Parser.h"
-#include "aglais/v1/Parser.h"
+#include "aglais/src/Aglais.h"
+#include "aglais/src/v1/Parser.h"
 
 #include <string.h>
 #include <sstream>
 #include <exception>
 
 namespace aglais {
-
-void Parser::parse(const char *program, Consumer_ &consumer)
-{
-   std::istringstream in(program);
-   std::string line;
-   uint8_t line_id = 0;
    
+void Aglais::determineDocumentVersion(std::istream &in) {
+   
+   std::string line;   
    {
       if(!std::getline(in, line)) {
-         this->parserError(program, line_id);
+         this->parserError();
       }
-      ++line_id;
+      ++line_id_;
       
       std::istringstream tt_in(line);
       tt_in >> transfer_type_ >> protocol_version_;
 
-      if(transfer_type_ == 0) {
-         this->parserError(program, line_id);
+      if(transfer_type_ == TransferType::none) {
+         this->parserError();
       }
       
       if(protocol_version_ == 0) {
-         this->parserError(program, line_id);
+         this->parserError();
       }
    }
+}
+
+void Aglais::parse(std::istream &in, Consumer_ &consumer)
+{
+   this->determineDocumentVersion(in);
    
    switch(protocol_version_) {
       case 1:
       {
-         v1::Parser delegate_parser(transfer_type_, line_id);
+         v1::Parser delegate_parser(transfer_type_, line_id_);
          delegate_parser.parse(in, consumer);
       }
    }
 }
 
-void Parser::parserError(const char *program, uint8_t line_id) const
+void Aglais::parse(const char *document, Consumer_ &consumer)
+{
+   std::istringstream in(document);
+ 
+   this->parse(in, consumer);
+}
+
+void Aglais::compress(std::istream &in, std::ostream &out) 
+{
+   this->determineDocumentVersion(in);
+   
+   switch(protocol_version_) {
+      case 1:
+      {
+         v1::Parser delegate_parser(transfer_type_, line_id_);
+         delegate_parser.compress(in, out);
+      }
+   }
+}
+
+void Aglais::compress(const char *document, std::ostream &out) 
+{
+   std::istringstream in(document);
+   
+   this->compress(in, out);
+}
+
+void Aglais::parserError() const
 {   
    std::ostringstream error_stream;
-   error_stream << "Aglais parser error in line " << line_id;
+   error_stream << "Aglais parser error in line " << line_id_;
    throw std::runtime_error(error_stream.str());
 }
 

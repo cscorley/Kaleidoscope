@@ -22,22 +22,46 @@
 
 namespace aglais {
    
+struct TransferType {
+   static constexpr uint8_t none = 0;
+   static constexpr uint8_t verbose = 1;
+   static constexpr uint8_t compressed = 2;
+};
+
+} //namespace aglais
+
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
+#include <istream>
+#include <ostream>
+
+namespace aglais {
+   
 class Consumer_;
 
-class Parser {
+class Aglais {
    
    public:
       
-      void parse(const char *program, Consumer_ &consumer);
+      void parse(std::istream &in, Consumer_ &consumer);
+      void parse(const char *document, Consumer_ &consumer);
+      
+      void compress(std::istream &in, std::ostream &out);
+      void compress(const char *document, std::ostream &out);
       
    private:
       
-      void parserError(const char *program, uint8_t line_id) const;
+      void parserError() const;
+      void determineDocumentVersion(std::istream &in);
       
    private:
       
       uint8_t transfer_type_ = 0;
       uint8_t protocol_version_ = 0;
+      int line_id_ = 0;
 };
    
 } // namespace aglais
+
+#endif
+

@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "aglais/src/Aglais.h"
+
 #include <stdint.h>
 
 // This is version 1 of the Aglais protocol
@@ -28,8 +30,9 @@
 // <command_id_XXX> ::= (uint8_t id version of command)
 // <XXX_cmd> ::= <command_string_XXX> | <command_id_XXX>
 //
-// <cycle_id> ::= (uint8_t)
-// <time> ::= (uint16_t)
+// <cycle_id> ::= (uint32_t)
+// <time> ::= (uint32_t)
+// <time_offset_16> ::= (uint16_t)
 // <row> ::= (uint8_t)
 // <col> ::= (uint8_t)
 // <report_id> ::= (uint8_t)
@@ -54,10 +57,15 @@
 // <end_cycle> ::= <end_cycle_cmd> <cycle_id> <end_time>
 // <cycle_ar> ::= <action> | <reaction>
 // <cycle_content> ::= <cycle_ar> | <cycle_ar> <lbr> <cycle_content>
-// <cycle_long> ::= <cycle_start> <lbr> <cycle_content> <lbr> <cycle_end>
+// <cycle_long> ::= <start_cycle> <lbr> <cycle_content> <lbr> <end_cycle>
 // <set_time> ::= <set_time_cmd> <time>
 // <cycle_short> ::= <cycle_cmd> <cycle_id> 
-// <cycle> ::= <cycle_short> | <cycle_long>
+// <cycle_end_offsets> ::= <time_offset_16> | <time_offset_16> <cycle_end_offsets> # must match <cycles_count>
+// <cycles_start_time> ::= <time>
+// <cycles_start_id> ::= (uint32_t)
+// <cycles_count> ::= (uint16_t)
+// <cycles> ::= <cycles_cmd> <cycles_start_id> <cycles_start_time> <cycles_count> <cycle_end_offsets>
+// <cycle> ::= <cycle_short> | <cycle_long> | <cycles>
 // <cycle_data> ::= <cycle> | <cycle> <lbr> <cycle_data> | <comment>
 // <firmeware_id> ::= <firmeware_id_cmd> <id_string>
 // <header_content> ::= <firmeware_id>
@@ -78,7 +86,8 @@ namespace v1 {
    OP(reaction, 5)SEP                                                          \
    OP(end_cycle, 6)SEP                                                         \
    OP(set_time, 7)SEP                                                          \
-   OP(cycle, 8)TERM_SEP
+   OP(cycle, 8)SEP                                                             \
+   OP(cycles, 9)TERM_SEP
    
 #define AGLAIS_UINT8_T_STRUCT_DEF(NAME, ID)                                    \
    static constexpr uint8_t NAME = ID;
@@ -90,21 +99,15 @@ struct Command  {
    OP(none, 0)SEP                                                              \
    OP(key_pressed, 1)SEP                                                       \
    OP(key_released, 2)SEP                                                      \
-   OP(keyboard_report, 3)TERM_SEP
+   OP(hid_report, 3)TERM_SEP
 
 struct SubCommand {
    AGLAIS_V1_SUBCOMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
-};
-   
-struct TransferType {
-   static constexpr uint8_t none = 0;
-   static constexpr uint8_t verbose = 1;
-   static constexpr uint8_t compressed = 1;
 };
 
 constexpr uint8_t protocol_version = 1;
 
 constexpr char comment_symbol = '#';
    
-} // namespace V1
+} // namespace v1
 } // namespace aglais

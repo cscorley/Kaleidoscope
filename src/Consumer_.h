@@ -29,13 +29,12 @@ namespace aglais {
          virtual ~Consumer_() {}
          
          virtual void onFirmwareId(const char *firmware_id) {}
-         virtual void onStartCycle(uint16_t cycle_id, uint16_t cycle_start_time) {}
-         virtual void onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) {}
+         virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) {}
+         virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) {}
          virtual void onKeyPressed(uint8_t row, uint8_t col) {}
          virtual void onKeyReleased(uint8_t row, uint8_t col) {}
-         virtual void onKeyboardReport(uint8_t id, int length, const void *data) {}
-         virtual void onSetTime(uint16_t time) {}
-         virtual void onCycle(uint16_t cycle_id, uint16_t cycle_start_time, uint16_t cycle_end_time) {}
+         virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) {}
+         virtual void onSetTime(uint32_t time) {}
          
    };
 } // namespace aglais

@@ -18,9 +18,9 @@
 
 #pragma once
 
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
       
-#include "aglais/v1/Grammar.h"
+#include "aglais/src/v1/Grammar.h"
 
 #include <string>
 #include <istream>
@@ -48,7 +48,10 @@ class Parser {
       static uint8_t commandStringToId(const char *string);
       static uint8_t subCommandStringToId(const char *string);
       
+      uint8_t getTransferType() const { return transfer_type_; }
+      
       void parse(std::istream &in, Consumer_ &consumer);
+      void compress(std::istream &in, std::ostream &out);
    
    private:
       
