@@ -16,7 +16,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
 #include "Kaleidoscope-Simulator.h"
 #include "vendors/keyboardio/model01.h"

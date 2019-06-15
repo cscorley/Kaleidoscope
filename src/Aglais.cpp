@@ -17,8 +17,8 @@
  */
 
 #include "Aglais.h"
-#include "aglais/Parser.h"
-#include "aglais/Consumer_.h"
+#include "aglais/src/Aglais.h"
+#include "aglais/src/Consumer_.h"
 #include "assertions/generic_report/ReportEquals.h"
 
 namespace kaleidoscope {
@@ -38,10 +38,10 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
          //       parsed matches the firmware running in the simulator.
       }
       
-      virtual void onStartCycle(uint16_t cycle_id, uint16_t cycle_start_time) override {
+      virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) override {
          simulator_.setTime(cycle_start_time);
       }
-      virtual void onEndCycle(uint16_t cycle_id, uint16_t cycle_end_time) override {
+      virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) override {
          simulator_.cycle();
          
          if(!simulator_.reportAssertionsQueue().empty()) {
@@ -56,7 +56,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
       virtual void onKeyReleased(uint8_t row, uint8_t col) override {
          simulator_.releaseKey(row, col);
       }
-      virtual void onKeyboardReport(uint8_t id, int length, const void *data) override {
+      virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) override {
          
          switch(id) {
             // TODO: React appropriately on the following
@@ -91,13 +91,8 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
                simulator_.error() << "Aglais encountered unknown HID report with id = " << id;
          }
       }
-      virtual void onSetTime(uint16_t time) override {
+      virtual void onSetTime(uint32_t time) override {
          simulator_.setTime(time);
-      }
-      virtual void onCycle(uint16_t cycle_id, uint16_t cycle_start_time, uint16_t cycle_end_time) override {
-         simulator_.setTime(cycle_start_time);
-         simulator_.cycle();
-         simulator_.setTime(cycle_end_time);
       }
       
    private:
@@ -108,10 +103,10 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
 
 void parseAglaisScript(const char *code, Simulator &simulator)
 {
-   aglais::Parser parser;
+   aglais::Aglais a;
    SimulatorConsumerAdaptor sca(simulator);
    
-   parser.parse(code, sca);
+   a.parse(code, sca);
 }
 
 } // namespace simulator

@@ -33,7 +33,7 @@ a very simple firmware test.
 ```cpp
 // ... at end of the firmware file
 
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
 #include "Kaleidoscope-Simulator.h"
 
@@ -89,7 +89,7 @@ firmware builds for the target platform. That's because most target platforms re
 are simply too limited.
 
 ```cpp
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 ```
 
 Next, we bring the simulator API into scope.
@@ -148,7 +148,7 @@ in the generated keyboard report.
    simulator.cycleExpectReports(KeycodesActive{Key_A});
 ```
 
-That's it. Close scopes and terminate the `#ifdef ARDUINO_VIRTUAL`.
+That's it. Close scopes and terminate the `#ifdef KALEIDOSCOPE_VIRTUAL_BUILD`.
 
 ```cpp
 }
@@ -522,7 +522,7 @@ was shipped with Kaleidoscope-Simulator (see `vendors/keyboardio/model01.cpp`).
 ```cpp
 // In the firmware sketch file
 
-#ifdef ARDUINO_VIRTUAL
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
 #include "Kaleidoscope-Simulator.h"
 #include "vendors/keyboardio/model01.h"
