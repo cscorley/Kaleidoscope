@@ -50,3 +50,37 @@ of `aglais_convert -h` for more information.
 
 See the grammar of the Aglais data files in `src/v1/Grammar.h` 
 for a description of the data format and the data types involved.
+
+## Aglais document formats
+
+There are currently two versions of aglais documents, both are text based.
+
+### Verbose documents
+
+The verbose version of Aglais documents is human-readable and thus
+good for debugging. The following is an example of the syntax.
+
+```
+1 1
+firmware_id "an identifier string"
+start_cycle 0 103
+end_cycle 0 5165
+cycles 1 5165 2 1 9 
+start_cycle 3 5175
+action key_pressed 2 14
+reaction hid_report 8 29 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+end_cycle 3 5180
+cycles 4 5180 26 8 1 9 1 2 2 9 2 1 2 2 8 2 2 2 1 9 2 3 2 9 1 2 2 2 9 
+start_cycle 30 5275
+action key_pressed 2 3
+reaction hid_report 8 29 0 128 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+end_cycle 30 5280
+start_cycle 31 5280
+action key_released 2 14
+reaction hid_report 8 29 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+end_cycle 31 5285
+```
+
+## Compressed documents
+
+The compressed version of Aglais simply replaces all command keyboards by one character integer values. It looks like this:

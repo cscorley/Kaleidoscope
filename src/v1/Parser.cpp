@@ -30,7 +30,7 @@
 #define PARSER_ERROR(...)                                                      \
    {                                                                           \
       std::ostringstream o;                                                    \
-      o << "Aglais v1 parser error in line " << line_id_ << ": " << __VA_ARGS__;                          \
+      o << "Aglais v1 parser error in line " << line_id_ << ": " << __VA_ARGS__ << "." ;                          \
       throw std::runtime_error{o.str()};                                       \
    }
 
@@ -370,7 +370,14 @@ void Parser::parse(std::istream &in, Consumer_ &consumer)
    
    while(this->readNextLine(in, line)) {
       ++line_id_;
-      this->parseBodyLine(line, consumer);
+      try {
+         this->parseBodyLine(line, consumer);
+      }
+      catch(const std::runtime_error &e) {
+         std::ostringstream out;
+         out << e.what() << " Current line is \'" << line << "\'";
+         throw std::runtime_error(out.str());
+      }
    }
 }
 
