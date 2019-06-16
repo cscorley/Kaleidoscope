@@ -63,7 +63,7 @@ class Aglais {
       
    private:
       
-      int transfer_type_ = 0;
+      int document_type_ = 0;
       int protocol_version_ = 0;
       int line_id_ = 0;
       bool debug_ = false;

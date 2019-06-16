@@ -32,7 +32,7 @@
 //
 // <cycle_id> ::= (uint32_t)
 // <time> ::= (uint32_t)
-// <time_offset_16> ::= (uint16_t)
+// <time_offset_16> ::= (uint8_t)
 // <row> ::= (uint8_t)
 // <col> ::= (uint8_t)
 // <report_id> ::= (uint8_t)
@@ -60,10 +60,10 @@
 // <cycle_long> ::= <start_cycle> <lbr> <cycle_content> <lbr> <end_cycle>
 // <set_time> ::= <set_time_cmd> <time>
 // <cycle_short> ::= <cycle_cmd> <cycle_id> 
-// <cycle_end_offsets> ::= <time_offset_16> | <time_offset_16> <cycle_end_offsets> # must match <cycles_count>
+// <cycle_end_offsets> ::= <time_offset_8> | <time_offset_8> <cycle_end_offsets> # must match <cycles_count>
 // <cycles_start_time> ::= <time>
 // <cycles_start_id> ::= (uint32_t)
-// <cycles_count> ::= (uint16_t)
+// <cycles_count> ::= (uint8_t)
 // <cycles> ::= <cycles_cmd> <cycles_start_id> <cycles_start_time> <cycles_count> <cycle_end_offsets>
 // <cycle> ::= <cycle_short> | <cycle_long> | <cycles>
 // <cycle_data> ::= <cycle> | <cycle> <lbr> <cycle_data> | <comment>

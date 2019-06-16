@@ -283,22 +283,22 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
          {
             uint32_t start_cycles_id = 0;
             uint32_t start_cycles_time = 0;
-            uint16_t n_cycles = 0;
+            int n_cycles = 0;
             line_stream >> start_cycles_id >> start_cycles_time >> n_cycles;
             AGLAIS_DEBUG("cycles " << start_cycles_id << ' ' << start_cycles_time
                << ' ' << n_cycles)
             
-            uint16_t last_time_offset = 0;
-            for(uint16_t i = 0; i < n_cycles; ++i) {
+            uint8_t last_time_offset = 0;
+            for(int i = 0; i < n_cycles; ++i) {
                uint32_t cycle_id = start_cycles_id + i;
-               uint16_t time_offset = 0;
-               line_stream >> time_offset;
+               int time_offset_int = 0;
+               line_stream >> time_offset_int;
                uint32_t start_time = start_cycles_time + last_time_offset;
-               uint32_t end_time = start_cycles_time + time_offset;
-               last_time_offset = time_offset;
+               uint32_t end_time = start_cycles_time + (uint8_t)time_offset_int;
+               last_time_offset = (uint8_t)time_offset_int;
                
                if(debug_) {
-                  std::cout << time_offset << ' ';
+                  std::cout << time_offset_int << ' ';
                }
                consumer.onStartCycle(cycle_id, start_time);
                consumer.onEndCycle(cycle_id, end_time);
@@ -354,6 +354,9 @@ class CompressionConsumer : public Consumer_ {
    
    public:
       
+      static constexpr uint8_t max_grouped_cycles = 99;
+      static constexpr uint8_t max_grouped_time_offset = 99;
+      
       CompressionConsumer(const Parser &parser, std::ostream &out)
          :  parser_(parser),
             out_(out)
@@ -363,23 +366,79 @@ class CompressionConsumer : public Consumer_ {
          this->outputCommand(Command::firmware_id);
          out_ << " \"" << firmware_id << "\"\n";
       }
-      virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) override {
+      virtual void onStartCycle(uint32_t cycle_id, uint32_t 
+                                 cycle_start_time) override {
+         
+         // Store the information about the start of this cycle
+         // in order to have it available later when, e.g.
+         // cycles cannot be compressed.
+         //
          last_cycle_id_ = cycle_id;
          last_cycle_start_time_ = cycle_start_time;
+         
          cycle_content_encountered_ = false;
+         
+         // To save space we allow at max max_grouped_cycles
+         // cycles to be grouped
+         //
+         if(cycle_end_offsets_.size() == max_grouped_cycles) {
+            this->flushCompressedCycles();
+         }
          
          if(cycle_end_offsets_.empty()) {
             cycles_start_time_ = cycle_start_time;
+            cycles_start_id_ = cycle_id;
          }
       }
       virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) override {
          
          if(!cycle_content_encountered_) {
-            cycle_end_offsets_.push_back((uint16_t)(cycle_end_time - cycles_start_time_));
+            
+            // The last cycle was an empty cycle.
+            
+            auto offset = cycle_end_time - cycles_start_time_;
+            
+            // Check the offset and make sure
+            // that time offsets do not exceed max_grouped_time_offset.
+            //
+            if(offset > max_grouped_time_offset) {
+               this->flushCompressedCycles();
+               cycles_start_time_ = last_cycle_start_time_;
+               cycles_start_id_ = cycle_id;
+            }
+
+            // Recompute offset in case cycles were flushed.
+            //
+            offset = cycle_end_time - last_cycle_start_time_;
+            
+            if(offset > max_grouped_time_offset) {
+               
+               // If we end up here, offset equals the duration of
+               // the last cycle.
+               
+               // If the duration exceeds max_grouped_time_offset,
+               // we are not able to store this cycle in a compressed sequence.
+               
+               // Output the cycle as pair of start_cycle and end_cycle.
+               //
+               this->outputCommand(Command::start_cycle);
+               out_ << ' ' << cycle_id << ' ' << last_cycle_start_time_ << '\n';
+               this->outputCommand(Command::end_cycle);
+               out_ << ' ' << cycle_id << ' ' << cycle_end_time << '\n';
+            }
+            else {
+               
+               // Cycle duration ok
+
+               cycle_end_offsets_.push_back((uint8_t)offset);
+            }
          }
          else {
+            
+            // Cycle has content and thus cannot be compressed
+            
             this->outputCommand(Command::end_cycle);
-            out_ << ' ' << cycle_id << ' ' << cycle_end_time;
+            out_ << ' ' << cycle_id << ' ' << cycle_end_time << '\n';
          }
       }
       virtual void onKeyPressed(uint8_t row, uint8_t col) override {
@@ -388,10 +447,13 @@ class CompressionConsumer : public Consumer_ {
       virtual void onKeyReleased(uint8_t row, uint8_t col) override {
          this->considerKeyAction(SubCommand::key_released, row, col);
       }
-      virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) override {             
-         this->flush();
+      virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) override {
+         
+         this->flushAndStartUncompressedCycle();
+         
          cycle_content_encountered_ = true;
-         this->outputCommand(Command::action);
+         
+         this->outputCommand(Command::reaction);
          out_ << ' ';
          this->outputSubCommand(SubCommand::hid_report);
          out_ << ' ' << id << ' ' << length;
@@ -408,8 +470,11 @@ class CompressionConsumer : public Consumer_ {
    private:
       
       void considerKeyAction(uint8_t action_id, uint8_t row, uint8_t col) {
-         this->flush();
+         
+         this->flushAndStartUncompressedCycle();
+         
          cycle_content_encountered_ = true;
+         
          this->outputCommand(Command::action);
          out_ << ' ';
          this->outputSubCommand(action_id);
@@ -450,7 +515,7 @@ class CompressionConsumer : public Consumer_ {
          }
       }
       
-      void flush() {
+      void flushAndStartUncompressedCycle() {
          this->flushCompressedCycles();
          
          this->outputCommand(Command::start_cycle);
@@ -482,7 +547,7 @@ class CompressionConsumer : public Consumer_ {
       uint32_t cycles_start_time_ = 0;
       uint32_t last_cycle_id_ = 0;
       uint32_t last_cycle_start_time_ = 0;
-      std::vector<uint16_t> cycle_end_offsets_;
+      std::vector<uint8_t> cycle_end_offsets_;
 };
 
 void Parser::compress(std::istream &in, std::ostream &out) {

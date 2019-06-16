@@ -44,19 +44,19 @@ void Aglais::determineDocumentVersion(std::istream &in) {
    ++line_id_;
    
    std::istringstream tt_in(line);
-   tt_in >> transfer_type_ >> protocol_version_;
+   tt_in >> document_type_ >> protocol_version_;
 
-   if(!(   (transfer_type_ == TransferType::verbose)
-        || (transfer_type_ == TransferType::compressed)))
+   if(!(   (document_type_ == DocumentType::verbose)
+        || (document_type_ == DocumentType::compressed)))
    {
-      PARSER_ERROR("Unknown transfer type " << (int)transfer_type_ << " recieved")
+      PARSER_ERROR("Unknown transfer type " << (int)document_type_ << " recieved")
    }
    
    if(protocol_version_ != 1) {
       PARSER_ERROR("Unknown protocol version " << (int)protocol_version_ << " recieved")
    }
    
-   AGLAIS_DEBUG("transfer_type: " << transfer_type_
+   AGLAIS_DEBUG("transfer_type: " << document_type_
             << ", protocol_version: " << protocol_version_)
 }
 
@@ -70,7 +70,7 @@ void Aglais::parse(std::istream &in, Consumer_ &consumer)
          case 1:
          {
             AGLAIS_DEBUG("Delegating to v1 parser")
-            v1::Parser delegate_parser(transfer_type_, line_id_);
+            v1::Parser delegate_parser(document_type_, line_id_);
             delegate_parser.setDebug(debug_);
             delegate_parser.parse(in, consumer);
          }
@@ -100,7 +100,7 @@ void Aglais::compress(std::istream &in, std::ostream &out)
          case 1:
          {
             AGLAIS_DEBUG("Delegating to v1 parser")
-            v1::Parser delegate_parser(transfer_type_, line_id_);
+            v1::Parser delegate_parser(document_type_, line_id_);
             delegate_parser.setDebug(debug_);
             delegate_parser.compress(in, out);
          }
