@@ -22,7 +22,7 @@
 
 namespace aglais {
    
-struct TransferType {
+struct DocumentType {
    static constexpr uint8_t none = 0;
    static constexpr uint8_t verbose = 1;
    static constexpr uint8_t compressed = 2;

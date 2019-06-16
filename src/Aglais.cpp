@@ -39,7 +39,7 @@ void Aglais::determineDocumentVersion(std::istream &in) {
       std::istringstream tt_in(line);
       tt_in >> transfer_type_ >> protocol_version_;
 
-      if(transfer_type_ == TransferType::none) {
+      if(transfer_type_ == DocumentType::none) {
          this->parserError();
       }
       

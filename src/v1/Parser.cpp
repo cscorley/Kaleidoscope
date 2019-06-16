@@ -93,7 +93,7 @@ uint8_t Parser::readCommandId(std::istream &line_stream) const
 {   
    uint8_t command_id = 0;
    
-   if(transfer_type_ == TransferType::verbose) {
+   if(document_type_ == DocumentType::verbose) {
       static constexpr int buf_length = 1024;
       char buffer[buf_length];
       
@@ -116,7 +116,7 @@ uint8_t Parser::readSubCommandId(std::istream &line_stream) const
 {   
    uint8_t sub_command_id = 0;
    
-   if(transfer_type_ == TransferType::verbose) {
+   if(document_type_ == DocumentType::verbose) {
       static constexpr int buf_length = 1024;
       char buffer[buf_length];
       
@@ -382,34 +382,34 @@ class CompressionConsumer : public Consumer_ {
       }
       
       void outputCommand(uint8_t command_id) {
-         switch(parser_.getTransferType()) {
-            case TransferType::verbose:
+         switch(parser_.getDocumentType()) {
+            case DocumentType::verbose:
                out_ << parser_.commandIdToString(command_id);
                break;
-            case TransferType::compressed:
+            case DocumentType::compressed:
                out_ << command_id;
                break;
             default:
             {
                std::ostringstream error_stream{};
-               error_stream << "Error while compressing. Unknown transfer type " << parser_.getTransferType();
+               error_stream << "Error while compressing. Unknown transfer type " << parser_.getDocumentType();
                throw std::runtime_error(error_stream.str().c_str());
             }
          }
       }
       
       void outputSubCommand(uint8_t sub_command_id) {
-         switch(parser_.getTransferType()) {
-            case TransferType::verbose:
+         switch(parser_.getDocumentType()) {
+            case DocumentType::verbose:
                out_ << parser_.subCommandIdToString(sub_command_id);
                break;
-            case TransferType::compressed:
+            case DocumentType::compressed:
                out_ << sub_command_id;
                break;
             default:
             {
                std::ostringstream error_stream{};
-               error_stream << "Error while compressing. Unknown transfer type " << parser_.getTransferType();
+               error_stream << "Error while compressing. Unknown transfer type " << parser_.getDocumentType();
                throw std::runtime_error(error_stream.str().c_str());
             }
          }
