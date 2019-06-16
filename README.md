@@ -1,68 +1,52 @@
-# Kaleidoscope-Simulator-Control
+# Aglais
 
-Use the physical keyboard to generate real-time input for simulated firmware runs.
+An I/O recorder data format, library and tools for USB-HID reporting keyboards.
 
 ## Introduction
 
-This plugin sends the state of any keys of the keyboard to the host system via
-serial communication. This information may be fed to a simulation of the same
-keyboard running on the host system.
+A USB-keyboard communicates with the host system via HID reports. Those are
+created when keys are pressed or released. More complex keyboards are registering
+at the host system as traditional keyboards but also as mouse devices or even absolute mouse devices at the same time. For the latter there are also dedicated HID reports that are send as a reaction to key-action.
 
-## Usage
+To debug the behavior of a keyboard firmware, it is very important to keep
+track of the exact sequence of key-actions and HID-reports being send.
 
-### Preparing the sketch
+Aglais defines a data format for storing and reading the I/O transactions. It enables a keyboard firmware to send the I/O information e.g. via a serial interface to the host system. 
 
-Include the plugin's header somewhere at the top of your sketch.
+Aglais comes with a tool `aglais_convert` that enables compressing files and 
+converting them from a compact text-based form to a verbose text-based form.
+The tool also allows to conveniently convert Aglais-documents into a form
+that can be integrated in any C++ program to be read by Aglais' interface library.
 
-```cpp
-#include "Kaleidoscope-Simulator-Control.h"
-```
+## Reading Aglais files
 
-The plugin captures key events and discards them while enabled. Discarding here means
-that the key events do not lead to any keys being send to the host system via usb keyboard reports.
-Instead, while enabled, the plugin keeps track of the state of the keyboard matrix and sends it to the host via serial communication.
+To read aglais files you can either build Aglais as standalone tool or 
+you can link it into other programs.
 
-Because of this, it is important to let Kaleidoscope-Simulator-Control be the first in the list of registered plugins.
+### Building the standalone library and tools
 
-```cpp
-KALEIDOSCOPE_INIT_PLUGINS(
-   SimulatorControl,
-   ... more plugins ...
-)
-```
-
-### Activation
-
-The plugin is deactivated when the firmware starts. It has to be actively activated. This is done by hitting two pre-defined keys together. For the Keyboardio Model01 these two keys are pre-defined as
-the outermost upper keys on both halfs of the keyboard.
-
-Alternative keys can be defined through the method `setActivationKeys(...)` that must be invoked with the row/col values of the two activation keys. This is best done in Arduino's `setup()` method, e.g.
-
-```cpp
-void setup() {
-   SimulatorControl.setActivationKeys(0 /*row of key 1*/, 1 /*col of key 1*/,
-                                      1 /*row of key 1*/, 1 /*col of key 1*/);
-   ... more setup ...
-}
-```
-
-### Generated output
-
-When enabled, the plugin sends output via the serial interface to the host. On a Linux system, 
-this output can be displayed via the command
+Aglais build system works based on CMake. To build it, do the following.
 
 ```
-cat /dev/ttyACM0
+cd <some_place_to_clone_aglais>
+git clone https://github.com/CapeLeidokos/Aglais.git
+
+cd <some_build_dir>
+cmake <some_place_to_clone_aglais>/Aglais
+make
 ```
 
-To drive a virtual firmware simulation, pipe the generated data stream to the simulator.
-Such a command might read similar to the following:
+### Interfacing Aglais
 
-```
-cat /dev/ttyACM0 | /tmp/kaleidoscope-my_user/sketch/9585290-any_sketch.ino/build/any_sketch.ino.elf -t
-```
+To use Aglais with your own code, link it to `libaglais.so` and 
+reimplement the consumer class `aglais::Consumer_`.
 
-**Important:** For this to work it requires a virtual firmware build. 
+## Converting Aglais files
 
-To find the name of your virtual firmware
-executable, add `VERBOSE=1` to your build command line and search for an invokation of the firmware executable with the additonal flag `-t` (which requests test function execution).
+To convert aglais files, use the tool `aglais_convert`. See the output
+of `aglais_convert -h` for more information.
+
+## Generating Aglais files autonomously
+
+See the grammar of the Aglais data files in `src/v1/Grammar.h` 
+for a description of the data format and the data types involved.
