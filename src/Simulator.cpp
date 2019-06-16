@@ -246,7 +246,7 @@ void Simulator::tapKey(uint8_t row, uint8_t col) {
 
 void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                          int tap_interval_cycles,
-                         std::shared_ptr<Assertion_> after_tap_and_cycles_assertion) {
+                         std::shared_ptr<Assertion_> after_tap_and_cycles_assertion ) {
    if(after_tap_and_cycles_assertion) {
       after_tap_and_cycles_assertion->setSimulator(this);
    }
