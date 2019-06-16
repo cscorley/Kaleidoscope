@@ -84,3 +84,24 @@ end_cycle 31 5285
 ## Compressed documents
 
 The compressed version of Aglais simply replaces all command keyboards by one character integer values. It looks like this:
+
+```
+1 2
+1 ""
+2 0 103
+5 0 5165
+8 1 5165 2 1 9
+2 3 5175
+3 1 2 14
+4 3 8 29 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+5 3 5180
+8 4 5180 26 8 1 9 1 2 2 9 2 1 2 2 8 2 2 2 1 9 2 3 2 9 1 2 2 2 9
+2 30 5275
+3 1 2 3
+4 3 8 29 0 128 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+5 30 5280
+2 31 5280
+3 2 2 14
+4 3 8 29 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+5 31 5285
+```
