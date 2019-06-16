@@ -38,7 +38,7 @@
 // <report_id> ::= (uint8_t)
 // <data_length> ::= (uint8_t)
 // <report_bytes> ::= (uint8_t)... (<data_length> times)
-// <transfer_type> ::= (uint8_t)
+// <document_type> ::= (uint8_t)
 // <protocol_version> ::= (uint8_t)
 // <version_id> ::= (uint8_t)
 // <id_string> ::= (double quoted string)
@@ -60,19 +60,20 @@
 // <cycle_long> ::= <start_cycle> <lbr> <cycle_content> <lbr> <end_cycle>
 // <set_time> ::= <set_time_cmd> <time>
 // <cycle_short> ::= <cycle_cmd> <cycle_id> 
-// <cycle_end_offsets> ::= <time_offset_8> | <time_offset_8> <cycle_end_offsets> # must match <cycles_count>
+// <cycle_duration> ::= (uint32_t)
+// <cycle_durations> ::= <cycle_duration> | <cycle_duration> <cycle_durations> # must match <cycles_count>
 // <cycles_start_time> ::= <time>
 // <cycles_start_id> ::= (uint32_t)
-// <cycles_count> ::= (uint8_t)
-// <cycles> ::= <cycles_cmd> <cycles_start_id> <cycles_start_time> <cycles_count> <cycle_end_offsets>
+// <cycles_count> ::= (uint32_t)
+// <cycles> ::= <cycles_cmd> <cycles_start_id> <cycles_start_time> <cycles_count> <cycle_durations>
 // <cycle> ::= <cycle_short> | <cycle_long> | <cycles>
 // <cycle_data> ::= <cycle> | <cycle> <lbr> <cycle_data> | <comment>
 // <firmeware_id> ::= <firmeware_id_cmd> <id_string>
 // <header_content> ::= <firmeware_id>
-// <header> ::= <transfer_type> <lbr> <protocol_version> <lbr> <header_content>
+// <header> ::= <document_type> <lbr> <protocol_version> <lbr> <header_content>
 // <document> ::= <header> <lbr> <cycle_data>
 
-// The value of <transfer_type> defines whether string- or 
+// The value of <document_type> defines whether string- or 
 // id-versions of commands are used
 
 namespace aglais {
@@ -80,14 +81,14 @@ namespace v1 {
    
 #define AGLAIS_V1_COMMANDS(OP, SEP, TERM_SEP)                                  \
    OP(none, 0)SEP                                                              \
-   OP(firmware_id, 2)SEP                                                       \
-   OP(start_cycle, 3)SEP                                                       \
-   OP(action, 4)SEP                                                            \
-   OP(reaction, 5)SEP                                                          \
-   OP(end_cycle, 6)SEP                                                         \
-   OP(set_time, 7)SEP                                                          \
-   OP(cycle, 8)SEP                                                             \
-   OP(cycles, 9)TERM_SEP
+   OP(firmware_id, 1)SEP                                                       \
+   OP(start_cycle, 2)SEP                                                       \
+   OP(action, 3)SEP                                                            \
+   OP(reaction, 4)SEP                                                          \
+   OP(end_cycle, 5)SEP                                                         \
+   OP(set_time, 6)SEP                                                          \
+   OP(cycle, 7)SEP                                                             \
+   OP(cycles, 8)TERM_SEP
    
 #define AGLAIS_UINT8_T_STRUCT_DEF(NAME, ID)                                    \
    static constexpr uint8_t NAME = ID;

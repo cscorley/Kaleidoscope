@@ -37,20 +37,20 @@ class Parser {
       
       static constexpr uint8_t protocol_version = aglais::v1::protocol_version;
       
-      Parser(uint8_t document_type, int start_line_id)
-         :  document_type_(document_type),
-            line_id_(start_line_id)
+      Parser(const Aglais &aglais, uint8_t input_document_type, int start_line_id)
+         :  aglais_{aglais},
+            input_document_type_{input_document_type},
+            line_id_{start_line_id},
+            debug_{aglais.debug_}
       {}
       
-      static const char *commandIdToString(uint8_t command_id);
-      static const char *subCommandIdToString(uint8_t sub_command_id);
+      const char *commandIdToString(uint8_t command_id) const;
+      const char *subCommandIdToString(uint8_t sub_command_id) const;
 
-      static uint8_t commandStringToId(const char *string);
-      static uint8_t subCommandStringToId(const char *string);
+      uint8_t commandStringToId(const char *string) const;
+      uint8_t subCommandStringToId(const char *string) const;
       
-      uint8_t getDocumentType() const { return document_type_; }
-      
-      void setDebug(bool state = true) { debug_ = state; }
+      uint8_t getInputDocumentType() const { return input_document_type_; }
       
       void parse(std::istream &in, Consumer_ &consumer);
       void compress(std::istream &in, std::ostream &out);
@@ -69,9 +69,12 @@ class Parser {
       
    private:
       
-      uint8_t document_type_ = DocumentType::none;
+      const Aglais &aglais_;
+      uint8_t input_document_type_ = DocumentType::none;
       int line_id_ = 0;
       bool debug_ = false;
+      
+      friend class CompressionConsumer;
 };
    
 } // namespace V1

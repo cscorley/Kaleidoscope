@@ -43,6 +43,11 @@ struct DocumentType {
 
 namespace aglais {
    
+namespace v1 {
+class Parser;
+class CompressionConsumer;
+}
+   
 class Consumer_;
 
 class Aglais {
@@ -56,6 +61,10 @@ class Aglais {
       void compress(const char *document, std::ostream &out);
       
       void setDebug(bool state = true) { debug_ = state; }
+      void setOutputDocumentType(uint8_t document_type) {
+         output_document_type_ = document_type;
+      }
+      void setQuoteLines(bool state = true) { quote_lines_ = state; }
       
    private:
       
@@ -67,6 +76,11 @@ class Aglais {
       int protocol_version_ = 0;
       int line_id_ = 0;
       bool debug_ = false;
+      uint8_t output_document_type_ = DocumentType::compressed;
+      bool quote_lines_ = false;
+      
+      friend class v1::Parser;
+      friend class v1::CompressionConsumer;
 };
    
 } // namespace aglais

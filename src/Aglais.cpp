@@ -44,20 +44,20 @@ void Aglais::determineDocumentVersion(std::istream &in) {
    ++line_id_;
    
    std::istringstream tt_in(line);
-   tt_in >> document_type_ >> protocol_version_;
+   tt_in >> protocol_version_ >> document_type_;
+ 
+   if(protocol_version_ != 1) {
+      PARSER_ERROR("Unknown protocol version " << (int)protocol_version_ << " recieved")
+   }
 
    if(!(   (document_type_ == DocumentType::verbose)
         || (document_type_ == DocumentType::compressed)))
    {
-      PARSER_ERROR("Unknown transfer type " << (int)document_type_ << " recieved")
+      PARSER_ERROR("Unknown document type " << (int)document_type_ << " recieved")
    }
-   
-   if(protocol_version_ != 1) {
-      PARSER_ERROR("Unknown protocol version " << (int)protocol_version_ << " recieved")
-   }
-   
-   AGLAIS_DEBUG("transfer_type: " << document_type_
-            << ", protocol_version: " << protocol_version_)
+     
+   AGLAIS_DEBUG("document type: " << document_type_
+            << ", protocol version: " << protocol_version_)
 }
 
 void Aglais::parse(std::istream &in, Consumer_ &consumer)
@@ -70,8 +70,7 @@ void Aglais::parse(std::istream &in, Consumer_ &consumer)
          case 1:
          {
             AGLAIS_DEBUG("Delegating to v1 parser")
-            v1::Parser delegate_parser(document_type_, line_id_);
-            delegate_parser.setDebug(debug_);
+            v1::Parser delegate_parser(*this, document_type_, line_id_);
             delegate_parser.parse(in, consumer);
          }
       }
@@ -96,12 +95,22 @@ void Aglais::compress(std::istream &in, std::ostream &out)
       AGLAIS_DEBUG("Starting compression")
       this->determineDocumentVersion(in);
       
+      if(quote_lines_) {
+         out << '"';
+      }
+      out << (int)protocol_version_ << ' ' << (int)output_document_type_;
+      if(quote_lines_) {
+         out << '"';
+      }
+      out << '\n';
+      
       switch(protocol_version_) {
          case 1:
          {
             AGLAIS_DEBUG("Delegating to v1 parser")
-            v1::Parser delegate_parser(document_type_, line_id_);
-            delegate_parser.setDebug(debug_);
+            AGLAIS_DEBUG("debug: " << debug_)
+            AGLAIS_DEBUG("output document type: " << (int)output_document_type_)
+            v1::Parser delegate_parser(*this, document_type_, line_id_);
             delegate_parser.compress(in, out);
          }
       }

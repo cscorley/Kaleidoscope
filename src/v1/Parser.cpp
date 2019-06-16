@@ -30,7 +30,7 @@
 #define PARSER_ERROR(...)                                                      \
    {                                                                           \
       std::ostringstream o;                                                    \
-      o << "Aglais v1 parser error: " << __VA_ARGS__;                          \
+      o << "Aglais v1 parser error in line " << line_id_ << ": " << __VA_ARGS__;                          \
       throw std::runtime_error{o.str()};                                       \
    }
 
@@ -42,7 +42,7 @@ namespace v1 {
 #define AGLAIS_V1_ARRAY_INIT(NAME, ID) #NAME
 #define AGLAIS_V1_MAP_INIT(NAME, ID) { #NAME, ID}
    
-const char *Parser::commandIdToString(uint8_t command_id)
+const char *Parser::commandIdToString(uint8_t command_id) const
 {
    static const char *command_strings[] = {
       AGLAIS_V1_COMMANDS(AGLAIS_V1_ARRAY_INIT, COMMA,)
@@ -52,10 +52,13 @@ const char *Parser::commandIdToString(uint8_t command_id)
       PARSER_ERROR("Unable to find command for id " << (int)command_id)
    }
    
+   AGLAIS_DEBUG("Found command string \'" << command_strings[command_id]
+      << "\' for command id " << (int)command_id)
+   
    return command_strings[command_id];
 }
 
-const char *Parser::subCommandIdToString(uint8_t sub_command_id)
+const char *Parser::subCommandIdToString(uint8_t sub_command_id) const
 {
    static const char *sub_command_strings[] = {
       AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_ARRAY_INIT, COMMA,)
@@ -65,10 +68,13 @@ const char *Parser::subCommandIdToString(uint8_t sub_command_id)
       PARSER_ERROR("Unable to find subcommand for id " << (int)sub_command_id)
    }
    
+   AGLAIS_DEBUG("Found subcommand string \'" << sub_command_strings[sub_command_id]
+      << "\' for subcommand id " << (int)sub_command_id)
+   
    return sub_command_strings[sub_command_id];
 }
 
-uint8_t Parser::commandStringToId(const char *s)
+uint8_t Parser::commandStringToId(const char *s) const
 {
    static const std::map<std::string, uint8_t> command_ids = {
       AGLAIS_V1_COMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
@@ -83,7 +89,7 @@ uint8_t Parser::commandStringToId(const char *s)
    return it->second;
 }
 
-uint8_t Parser::subCommandStringToId(const char *s)
+uint8_t Parser::subCommandStringToId(const char *s) const
 {
    static const std::map<std::string, uint8_t> sub_command_ids = {
       AGLAIS_V1_SUBCOMMANDS(AGLAIS_V1_MAP_INIT, COMMA,)
@@ -97,23 +103,41 @@ uint8_t Parser::subCommandStringToId(const char *s)
    return it->second;
 }
 
+namespace {
+void skipToNextNonWhitespace(std::istream &in)
+{
+   do {
+      char next = in.peek();
+      if(std::isspace(next)) {
+         in.ignore();
+      }
+      else {
+         break;
+      }
+   } while(in);
+}
+}
+
 uint8_t Parser::readCommandId(std::istream &line_stream) const
 {   
    uint8_t command_id = 0;
    
-   if(document_type_ == DocumentType::verbose) {
+   if(input_document_type_ == DocumentType::verbose) {
       static constexpr int buf_length = 1024;
       char buffer[buf_length];
       
+      skipToNextNonWhitespace(line_stream);
+      
       line_stream.get(buffer, buf_length, ' ');
-      line_stream.ignore();
       
       AGLAIS_DEBUG("Command string: \'" <<  buffer << "\'")
       
       command_id = this->commandStringToId(buffer);
    }
    else {
-      line_stream >> command_id;
+      int command_id_int = 0;
+      line_stream >> command_id_int;
+      command_id = command_id_int;
    }
    
    AGLAIS_DEBUG("Command id: " << (int)command_id)
@@ -125,9 +149,11 @@ uint8_t Parser::readSubCommandId(std::istream &line_stream) const
 {   
    uint8_t sub_command_id = 0;
    
-   if(document_type_ == DocumentType::verbose) {
+   if(input_document_type_ == DocumentType::verbose) {
       static constexpr int buf_length = 1024;
       char buffer[buf_length];
+      
+      skipToNextNonWhitespace(line_stream);
       
       line_stream.get(buffer, buf_length, ' ');
       line_stream.ignore();
@@ -137,7 +163,9 @@ uint8_t Parser::readSubCommandId(std::istream &line_stream) const
       sub_command_id = this->subCommandStringToId(buffer);
    }
    else {
-      line_stream >> sub_command_id;
+      int sub_command_id_int = 0;
+      line_stream >> sub_command_id_int;
+      sub_command_id = sub_command_id_int;
    }
    
    AGLAIS_DEBUG("Subcommand id: " << (int)sub_command_id)
@@ -275,37 +303,33 @@ bool Parser::parseBodyLine(std::string &line, Consumer_ &consumer) const
             uint32_t end_time = 0;
             line_stream >> cycle_id >> start_time >> end_time;
             AGLAIS_DEBUG("cycle " << cycle_id << ' ' << start_time << ' ' << end_time)
-            consumer.onStartCycle(cycle_id, start_time);
-            consumer.onStartCycle(cycle_id, end_time);
+            consumer.onCycle(cycle_id, start_time, end_time);
          }
          break;
       case Command::cycles:
          {
             uint32_t start_cycles_id = 0;
             uint32_t start_cycles_time = 0;
-            int n_cycles = 0;
+            uint32_t n_cycles = 0;
             line_stream >> start_cycles_id >> start_cycles_time >> n_cycles;
             AGLAIS_DEBUG("cycles " << start_cycles_id << ' ' << start_cycles_time
                << ' ' << n_cycles)
             
+            std::vector<uint32_t> cycle_durations;
+            cycle_durations.resize(n_cycles);
             uint8_t last_time_offset = 0;
-            for(int i = 0; i < n_cycles; ++i) {
+            for(uint32_t i = 0; i < n_cycles; ++i) {
                uint32_t cycle_id = start_cycles_id + i;
-               int time_offset_int = 0;
-               line_stream >> time_offset_int;
-               uint32_t start_time = start_cycles_time + last_time_offset;
-               uint32_t end_time = start_cycles_time + (uint8_t)time_offset_int;
-               last_time_offset = (uint8_t)time_offset_int;
+               line_stream >> cycle_durations[i];
                
                if(debug_) {
-                  std::cout << time_offset_int << ' ';
+                  std::cout << cycle_durations[i] << ' ';
                }
-               consumer.onStartCycle(cycle_id, start_time);
-               consumer.onEndCycle(cycle_id, end_time);
             }
             if(debug_) {
                std::cout << std::endl;
             }
+            consumer.onCycles(start_cycles_id, start_cycles_time, cycle_durations);
          }
          break;
       default:
@@ -350,6 +374,8 @@ void Parser::parse(std::istream &in, Consumer_ &consumer)
    }
 }
 
+#define DEBUG_CC(...) AGLAIS_DEBUG("Compression: " << __VA_ARGS__)
+
 class CompressionConsumer : public Consumer_ {
    
    public:
@@ -357,17 +383,38 @@ class CompressionConsumer : public Consumer_ {
       static constexpr uint8_t max_grouped_cycles = 99;
       static constexpr uint8_t max_grouped_time_offset = 99;
       
-      CompressionConsumer(const Parser &parser, std::ostream &out)
-         :  parser_(parser),
-            out_(out)
+      CompressionConsumer(const Parser &parser, 
+                          std::ostream &out, 
+                          bool debug)
+         :  parser_{parser},
+            out_{out},
+            debug_{parser.aglais_.debug_}
       {}
       
-      virtual void onFirmwareId(const char *firmware_id) override {
+      ~CompressionConsumer() {
+         // There might be some unflushed content in the queue
+         //
+         this->flushCompressedCycles();
+      }
+      
+      virtual void onFirmwareId(const char *firmware_id_string) override {
+         
+         DEBUG_CC("firmware_id \"" << firmware_id_string << '\"')
+         
+         this->startLine();
          this->outputCommand(Command::firmware_id);
-         out_ << " \"" << firmware_id << "\"\n";
+         if(parser_.aglais_.quote_lines_) {
+            out_ << " \\\"" << firmware_id_string << "\\\"";
+         }
+         else {
+            out_ << " \"" << firmware_id_string << "\"\n";
+         }
+         this->endLine();
       }
       virtual void onStartCycle(uint32_t cycle_id, uint32_t 
                                  cycle_start_time) override {
+                                    
+         DEBUG_CC("start_cycle " << cycle_id << ' ' << cycle_start_time)
          
          // Store the information about the start of this cycle
          // in order to have it available later when, e.g.
@@ -378,12 +425,12 @@ class CompressionConsumer : public Consumer_ {
          
          cycle_content_encountered_ = false;
          
-         // To save space we allow at max max_grouped_cycles
-         // cycles to be grouped
-         //
-         if(cycle_end_offsets_.size() == max_grouped_cycles) {
-            this->flushCompressedCycles();
-         }
+//          // To save space we allow at max max_grouped_cycles
+//          // cycles to be grouped
+//          //
+//          if(cycle_end_offsets_.size() == max_grouped_cycles) {
+//             this->flushCompressedCycles();
+//          }
          
          if(cycle_end_offsets_.empty()) {
             cycles_start_time_ = cycle_start_time;
@@ -392,24 +439,26 @@ class CompressionConsumer : public Consumer_ {
       }
       virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) override {
          
+         DEBUG_CC("end_cycle " << cycle_id << ' ' << cycle_end_time)
+         
          if(!cycle_content_encountered_) {
             
             // The last cycle was an empty cycle.
             
-            auto offset = cycle_end_time - cycles_start_time_;
-            
-            // Check the offset and make sure
-            // that time offsets do not exceed max_grouped_time_offset.
-            //
-            if(offset > max_grouped_time_offset) {
-               this->flushCompressedCycles();
-               cycles_start_time_ = last_cycle_start_time_;
-               cycles_start_id_ = cycle_id;
-            }
+//             auto offset = cycle_end_time - cycles_start_time_;
+//             
+//             // Check the offset and make sure
+//             // that time offsets do not exceed max_grouped_time_offset.
+//             //
+//             if(offset > max_grouped_time_offset) {
+//                this->flushCompressedCycles();
+//                cycles_start_time_ = last_cycle_start_time_;
+//                cycles_start_id_ = cycle_id;
+//             }
 
             // Recompute offset in case cycles were flushed.
             //
-            offset = cycle_end_time - last_cycle_start_time_;
+            auto offset = cycle_end_time - last_cycle_start_time_;
             
             if(offset > max_grouped_time_offset) {
                
@@ -421,10 +470,14 @@ class CompressionConsumer : public Consumer_ {
                
                // Output the cycle as pair of start_cycle and end_cycle.
                //
+               this->startLine();
                this->outputCommand(Command::start_cycle);
-               out_ << ' ' << cycle_id << ' ' << last_cycle_start_time_ << '\n';
+               out_ << ' ' << cycle_id << ' ' << last_cycle_start_time_;
+               this->endLine();
+               this->startLine();
                this->outputCommand(Command::end_cycle);
-               out_ << ' ' << cycle_id << ' ' << cycle_end_time << '\n';
+               out_ << ' ' << cycle_id << ' ' << cycle_end_time;
+               this->endLine();
             }
             else {
                
@@ -437,22 +490,35 @@ class CompressionConsumer : public Consumer_ {
             
             // Cycle has content and thus cannot be compressed
             
+            this->startLine();
             this->outputCommand(Command::end_cycle);
-            out_ << ' ' << cycle_id << ' ' << cycle_end_time << '\n';
+            out_ << ' ' << cycle_id << ' ' << cycle_end_time;
+            this->endLine();
          }
       }
       virtual void onKeyPressed(uint8_t row, uint8_t col) override {
+         DEBUG_CC("key_pressed " << (int)row << ' ' << (int)col)
          this->considerKeyAction(SubCommand::key_pressed, row, col);
       }
       virtual void onKeyReleased(uint8_t row, uint8_t col) override {
+         DEBUG_CC("key_released " << (int)row << ' ' << (int)col)
          this->considerKeyAction(SubCommand::key_released, row, col);
       }
       virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) override {
+         
+         DEBUG_CC("hid_report " << (int)id << ' ' << length)
+         if(debug_) {
+            for(int i = 0; i < length; ++i) {
+               std::cout << (int)data[i] << ' ';
+            }
+            std::cout << std::endl;
+         }
          
          this->flushAndStartUncompressedCycle();
          
          cycle_content_encountered_ = true;
          
+         this->startLine();
          this->outputCommand(Command::reaction);
          out_ << ' ';
          this->outputSubCommand(SubCommand::hid_report);
@@ -460,14 +526,46 @@ class CompressionConsumer : public Consumer_ {
          for(int i = 0; i < length; ++i) {
             out_ << data[i] << ' ';
          }
-         out_ << '\n';
+         this->endLine();
       }
       virtual void onSetTime(uint32_t time) override {
+         DEBUG_CC("set_time " << time)
+         this->startLine();
          this->outputCommand(Command::set_time);
-         out_ << ' ' << time << '\n';
+         out_ << ' ' << time;
+         this->endLine();
+      }
+      virtual void onCycle(uint32_t cycle_id, uint32_t cycle_start_time, uint32_t cycle_end_time) override {
+         this->startLine();
+         this->outputCommand(Command::cycle);
+         out_ << ' ' << cycle_id << ' ' << cycle_start_time << ' ' << cycle_end_time << '\n';
+         this->endLine();
+      }
+      virtual void onCycles(uint32_t start_cycle_id, uint32_t start_time_id, 
+                            const std::vector<uint32_t> &cycle_durations) override {
+         this->startLine();
+         this->outputCommand(Command::cycles);
+         out_ << ' ' << start_cycle_id << ' ' << start_time_id << ' ' << cycle_durations.size() << ' ';
+         for(const auto &duration: cycle_durations) {
+            out_ << duration << ' ';
+         }
+         this->endLine();
       }
       
    private:
+      
+      void startLine() const {
+         if(parser_.aglais_.quote_lines_) {
+            out_ << '"';
+         }
+      }
+      
+      void endLine() const {
+         if(parser_.aglais_.quote_lines_) {
+            out_ << '"';
+         }
+         out_ << '\n';
+      }
       
       void considerKeyAction(uint8_t action_id, uint8_t row, uint8_t col) {
          
@@ -475,51 +573,61 @@ class CompressionConsumer : public Consumer_ {
          
          cycle_content_encountered_ = true;
          
+         this->startLine();
          this->outputCommand(Command::action);
          out_ << ' ';
          this->outputSubCommand(action_id);
-         out_ << ' ' << row << ' ' << col << '\n';
+         out_ << ' ' << (int)row << ' ' << (int)col;
+         this->endLine();
       }
       
       void outputCommand(uint8_t command_id) {
-         switch(parser_.getDocumentType()) {
+         switch(parser_.aglais_.output_document_type_) {
             case DocumentType::verbose:
                out_ << parser_.commandIdToString(command_id);
                break;
             case DocumentType::compressed:
-               out_ << command_id;
+               out_ << (int)command_id;
                break;
             default:
             {
                std::ostringstream error_stream{};
-               error_stream << "Error while compressing. Unknown transfer type " << parser_.getDocumentType();
+               error_stream << "Error while compressing. Unknown document type " << parser_.aglais_.output_document_type_;
                throw std::runtime_error(error_stream.str().c_str());
             }
          }
       }
       
       void outputSubCommand(uint8_t sub_command_id) {
-         switch(parser_.getDocumentType()) {
+         switch(parser_.aglais_.output_document_type_) {
             case DocumentType::verbose:
                out_ << parser_.subCommandIdToString(sub_command_id);
                break;
             case DocumentType::compressed:
-               out_ << sub_command_id;
+               out_ << (int)sub_command_id;
                break;
             default:
             {
                std::ostringstream error_stream{};
-               error_stream << "Error while compressing. Unknown transfer type " << parser_.getDocumentType();
+               error_stream << "Error while compressing. Unknown document type " << parser_.aglais_.output_document_type_;
                throw std::runtime_error(error_stream.str().c_str());
             }
          }
       }
       
       void flushAndStartUncompressedCycle() {
+         
+         // Only enable flushing once per cycle when actions/reactions
+         // appear.
+         //
+         if(cycle_content_encountered_) { return; }
+         
          this->flushCompressedCycles();
          
+         this->startLine();
          this->outputCommand(Command::start_cycle);
-         out_ << ' ' << last_cycle_id_ << ' ' << last_cycle_start_time_ << '\n';
+         out_ << ' ' << last_cycle_id_ << ' ' << last_cycle_start_time_;
+         this->endLine();
       }
       
       void flushCompressedCycles() {
@@ -528,12 +636,15 @@ class CompressionConsumer : public Consumer_ {
             return;
          }
          
+         this->startLine();
          this->outputCommand(Command::cycles);
-         out_ << cycles_start_id_ << ' ' << cycles_start_time_ << ' '
+         out_ << ' ' << cycles_start_id_ << ' ' << cycles_start_time_ << ' '
             << cycle_end_offsets_.size() << ' ';
          for(const auto &end_offset: cycle_end_offsets_) {
-            out_ << end_offset << ' ';
+            out_ << (int)end_offset << ' ';
          }
+         this->endLine();
+         
          cycle_end_offsets_.clear();
       }
       
@@ -541,6 +652,7 @@ class CompressionConsumer : public Consumer_ {
       
       const Parser &parser_;
       std::ostream &out_;
+      bool debug_ = false;
       
       bool cycle_content_encountered_ = false;
       uint32_t cycles_start_id_ = 0;
@@ -552,7 +664,7 @@ class CompressionConsumer : public Consumer_ {
 
 void Parser::compress(std::istream &in, std::ostream &out) {
    
-   CompressionConsumer cc{*this, out};
+   CompressionConsumer cc{*this, out, debug_};
    
    this->parse(in, cc);
 }

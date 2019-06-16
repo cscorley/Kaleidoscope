@@ -21,16 +21,42 @@
 #include <iostream>
 #include <fstream>
 
+namespace {
+   bool debug = false;
+   uint8_t output_document_type = aglais::DocumentType::compressed;
+   bool quote_lines = false;
+}
+
 void printUsage(int argc, const char **argv) {
-   std::cout << "Usage: " << argv[0] << " <input_document> <compressed_output_document>"
+   std::cout << "Usage: " << argv[0] << " <-h | [-d] [-v] [-q] <input_document> <compressed_output_document> >"
          << std::endl;
+   std::cout << "   -h: Display help." << std::endl;
+   std::cout << "   -d: Debugging output." << std::endl;
+   std::cout << "   -v: Generate verbose output file." << std::endl;
+   std::cout << "   -q: Quote every line (to be used in C++ code." << std::endl;
+}
+
+void parseFlag(const char *flag) {
+   
+   std::string flag_string{flag};
+   
+   if(flag_string == "-d") {
+      debug = true;
+   }
+   else if(flag_string == "-v") {
+      std::cout << "Generating verbose output file" << std::endl;
+      output_document_type = aglais::DocumentType::verbose;
+   }
+   else if(flag_string == "-q") {
+      std::cout << "Quoting lines" << std::endl;
+      quote_lines = true;
+   }
 }
 
 int main(int argc, const char **argv) 
 {
    if(argc < 3) {
-      std::cout << "Usage: " << argv[0] << " <input_document> <compressed_output_document>"
-         << std::endl;
+      printUsage(argc, argv);
       exit(1);
    }
    
@@ -40,8 +66,28 @@ int main(int argc, const char **argv)
       }
    }
    
-   std::ifstream input_file{argv[1]};
-   std::ofstream output_file{argv[2]};
-   aglais::Aglais parser{};
-   parser.compress(input_file, output_file);
+   int in_file_arg = 1;
+   int out_file_arg = 2;
+   
+   if(argc > 3) {
+      for(int i = 1; i < argc - 2; ++i) {
+         parseFlag(argv[i]);
+         ++in_file_arg;
+         ++out_file_arg;
+      }
+   }
+   
+   std::cout << "Compressing file \'" << argv[in_file_arg] << "\'" << std::endl;
+   std::cout << "Output written to \'" << argv[out_file_arg] << "\'" << std::endl;
+   
+   std::ifstream input_file{argv[in_file_arg]};
+   std::ofstream output_file{argv[out_file_arg]};
+   
+   aglais::Aglais a{};
+   
+   a.setDebug(debug);
+   a.setOutputDocumentType(output_document_type);
+   a.setQuoteLines(quote_lines);
+   
+   a.compress(input_file, output_file);
 }
