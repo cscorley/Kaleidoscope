@@ -348,7 +348,7 @@ bool Parser::readNextLine(std::istream &in, std::string &line)
       }
       ++line_id_;
       
-      if(!line.empty() && (line[0] != comment_symbol)) {
+      if(!line.empty() && (line[0] != comment_symbol) && (line[0] != '.')) {
          break;
       }         
    } while(1);
@@ -407,7 +407,7 @@ class CompressionConsumer : public Consumer_ {
             out_ << " \\\"" << firmware_id_string << "\\\"";
          }
          else {
-            out_ << " \"" << firmware_id_string << "\"\n";
+            out_ << " \"" << firmware_id_string << "\"";
          }
          this->endLine();
       }
@@ -522,9 +522,9 @@ class CompressionConsumer : public Consumer_ {
          this->outputCommand(Command::reaction);
          out_ << ' ';
          this->outputSubCommand(SubCommand::hid_report);
-         out_ << ' ' << id << ' ' << length;
+         out_ << ' ' << (int)id << ' ' << length << ' ';
          for(int i = 0; i < length; ++i) {
-            out_ << data[i] << ' ';
+            out_ << (int)data[i] << ' ';
          }
          this->endLine();
       }
@@ -562,7 +562,7 @@ class CompressionConsumer : public Consumer_ {
       
       void endLine() const {
          if(parser_.aglais_.quote_lines_) {
-            out_ << '"';
+            out_ << "\\n\"";
          }
          out_ << '\n';
       }

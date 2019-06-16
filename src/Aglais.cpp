@@ -100,7 +100,7 @@ void Aglais::compress(std::istream &in, std::ostream &out)
       }
       out << (int)protocol_version_ << ' ' << (int)output_document_type_;
       if(quote_lines_) {
-         out << '"';
+         out << "\\n\"";
       }
       out << '\n';
       
