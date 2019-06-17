@@ -65,12 +65,12 @@ bool MouseReport::isRightButtonPressed() const
    return report_data_.buttons & MOUSE_RIGHT;
 }
 
-signed char MouseReport::getMovementX() const
+signed char MouseReport::getXMovement() const
 {
    return report_data_.xAxis;
 }
 
-signed char MouseReport::getMovementY() const
+signed char MouseReport::getYMovement() const
 {
    return report_data_.yAxis;
 }
@@ -100,8 +100,8 @@ void MouseReport::dump(const Simulator &simulator, const char *add_indent) const
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
   simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
-  simulator.log() << add_indent << "  x-axis motion: " << this->getMovementX();
-  simulator.log() << add_indent << "  y-axis motion: " << this->getMovementY();
+  simulator.log() << add_indent << "  x-axis motion: " << this->getXMovement();
+  simulator.log() << add_indent << "  y-axis motion: " << this->getYMovement();
   simulator.log() << add_indent << "  horizontal wheel motion: " << this->getHorizontalWheel();
   simulator.log() << add_indent << "  vertical wheel motion: " << this->getVerticalWheel();
 }

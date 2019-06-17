@@ -91,12 +91,12 @@ class MouseReport : public Report_ {
       /// @brief Queries the x-movement stored in the report.
       /// @returns The x-movement.
       ///
-      signed char getMovementX() const;
+      signed char getXMovement() const;
       
       /// @brief Queries the y-movement stored in the report.
       /// @returns The y-movement.
       ///
-      signed char getMovementY() const;
+      signed char getYMovement() const;
       
       /// @brief Queries the verical wheel movement.
       /// @returns The vertical wheel movement.
