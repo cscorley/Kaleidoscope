@@ -37,7 +37,7 @@ void runSimulator(Simulator &simulator) {
    
    auto test = simulator.newTest("Aglais test");
 
-   parseAglaisScript(aglais_test_recording, simulator);
+   processAglaisDocument(aglais_test_recording, simulator);
 }
 
 const char aglais_test_recording[] =
