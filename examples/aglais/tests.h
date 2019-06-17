@@ -36,10 +36,6 @@ void runSimulator(Simulator &simulator) {
    using namespace assertions;
    
    auto test = simulator.newTest("Aglais test");
-   
-   // Do not allow unexpected reports
-   //
-   simulator.setErrorIfReportWithoutQueuedAssertions(true);
 
    parseAglaisScript(aglais_test_recording, simulator);
 }

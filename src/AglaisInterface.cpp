@@ -137,11 +137,15 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
 
 void parseAglaisScript(const char *code, Simulator &simulator)
 {
+   auto rwqa_state = simulator.getErrorIfReportWithoutQueuedAssertions();
+   
    aglais::Aglais a;
    //a.setDebug(true);
    
    SimulatorConsumerAdaptor sca(simulator);
    a.parse(code, sca);
+   
+   simulator.setErrorIfReportWithoutQueuedAssertions(rwqa_state);
 }
 
 } // namespace simulator
