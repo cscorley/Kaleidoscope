@@ -121,13 +121,13 @@ HeaderStream::HeaderStream(const Simulator *simulator)
    this->getOStream() << "\x1B[32;1m";
    
    this->SimulatorStream_::reactOnLineStart();
-   this->getOStream() << "########################################################\n";
+   this->getOStream() << "################################################################################\n";
 }
 
 HeaderStream::~HeaderStream() {
    this->getOStream() << "\n";
    this->SimulatorStream_::reactOnLineStart();
-   this->getOStream() << "########################################################\n";
+   this->getOStream() << "################################################################################\n";
    
    // Restore color to neutral.
    //
