@@ -23,7 +23,7 @@ namespace simulator {
    
 class Simulator;
 
-void parseAglaisScript(const char *code, Simulator &sim);
+void processAglaisDocument(const char *code, Simulator &sim);
 
 } // namespace simulator
 } // namespace kaleidoscope
