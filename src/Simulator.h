@@ -227,6 +227,7 @@ class Simulator {
       bool abort_on_first_error_;
       
       bool assertions_passed_ = true;
+      bool test_success_ = true;
    
       int cycle_id_ = 0;
       TimeType time_ = 0;
@@ -601,7 +602,7 @@ class Simulator {
       
    private:
       
-      bool checkStatus() const;
+      bool checkStatus();
             
       void headerText();
       

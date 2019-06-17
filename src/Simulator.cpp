@@ -221,7 +221,7 @@ Simulator::Simulator(std::ostream &out,
 Simulator::~Simulator() {
    this->footerText();
    
-   if(!this->checkStatus()) {
+   if(!test_success_) {
       this->error() << "Terminating with exit code 1";
       exit(1);
    }
@@ -354,26 +354,24 @@ void Simulator::initKeyboard() {
    kaleidoscope::hid::initializeKeyboard();
 }
 
-bool Simulator::checkStatus() const {
-   
-   bool success = true;
+bool Simulator::checkStatus() {
    
    if(!queued_report_assertions_.empty()) {
       this->error() << "There are " << queued_report_assertions_.size()
          << " left over assertions in the queue.";
-      success = false;
+      test_success_ = false;
    }
    
    if(!assertions_passed_) {
       this->error() << "Not all assertions passed.";
-      success = false;
+      test_success_ = false;
    }
    
    if(error_count_ != 0) {
-      success = false;
+      test_success_ = false;
    }
       
-   if(success) {
+   if(test_success_) {
       this->log() << "All tests passed.";
       return true;
    }
@@ -386,7 +384,7 @@ bool Simulator::checkStatus() const {
       
 void Simulator::headerText() {
    
-   // Foreground color red
+   // Foreground color yellow
    //
    this->getOStream() << "\x1B[33;1m";
    
@@ -411,7 +409,7 @@ void Simulator::headerText() {
 
 void Simulator::footerText() {
    
-   // Foreground color red
+   // Foreground color yellow
    //
    this->getOStream() << "\x1B[33;1m";
    
@@ -426,7 +424,11 @@ void Simulator::footerText() {
    this->log() << "num. keyboard reports processed: " << n_typed_reports_in_cycle_[KeyboardReportSid];
    this->log() << "num. mouse reports processed: " << n_typed_reports_in_cycle_[MouseReportSid];
    this->log() << "num. absolute mouse reports processed: " << n_typed_reports_in_cycle_[AbsoluteMouseReportSid];
-   this->log() << "################################################################################";
+   this->log() << "";
+   this->checkStatus();
+   this->getOStream() << "\x1B[33;1m";
+   this->log() << "";
+   this->log() <<  "################################################################################";
    this->log() << "";
    
    // Restore color to neutral.
