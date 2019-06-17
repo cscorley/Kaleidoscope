@@ -18,12 +18,12 @@
 
 #pragma once
 
-#include "AssertionContainer.h"
-#include "AssertionQueueAdaptor.h"
+#include "ActionContainer.h"
+#include "ActionQueueAdaptor.h"
 #include "reports/KeyboardReport.h"
 #include "reports/MouseReport.h"
 #include "reports/AbsoluteMouseReport.h"
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/generic_report/ReportAction.h"
 
 #include "HIDReportConsumer_.h"
 
@@ -39,7 +39,7 @@ namespace kaleidoscope {
 namespace simulator {
    
 class Simulator;
-class Assertion_;
+class Action_;
 
 /// @brief An auxlialary tag template for method selection.
 /// @details This class is necessary as C++ does not allow
@@ -226,7 +226,7 @@ class Simulator {
       int cycle_duration_;
       bool abort_on_first_error_;
       
-      bool assertions_passed_ = true;
+      bool actions_passed_ = true;
       bool test_success_ = true;
    
       int cycle_id_ = 0;
@@ -235,7 +235,7 @@ class Simulator {
       
       mutable int error_count_ = 0;
       
-      bool error_if_report_without_queued_assertions_ = false;
+      bool error_if_report_without_queued_actions_ = false;
       
       int n_typed_reports_in_cycle_[4] = {};
       int n_typed_overall_reports_[4] = {};
@@ -243,15 +243,15 @@ class Simulator {
       int n_reports_in_cycle_ = 0;
       int n_overall_reports_ = 0;
       
-      AssertionContainer<ReportAssertion_> queued_report_assertions_;
+      ActionContainer<ReportAction_> queued_report_actions_;
       
-      AssertionContainer<ReportAssertion<KeyboardReport>> permanent_keyboard_report_assertions_;
-      AssertionContainer<ReportAssertion<MouseReport>> permanent_mouse_report_assertions_;
-      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> permanent_absolute_mouse_report_assertions_;
-      AssertionContainer<ReportAssertion_> permanent_generic_report_assertions_;
+      ActionContainer<ReportAction<KeyboardReport>> permanent_keyboard_report_actions_;
+      ActionContainer<ReportAction<MouseReport>> permanent_mouse_report_actions_;
+      ActionContainer<ReportAction<AbsoluteMouseReport>> permanent_absolute_mouse_report_actions_;
+      ActionContainer<ReportAction_> permanent_generic_report_actions_;
       
-      AssertionContainer<Assertion_> queued_cycle_assertions_;
-      AssertionContainer<Assertion_> permanent_cycle_assertions_;
+      ActionContainer<Action_> queued_cycle_actions_;
+      ActionContainer<Action_> permanent_cycle_actions_;
       
       class HIDReportConsumer : public HIDReportConsumer_
       {
@@ -287,64 +287,64 @@ class Simulator {
       
       ~Simulator();
       
-      /// @details If the ErrorIfReportWithoutQueuedAssertions is enabled
-      ///          it is considered an error if no assertions are queued
+      /// @details If the ErrorIfReportWithoutQueuedActions is enabled
+      ///          it is considered an error if no actions are queued
       ///          for a report.
       /// @param state The new boolean state of the condition.
       ///
-      void setErrorIfReportWithoutQueuedAssertions(bool state) {
-         error_if_report_without_queued_assertions_ = state;
+      void setErrorIfReportWithoutQueuedActions(bool state) {
+         error_if_report_without_queued_actions_ = state;
       }
       
-      /// @brief Retreives the state of the ErrorIfReportWithoutQueuedAssertions
+      /// @brief Retreives the state of the ErrorIfReportWithoutQueuedActions
       ///        condition.
       /// @returns The conditions state.
       ///
-      bool getErrorIfReportWithoutQueuedAssertions() const {
-         return error_if_report_without_queued_assertions_;
+      bool getErrorIfReportWithoutQueuedActions() const {
+         return error_if_report_without_queued_actions_;
       }
       
-      AssertionQueueAdaptor<AssertionContainer<ReportAssertion_>> reportAssertionsQueue() {
-         return AssertionQueueAdaptor<AssertionContainer<ReportAssertion_>>{queued_report_assertions_};
+      ActionQueueAdaptor<ActionContainer<ReportAction_>> reportActionsQueue() {
+         return ActionQueueAdaptor<ActionContainer<ReportAction_>>{queued_report_actions_};
       }
       
-      /// @brief Retreives the permanent keyboard report assertions.
+      /// @brief Retreives the permanent keyboard report actions.
       ///
-      AssertionContainer<ReportAssertion<KeyboardReport>> &permanentKeyboardReportAssertions() {
-         return permanent_keyboard_report_assertions_;
+      ActionContainer<ReportAction<KeyboardReport>> &permanentKeyboardReportActions() {
+         return permanent_keyboard_report_actions_;
       }
       
-      /// @brief Retreives the permanent mouse report assertions.
+      /// @brief Retreives the permanent mouse report actions.
       ///
-      AssertionContainer<ReportAssertion<MouseReport>> &permanentMouseReportAssertions() {
-         return permanent_mouse_report_assertions_;
+      ActionContainer<ReportAction<MouseReport>> &permanentMouseReportActions() {
+         return permanent_mouse_report_actions_;
       }
       
-      /// @brief Retreives the absolute mouse report assertions.
+      /// @brief Retreives the absolute mouse report actions.
       ///
-      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> &permanentAbsoluteMouseReportAssertions() {
-         return permanent_absolute_mouse_report_assertions_;
+      ActionContainer<ReportAction<AbsoluteMouseReport>> &permanentAbsoluteMouseReportActions() {
+         return permanent_absolute_mouse_report_actions_;
       }
       
-      /// @brief Retreives the generic report assertions.
+      /// @brief Retreives the generic report actions.
       ///
-      AssertionContainer<ReportAssertion_> &permanentReportAssertions() {
-         return permanent_generic_report_assertions_;
+      ActionContainer<ReportAction_> &permanentReportActions() {
+         return permanent_generic_report_actions_;
       }
       
-      /// @brief Retreives the queued cycle assertions.
-      /// @details The head of the assertion queue is applied at the end of
+      /// @brief Retreives the queued cycle actions.
+      /// @details The head of the action queue is applied at the end of
       ///        the next cycle and removed afterwards.
       ///
-      AssertionQueueAdaptor<AssertionContainer<Assertion_>> cycleAssertionsQueue() {
-         return AssertionQueueAdaptor<AssertionContainer<Assertion_>>{queued_cycle_assertions_};
+      ActionQueueAdaptor<ActionContainer<Action_>> cycleActionsQueue() {
+         return ActionQueueAdaptor<ActionContainer<Action_>>{queued_cycle_actions_};
       }
       
-      /// @brief Retreives the permanent cycle assertions.
-      /// @details Permanent cycle assertions are applied after every cycle.
+      /// @brief Retreives the permanent cycle actions.
+      /// @details Permanent cycle actions are applied after every cycle.
       ///
-      AssertionContainer<Assertion_> &permanentCycleAssertions() {
-         return permanent_cycle_assertions_;
+      ActionContainer<Action_> &permanentCycleActions() {
+         return permanent_cycle_actions_;
       }
       
       /// @brief Registers a key press event.
@@ -381,47 +381,47 @@ class Simulator {
       /// @param col The keyboard matrix col.
       /// @param tap_interval_cycles The number of cycles that   
       ///        elapse between individual taps.
-      /// @param after_tap_and_cycles_assertion An assertion
+      /// @param after_tap_and_cycles_action An action
       ///        that is evaluated after every tap.
       ///
       void multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                        int tap_interval_cycles = 1,
-                       std::shared_ptr<Assertion_> after_tap_and_cycles_assertion = std::shared_ptr<Assertion_>()
+                       std::shared_ptr<Action_> after_tap_and_cycles_action = std::shared_ptr<Action_>()
                       );
 
       /// @brief Releases all keys that are currently pressed.
       ///
       void clearAllKeys();
          
-      /// @brief Runs a scan cycle and processes assertions afterwards.
+      /// @brief Runs a scan cycle and processes actions afterwards.
       ///
       void cycle();
          
-      /// @brief Runs a number of scan cycles and processes assertions afterwards.
+      /// @brief Runs a number of scan cycles and processes actions afterwards.
       ///
       /// @param n The number of cycles to run.
-      /// @tparam assertions A list of assertions that are evaluated
+      /// @tparam actions A list of actions that are evaluated
       ///        after every cycle.
       ///
-      template<typename..._Assertions>
-      void cycles(int n = 0, _Assertions...assertions) {
+      template<typename..._Actions>
+      void cycles(int n = 0, _Actions...actions) {
          this->cyclesInternal(n,
-            std::vector<std::shared_ptr<Assertion_>>{
-               std::forward<_Assertions>(assertions)...
+            std::vector<std::shared_ptr<Action_>>{
+               std::forward<_Actions>(actions)...
             }
          );
       }
       
-      template<typename..._Assertions>
-      void cycleExpectReports(_Assertions...assertions) {
+      template<typename..._Actions>
+      void cycleExpectReports(_Actions...actions) {
          
-         this->reportAssertionsQueue()
-            .queue(std::forward<_Assertions>(assertions)...);
+         this->reportActionsQueue()
+            .queue(std::forward<_Actions>(actions)...);
             
          this->cycle();
          
-         if(!queued_report_assertions_.empty()) {
-            this->error() << "Keyboard report assertions are left in queue";
+         if(!queued_report_actions_.empty()) {
+            this->error() << "Keyboard report actions are left in queue";
          }
       }
             
@@ -437,15 +437,15 @@ class Simulator {
       ///
       void advanceTimeTo(TimeType time);
       
-      /// @brief Immediately evaluates a number of assertions
+      /// @brief Immediately evaluates a number of actions
       ///
-      /// @tparam assertions A number assertions to be evaluated immediately.
+      /// @tparam actions A number actions to be evaluated immediately.
       ///
-      template<typename..._Assertions>
-      void evaluateAssertions(_Assertions...assertions) {
-         this->evaluateAssertionsInternal(
-            std::vector<std::shared_ptr<Assertion_>>{
-               std::forward<_Assertions>(assertions)...
+      template<typename..._Actions>
+      void evaluateActions(_Actions...actions) {
+         this->evaluateActionsInternal(
+            std::vector<std::shared_ptr<Action_>>{
+               std::forward<_Actions>(actions)...
             }
          );
       }
@@ -508,10 +508,10 @@ class Simulator {
       ///
       bool getDebug() const { return debug_; }
       
-      /// @brief Asserts that no assertions (keyboard report and cycle)
+      /// @brief Asserts that no actions (keyboard report and cycle)
       ///        are currently queued.
       /// @details This function is automatically called at the end of each 
-      ///        test to make sure that all assertions were used.
+      ///        test to make sure that all actions were used.
       ///
       void assertNothingQueued() const;
       
@@ -527,7 +527,7 @@ class Simulator {
       
       /// @brief Asserts a boolean condition.
       /// @param cond The condition.
-      /// @param assertion_code A string representation of the assertion.
+      /// @param action_code A string representation of the action.
       ///
       void assertCondition(bool cond, const char *condition_string) const;
       
@@ -612,55 +612,55 @@ class Simulator {
       
       void checkCycleDurationSet();
       
-      AssertionContainer<ReportAssertion<KeyboardReport>> &getPermanentReportAssertions(ReportType<KeyboardReport>) {
-         return permanent_keyboard_report_assertions_;
+      ActionContainer<ReportAction<KeyboardReport>> &getPermanentReportActions(ReportType<KeyboardReport>) {
+         return permanent_keyboard_report_actions_;
       }
       
-      AssertionContainer<ReportAssertion<MouseReport>> &getPermanentReportAssertions(ReportType<MouseReport>) {
-         return permanent_mouse_report_assertions_;
+      ActionContainer<ReportAction<MouseReport>> &getPermanentReportActions(ReportType<MouseReport>) {
+         return permanent_mouse_report_actions_;
       }
       
-      AssertionContainer<ReportAssertion<AbsoluteMouseReport>> &getPermanentReportAssertions(ReportType<AbsoluteMouseReport>) {
-         return permanent_absolute_mouse_report_assertions_;
+      ActionContainer<ReportAction<AbsoluteMouseReport>> &getPermanentReportActions(ReportType<AbsoluteMouseReport>) {
+         return permanent_absolute_mouse_report_actions_;
       }
       
       // This method is templated to enable it being used for std::vector
       // and std::deque.
       //
       template<typename _Container>
-      void evaluateAssertionsInternal(const _Container &assertions) {
+      void evaluateActionsInternal(const _Container &actions) {
             
-         if(assertions.empty()) { return; }
+         if(actions.empty()) { return; }
          
-         for(auto &assertion: assertions) {
+         for(auto &action: actions) {
       
             // Just in case we haven't done that before
             //
-            assertion->setSimulator(this);
+            action->setSimulator(this);
             
-            bool assertion_passed = assertion->eval();
+            bool action_passed = action->eval();
             
-            if(!assertion_passed || debug_) {
-               assertion->report();
+            if(!action_passed || debug_) {
+               action->report();
             }
             
-            assertions_passed_ &= assertion_passed;
+            actions_passed_ &= action_passed;
          }
       }
       
-      void processReportAssertion(ReportAssertion_ &assertion, 
+      void processReportAction(ReportAction_ &action, 
                                   const Report_ &report) {
          
-         assertion.setReport(&report);
+         action.setReport(&report);
          
-         bool assertion_passed = assertion.eval();
+         bool action_passed = action.eval();
          
-         if(!assertion_passed || debug_) {
-            assertion.report();
+         if(!action_passed || debug_) {
+            action.report();
          }
          
-         assertions_passed_ &= assertion_passed;
-         assertion.setReport(nullptr);
+         actions_passed_ &= action_passed;
+         action.setReport(nullptr);
       }
       
       template<typename _ReportType>
@@ -679,46 +679,46 @@ class Simulator {
                << " (" << n_typed_reports_in_cycle_[AnyTypeReportSid] << ". in cycle "
                << this->getCycleId() << ")";
                         
-         auto n_assertions_queued = queued_report_assertions_.size();
+         auto n_actions_queued = queued_report_actions_.size();
          
-         this->log() << n_assertions_queued
-            << " queued " << _ReportType::typeString() << " report assertions";
+         this->log() << n_actions_queued
+            << " queued " << _ReportType::typeString() << " report actions";
          
-         if(!queued_report_assertions_.empty()) {
-            auto assertion = queued_report_assertions_.popFront();
+         if(!queued_report_actions_.empty()) {
+            auto action = queued_report_actions_.popFront();
             
-            auto report_type = assertion->getReportTypeId();
+            auto report_type = action->getReportTypeId();
             
             if(report_type == Report_::hid_report_type_) {
                // Generic report
                //
-               this->processReportAssertion(*assertion, report);
+               this->processReportAction(*action, report);
             }
             else if(report_type == _ReportType::hid_report_type_) {
-               auto &typed_assertion = static_cast<ReportAssertion<_ReportType>&>(*assertion);
-               this->processReportAssertion(typed_assertion, report);
+               auto &typed_action = static_cast<ReportAction<_ReportType>&>(*action);
+               this->processReportAction(typed_action, report);
             }
             else {
                this->error() << "Expected a "
-                  << assertion->getTypeString() << " assertion but encountered a "
-                  << _ReportType::typeString() << " assertion";
+                  << action->getTypeString() << " action but encountered a "
+                  << _ReportType::typeString() << " action";
             }
          }
          
-         auto &permanent_assertions = this->getPermanentReportAssertions(ReportType<_ReportType>{});
-         for(auto &assertion: permanent_assertions.directAccess()) {
-            this->processReportAssertion(*assertion, report);
+         auto &permanent_actions = this->getPermanentReportActions(ReportType<_ReportType>{});
+         for(auto &action: permanent_actions.directAccess()) {
+            this->processReportAction(*action, report);
          }
 
-         for(auto &assertion: permanent_generic_report_assertions_.directAccess()) {
-            if(   (assertion->getReportTypeId() == _ReportType::hid_report_type_)
-               || (assertion->getReportTypeId() == GenericReportTypeId)) {
-               this->processReportAssertion(*assertion, report);
+         for(auto &action: permanent_generic_report_actions_.directAccess()) {
+            if(   (action->getReportTypeId() == _ReportType::hid_report_type_)
+               || (action->getReportTypeId() == GenericReportTypeId)) {
+               this->processReportAction(*action, report);
             }
          }
                
-         if((n_assertions_queued == 0) && this->getErrorIfReportWithoutQueuedAssertions()) {
-            this->error() << "Encountered a " << _ReportType::typeString() << " report without assertions being queued";
+         if((n_actions_queued == 0) && this->getErrorIfReportWithoutQueuedActions()) {
+            this->error() << "Encountered a " << _ReportType::typeString() << " report without actions being queued";
          }
       }
       
@@ -727,7 +727,7 @@ class Simulator {
       void skipTimeInternal(TimeType delta_t);
       
       void cyclesInternal(int n, 
-                  const std::vector<std::shared_ptr<Assertion_>> &cycle_assertion_list);
+                  const std::vector<std::shared_ptr<Action_>> &cycle_action_list);
 };
 
 /// @brief Asserts a condition.

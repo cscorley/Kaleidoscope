@@ -23,59 +23,59 @@ namespace kaleidoscope {
 namespace simulator {
    
 /// @brief An adaptor template that restricts access to 
-///        assertion containers.
+///        action containers.
 /// @details The adaptor provides the necessary access method
 ///        of a typical queue container.
 ///
 template<typename _ContainerType>
-class AssertionQueueAdaptor
+class ActionQueueAdaptor
 {
    public:
       
-      typedef typename _ContainerType::AssertionType AssertionType;
-      typedef AssertionQueueAdaptor<_ContainerType> ThisType;
+      typedef typename _ContainerType::ActionType ActionType;
+      typedef ActionQueueAdaptor<_ContainerType> ThisType;
       
-      AssertionQueueAdaptor(_ContainerType &container)
+      ActionQueueAdaptor(_ContainerType &container)
          :  container_{container}
       {}
       
-      /// @brief Queues assertions.
+      /// @brief Queues actions.
       ///
-      /// @param assertions The assertions to be added to the queue.
+      /// @param actions The actions to be added to the queue.
       ///
-      ThisType &queue(const std::vector<std::shared_ptr<AssertionType>> &assertions) {
-         container_.add(assertions);
+      ThisType &queue(const std::vector<std::shared_ptr<ActionType>> &actions) {
+         container_.add(actions);
          return *this;
       }
          
       
-      /// @brief Queues assertions.
+      /// @brief Queues actions.
       ///
-      /// @tparam assertions The assertions to be added to the queue.
+      /// @tparam actions The actions to be added to the queue.
       ///
-      template<typename..._Assertions>
-      ThisType &queue(_Assertions...assertions) {
-         container_.add(std::vector<std::shared_ptr<AssertionType>>{std::forward<_Assertions>(assertions)...});
+      template<typename..._Actions>
+      ThisType &queue(_Actions...actions) {
+         container_.add(std::vector<std::shared_ptr<ActionType>>{std::forward<_Actions>(actions)...});
          return *this;
       }
       
-      /// @brief Queues a list of assertion.
+      /// @brief Queues a list of action.
       ///
-      /// @param assertions The assertions to be added to the queue.
+      /// @param actions The actions to be added to the queue.
       ///
-      ThisType &queueGrouped(const std::vector<std::shared_ptr<AssertionType>> &assertions) {
-         container_.addGrouped(assertions);
+      ThisType &queueGrouped(const std::vector<std::shared_ptr<ActionType>> &actions) {
+         container_.addGrouped(actions);
          return *this;
       }
       
-      /// @brief Queues a list of assertion.
+      /// @brief Queues a list of action.
       ///
-      /// @tparam assertions The assertions to be added to the queue.
+      /// @tparam actions The actions to be added to the queue.
       ///
-      template<typename..._Assertions>
-      ThisType &queueGrouped(_Assertions...assertions) {
+      template<typename..._Actions>
+      ThisType &queueGrouped(_Actions...actions) {
          container_.addGrouped(
-            std::vector<std::shared_ptr<AssertionType>>{std::forward<_Assertions>(assertions)...}
+            std::vector<std::shared_ptr<ActionType>>{std::forward<_Actions>(actions)...}
          );
          return *this;
       }

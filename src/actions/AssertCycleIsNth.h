@@ -18,43 +18,55 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/Action_.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-
-/// @brief Asserts that any keycodes are active in the current report.
+namespace actions {
+   
+/// @brief Asserts that the current cycle is the nth.
 ///
-class AnyKeycodeActive {
+class AssertCycleIsNth {
    
    public:
-      
-      KT_ASSERTION_STD_CONSTRUCTOR(AnyKeycodeActive)
-      
+   
+      /// @brief Constructor
+      /// @param cycle_id The id of the cycle to check against.
+      ///
+      AssertCycleIsNth(int cycle_id)
+         : AssertCycleIsNth(DelegateConstruction{}, cycle_id)
+      {}
+   
    private:
       
-      class Assertion : public ReportAssertion<KeyboardReport> {
-            
+      class Action : public Action_ {
+      
          public:
+         
+            Action(int cycle_id) : cycle_id_(cycle_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Any keycodes active";
+               this->getSimulator()->log() << add_indent << "Is " << cycle_id_ << ". cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Any keycodes active: ";
-               this->getSimulator()->log() << this->getReport().isAnyKeyActive();
+               this->getSimulator()->log() << add_indent << "Is " << this->getSimulator()->getCycleId() << ". cycle";
             }
+         
+         private:
 
             virtual bool evalInternal() override {
-               return this->getReport().isAnyKeyActive();
+               return this->getSimulator()->getCycleId() == cycle_id_;
             }
+            
+         private:
+            
+            int cycle_id_ = -1;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(AnyKeycodeActive)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertCycleIsNth)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

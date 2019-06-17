@@ -133,7 +133,7 @@ bool
 
 bool 
    KeyboardReport
-      ::isAnyModifierActive() const
+      ::isAssertAnyModifierActive() const
 {
    for(uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
       uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
@@ -163,7 +163,7 @@ bool
    KeyboardReport
       ::isEmpty() const
 {
-   return !(this->isAnyModifierActive() || this->isAnyKeyActive());
+   return !(this->isAssertAnyModifierActive() || this->isAnyKeyActive());
 }
       
 void 

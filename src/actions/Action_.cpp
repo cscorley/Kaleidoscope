@@ -16,14 +16,14 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "assertions/Assertion_.h"
+#include "actions/Action_.h"
 #include "aux/demangle.h"
 #include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
 
-void Assertion_::report(const char *add_indent) const 
+void Action_::report(const char *add_indent) const 
 {
    if(this->valid_) {
       {
@@ -32,7 +32,7 @@ void Assertion_::report(const char *add_indent) const
          if(this->negate_) {
             log << "negated ";
          }
-         log << type(*this) << " assertion passed";
+         log << type(*this) << " action passed";
       }
       //this->describe();
    }
@@ -44,7 +44,7 @@ void Assertion_::report(const char *add_indent) const
          if(negate_) {
             error << "negated ";
          }
-         error << type(*this) << " assertion failed";
+         error << type(*this) << " action failed";
       }
       simulator_->log() << add_indent << "expected:";
       this->describe(indent.c_str());
@@ -53,7 +53,7 @@ void Assertion_::report(const char *add_indent) const
    }
 }
 
-void Assertion_::describeState(const char *add_indent) const {
+void Action_::describeState(const char *add_indent) const {
    if(valid_) {
       simulator_->log() << add_indent << "valid";
    }

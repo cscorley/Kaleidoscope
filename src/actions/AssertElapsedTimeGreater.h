@@ -18,16 +18,16 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
+#include "actions/Action_.h"
 #include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
 /// @brief Asserts that that time that elapsed is greater than a given time in [ms].
 ///
-class ElapsedTimeGreater {
+class AssertElapsedTimeGreater {
    
    public:
    
@@ -35,17 +35,17 @@ class ElapsedTimeGreater {
       /// @param delta_t The amount of time that is asserted being elapsed.
       /// @param start_t An optional start point in time as reference (defaults to zero).
       ///
-      ElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
-         :  ElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
+      AssertElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
+         :  AssertElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
       {}
       
    private:
       
-      class Assertion : public Assertion_ {
+      class Action : public Action_ {
       
          public:
 
-            Assertion(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
+            Action(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
                :  start_t_(start_t),
                   delta_t_(delta_t)
             {}
@@ -69,9 +69,9 @@ class ElapsedTimeGreater {
             Simulator::TimeType delta_t_ = .0;
       };
       
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ElapsedTimeGreater)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertElapsedTimeGreater)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

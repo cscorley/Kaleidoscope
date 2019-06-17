@@ -18,17 +18,17 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/generic_report/ReportAction.h"
 #include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
 /// @brief Asserts that the current report equals another report.
 ///
 template<typename _ReportType>
-class ReportEquals {
+class AssertReportEquals {
    
    public:
       
@@ -36,29 +36,29 @@ class ReportEquals {
       ///
       /// @param report The report to compare with.
       ///
-      ReportEquals(const _ReportType &report)
-         : ReportEquals(DelegateConstruction{}, report)
+      AssertReportEquals(const _ReportType &report)
+         : AssertReportEquals(DelegateConstruction{}, report)
       {}
       
       /// @brief Constructor.
       ///
       /// @param data The data of the report to compare with.
       ///
-      ReportEquals(const void *data)
-         : ReportEquals(DelegateConstruction{}, data)
+      AssertReportEquals(const void *data)
+         : AssertReportEquals(DelegateConstruction{}, data)
       {}
    
    private:
       
-      class Assertion : public ReportAssertion<_ReportType> {
+      class Action : public ReportAction<_ReportType> {
    
          public:
             
-            Assertion(const _ReportType &report)
+            Action(const _ReportType &report)
                :  report_(report)
             {}
       
-            Assertion(const void *data)
+            Action(const void *data)
                :  report_(data)
             {}
 
@@ -86,9 +86,9 @@ class ReportEquals {
             _ReportType report_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(ReportEquals<_ReportType>)
+   KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertReportEquals<_ReportType>)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

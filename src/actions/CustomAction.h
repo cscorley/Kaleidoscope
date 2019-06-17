@@ -18,55 +18,60 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
+#include "actions/Action_.h"
+#include "kaleidoscope/key_defs.h"
+
+#include <functional>
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-   
-/// @brief Asserts that the current cycle is the nth.
+namespace actions {
+
+/// @brief Executes a lambda function of type bool(const Simulator &).
+/// @details The lambda must return true to signal that the action passed
+///        and false otherwise.      
 ///
-class CycleIsNth {
+class CustomAction {
    
    public:
-   
-      /// @brief Constructor
-      /// @param cycle_id The id of the cycle to check against.
+      
+      /// @brief Constructor.
+      /// @param func The function object to evaluate.
       ///
-      CycleIsNth(int cycle_id)
-         : CycleIsNth(DelegateConstruction{}, cycle_id)
+      CustomAction(const std::function<bool()> &func)
+         : CustomAction(DelegateConstruction{}, func)
       {}
-   
+      
    private:
       
-      class Assertion : public Assertion_ {
-      
+      class Action : public Action_ {
+            
          public:
-         
-            Assertion(int cycle_id) : cycle_id_(cycle_id) {}
+            
+            Action(const std::function<bool()> &func)
+               : func_(func)
+            {}
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+               this->getSimulator()->log() << add_indent << "Custom keyboard report action";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Is " << this->getSimulator()->getCycleId() << ". cycle";
+               this->getSimulator()->log() << add_indent << "Custom keyboard report action failed";
             }
-         
-         private:
 
             virtual bool evalInternal() override {
-               return this->getSimulator()->getCycleId() == cycle_id_;
+               return func_();
             }
             
          private:
             
-            int cycle_id_ = -1;
+            std::function<bool()> func_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CycleIsNth)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(CustomAction)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

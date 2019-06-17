@@ -18,32 +18,32 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/generic_report/ReportAction.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
 /// @brief Asserts that the current report is the nth report in the current cycle.
 ///
-class ReportNthInCycle {
+class AssertReportIsNthInCycle {
    
    public:
       
       /// @brief Constructor.
       /// @param report_id The id of the report to check against.
       ///
-      ReportNthInCycle(int report_id)
-         : ReportNthInCycle(DelegateConstruction{}, report_id)
+      AssertReportIsNthInCycle(int report_id)
+         : AssertReportIsNthInCycle(DelegateConstruction{}, report_id)
       {}
       
    private:
       
-      class Assertion : public ReportAssertion_ {
+      class Action : public ReportAction_ {
             
          public:
 
-            Assertion(int report_id) : report_id_(report_id) {}
+            Action(int report_id) : report_id_(report_id) {}
 
             virtual void describe(const char *add_indent = "") const override {
                this->getSimulator()->log() << add_indent << "Report " << report_id_ << ". in cycle";
@@ -63,9 +63,9 @@ class ReportNthInCycle {
             int report_id_ = -1;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportNthInCycle)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertReportIsNthInCycle)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

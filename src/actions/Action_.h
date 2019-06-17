@@ -38,21 +38,21 @@ class Report_;
 ///
 class VoidReport {};
    
-/// @brief An abstract assertion.
+/// @brief An abstract action.
 /// @details This abstract class serves as base class for any
-///        assertions.
+///        actions.
 ///
 ///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
 ///
-class Assertion_ {
+class Action_ {
    
    public:
       
       typedef VoidReport ReportType;
-      typedef Assertion_ AssertionBaseType;
+      typedef Action_ ActionBaseType;
       
-      /// @brief Reports information about the assertion.
+      /// @brief Reports information about the action.
       ///
       /// @details Do not override this method but the method describeState instead.
       ///
@@ -60,7 +60,7 @@ class Assertion_ {
       ///
       virtual void report(const char *add_indent = "") const;
       
-      /// @brief Describes the assertion.
+      /// @brief Describes the action.
       ///
       /// @param add_indent An additional indentation string.
       ///
@@ -69,30 +69,30 @@ class Assertion_ {
       /// @brief Evaluates the condition that is supposed to be asserted.
       /// @details Do not override this method.
       ///
-      /// @return [bool] True if the assertion passed, false otherwise.
+      /// @return [bool] True if the action passed, false otherwise.
       ///
       bool eval() {
          valid_ = (this->evalInternal() != negate_); // logical XOR
          return valid_;
       }
       
-      /// @brief Describes the current state of the assertion object.
+      /// @brief Describes the current state of the action object.
       /// @details Possibly provides information about what went wrong
-      ///         if the assertion failed.
+      ///         if the action failed.
       ///
       /// @param add_indent An additional indentation string.
       ///
       ///
       virtual void describeState(const char *add_indent = "") const;
    
-      /// @brief Register the test simulator with the assertion.
+      /// @brief Register the test simulator with the action.
       ///
       virtual void setSimulator(const Simulator *simulator) {
          simulator_ = simulator;
       }
 
       /// @brief Retreive the test simulator object that is associated with
-      ///        the assertion.
+      ///        the action.
       ///
       /// @return A pointer to the current test simulator.
       ///
@@ -100,7 +100,7 @@ class Assertion_ {
          return simulator_;
       }
      
-      /// @brief Checks validity of an assertion.
+      /// @brief Checks validity of an action.
       ///
       /// @return True if valid, false otherwise.
       ///
@@ -108,8 +108,8 @@ class Assertion_ {
          return valid_;
       }
       
-      /// @brief Set the boolean negation state of the assertion validity check.
-      /// @details If negation is enabled, an assertion is assumed to be correct
+      /// @brief Set the boolean negation state of the action validity check.
+      /// @details If negation is enabled, an action is assumed to be correct
       ///        if the non negated version would fail.
       ///
       /// @param state The negation state.
@@ -118,8 +118,8 @@ class Assertion_ {
          negate_ = state;
       }
       
-      /// @brief Set the boolean negation state of the assertion validity check.
-      /// @details If negation is enabled, an assertion is assumed to be correct
+      /// @brief Set the boolean negation state of the action validity check.
+      /// @details If negation is enabled, an action is assumed to be correct
       ///        if the non negated version would fail.
       ///
       /// @param state The negation state.
@@ -128,7 +128,7 @@ class Assertion_ {
          negate_ = state;
       }
       
-      /// @brief Retreive the boolean negation state of the assertion validity check.
+      /// @brief Retreive the boolean negation state of the action validity check.
       ///
       /// @return The negation state.
       ///
@@ -152,9 +152,9 @@ class Assertion_ {
    protected:
             
       /// @brief Evaluates the condition that is supposed to be asserted.
-      /// @details Override this method in derived assertions.
+      /// @details Override this method in derived actions.
       ///
-      /// @return [bool] True if the assertion passed, false otherwise.
+      /// @return [bool] True if the action passed, false otherwise.
       ///
       virtual bool evalInternal() = 0;
       
@@ -171,31 +171,33 @@ class Assertion_ {
 } // namespace simulator
 } // namespace kaleidoscope
       
-#define KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER, TYPENAME_KEYWORD)                            \
+#define KT_AUTO_DEFINE_ACTION_INVENTORY_(WRAPPER, TYPENAME_KEYWORD)            \
                                                                                \
    private:                                                                    \
-      std::shared_ptr<WRAPPER::Assertion> assertion_;                          \
+      std::shared_ptr<WRAPPER::Action> action_;                                \
                                                                                \
    public:                                                                     \
       struct DelegateConstruction {};                                          \
                                                                                \
       template<typename..._Args>                                               \
       WRAPPER(DelegateConstruction, _Args...args)                              \
-         : assertion_{new WRAPPER::Assertion{std::forward<_Args>(args)...}}    \
+         : action_{new WRAPPER::Action{std::forward<_Args>(args)...}}          \
       {}                                                                       \
                                                                                \
-      operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> () { return assertion_; }                                                           \
-      std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Assertion::AssertionBaseType> ptr() { return assertion_; }                                                           \
+      operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> () { return action_; }                                                           \
+      std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> ptr() { return action_; }                                                           \
                                                                                \
-      WRAPPER &negate(bool state = true) { assertion_->negate(state); return *this; }
+      WRAPPER &negate(bool state = true) { action_->negate(state); return *this; }
       
-#define KT_AUTO_DEFINE_ASSERTION_INVENTORY(WRAPPER)                   \
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER,)
+#define KT_AUTO_DEFINE_ACTION_INVENTORY(WRAPPER)                               \
+   KT_AUTO_DEFINE_ACTION_INVENTORY_(WRAPPER,)
    
-#define KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(WRAPPER)                   \
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY_(WRAPPER, typename)
+#define KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(WRAPPER)                          \
+   KT_AUTO_DEFINE_ACTION_INVENTORY_(WRAPPER, typename)
    
-#define KT_ASSERTION_STD_CONSTRUCTOR(WRAPPER)                                  \
+#define KT_ACTION_STD_CONSTRUCTOR(WRAPPER, ...)                                \
       WRAPPER()                                                                \
          : WRAPPER(DelegateConstruction{})                                     \
-      {}
+      {                                                                        \
+         __VA_ARGS__                                                           \
+      }

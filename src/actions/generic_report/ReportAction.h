@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
+#include "actions/Action_.h"
 #include "reports/Report_.h"
 
 #include <cassert>
@@ -26,19 +26,19 @@
 namespace kaleidoscope {
 namespace simulator {
    
-/// @brief An abstract report assertion.
+/// @brief An abstract report action.
 /// @details This abstract class serves as base class for any
-///        report assertions.
+///        report actions.
 ///
 ///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
 ///
-class ReportAssertion_ : public Assertion_
+class ReportAction_ : public Action_
 {
    public:
       
       typedef Report_ ReportType;
-      typedef ReportAssertion_ AssertionBaseType;
+      typedef ReportAction_ ActionBaseType;
       
       virtual uint8_t getReportTypeId() const { return GenericReportTypeId; }
       
@@ -58,13 +58,13 @@ class ReportAssertion_ : public Assertion_
       const Report_ *report_ = nullptr;
 };
    
-/// @brief A report assertion.
+/// @brief A report action.
 ///
 ///        **Important:** This class is not part of Kaleidoscope-Simulator's 
 ///                   public API. It is meant for internal use only.
 ///
 template<typename _ReportType>
-class ReportAssertion : public ReportAssertion_
+class ReportAction : public ReportAction_
 {
    public:
       

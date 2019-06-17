@@ -17,8 +17,8 @@
  */
 
 #include "Simulator.h"
-#include "AssertionContainer_Impl.h"
-#include "assertions/Assertion_.h"
+#include "ActionContainer_Impl.h"
+#include "actions/Action_.h"
 
 #include "Kaleidoscope.h"
 #include "kaleidoscope/hid.h"
@@ -36,11 +36,11 @@ unsigned long millis = 0;
 
 // Explicit template instanciations
 //
-template class AssertionContainer<ReportAssertion<KeyboardReport>>;
-template class AssertionContainer<ReportAssertion<MouseReport>>;
-template class AssertionContainer<ReportAssertion<AbsoluteMouseReport>>;
-template class AssertionContainer<ReportAssertion_>;
-template class AssertionContainer<Assertion_>;
+template class ActionContainer<ReportAction<KeyboardReport>>;
+template class ActionContainer<ReportAction<MouseReport>>;
+template class ActionContainer<ReportAction<AbsoluteMouseReport>>;
+template class ActionContainer<ReportAction_>;
+template class ActionContainer<Action_>;
 
 std::ostream &SimulatorStream_::getOStream() const
 {
@@ -199,15 +199,15 @@ Simulator::Simulator(std::ostream &out,
       cycle_duration_{cycle_duration}, // ms
       abort_on_first_error_{abort_on_first_error},
       
-      queued_report_assertions_{*this},
+      queued_report_actions_{*this},
       
-      permanent_keyboard_report_assertions_{*this},
-      permanent_mouse_report_assertions_{*this},
-      permanent_absolute_mouse_report_assertions_{*this},
-      permanent_generic_report_assertions_{*this},
+      permanent_keyboard_report_actions_{*this},
+      permanent_mouse_report_actions_{*this},
+      permanent_absolute_mouse_report_actions_{*this},
+      permanent_generic_report_actions_{*this},
       
-      queued_cycle_assertions_{*this},
-      permanent_cycle_assertions_{*this},
+      queued_cycle_actions_{*this},
+      permanent_cycle_actions_{*this},
       
       hid_report_consumer_{*this}
 {
@@ -246,9 +246,9 @@ void Simulator::tapKey(uint8_t row, uint8_t col) {
 
 void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
                          int tap_interval_cycles,
-                         std::shared_ptr<Assertion_> after_tap_and_cycles_assertion ) {
-   if(after_tap_and_cycles_assertion) {
-      after_tap_and_cycles_assertion->setSimulator(this);
+                         std::shared_ptr<Action_> after_tap_and_cycles_action ) {
+   if(after_tap_and_cycles_action) {
+      after_tap_and_cycles_action->setSimulator(this);
    }
    
    this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ") " 
@@ -265,13 +265,13 @@ void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col,
          this->cycleInternal(true /* only log reports */);
       }
       
-      // Check and execute the assertion
+      // Check and execute the action
       //
-      if(after_tap_and_cycles_assertion) {
-         this->log() << "Checking assertion after tap no. " << i;
-         if(!after_tap_and_cycles_assertion->eval()) {
-            this->error() << "Assertion after tap " << i << " failed";
-            after_tap_and_cycles_assertion->report();
+      if(after_tap_and_cycles_action) {
+         this->log() << "Checking action after tap no. " << i;
+         if(!after_tap_and_cycles_action->eval()) {
+            this->error() << "Action after tap " << i << " failed";
+            after_tap_and_cycles_action->report();
          }
       }
    }
@@ -294,7 +294,7 @@ void Simulator::cycle() {
 }
 
 void Simulator::cyclesInternal(int n, 
-                  const std::vector<std::shared_ptr<Assertion_>> &cycle_assertion_list) {
+                  const std::vector<std::shared_ptr<Action_>> &cycle_action_list) {
    if(n == 0) {
       n = scan_cycles_default_count_;
    }
@@ -303,7 +303,7 @@ void Simulator::cyclesInternal(int n,
          
    for(int i = 0; i < n; ++i) { 
       this->cycleInternal(true /* on_log_reports */);
-      this->evaluateAssertionsInternal(cycle_assertion_list);
+      this->evaluateActionsInternal(cycle_action_list);
    }
       
    this->log() << "";
@@ -356,14 +356,14 @@ void Simulator::initKeyboard() {
 
 bool Simulator::checkStatus() {
    
-   if(!queued_report_assertions_.empty()) {
-      this->error() << "There are " << queued_report_assertions_.size()
-         << " left over assertions in the queue.";
+   if(!queued_report_actions_.empty()) {
+      this->error() << "There are " << queued_report_actions_.size()
+         << " left over actions in the queue.";
       test_success_ = false;
    }
    
-   if(!assertions_passed_) {
-      this->error() << "Not all assertions passed.";
+   if(!actions_passed_) {
+      this->error() << "Not all actions passed.";
       test_success_ = false;
    }
    
@@ -469,19 +469,19 @@ void Simulator::cycleInternal(bool only_log_reports) {
    
    //kaleidoscope.setMillis(time_)
    
-   if(!queued_cycle_assertions_.empty()) {
-      this->log() << "Processing " << queued_cycle_assertions_.size()
-         << " queued cycle assertions";
-      this->evaluateAssertionsInternal(queued_cycle_assertions_.directAccess());
+   if(!queued_cycle_actions_.empty()) {
+      this->log() << "Processing " << queued_cycle_actions_.size()
+         << " queued cycle actions";
+      this->evaluateActionsInternal(queued_cycle_actions_.directAccess());
       
-      queued_cycle_assertions_.clear();
+      queued_cycle_actions_.clear();
    }
    
-   if(!permanent_cycle_assertions_.empty()) {
-      this->log() << "Processing " << permanent_cycle_assertions_.size()
-         << " permanent cycle assertions";
+   if(!permanent_cycle_actions_.empty()) {
+      this->log() << "Processing " << permanent_cycle_actions_.size()
+         << " permanent cycle actions";
       
-      this->evaluateAssertionsInternal(permanent_cycle_assertions_.directAccess());
+      this->evaluateActionsInternal(permanent_cycle_actions_.directAccess());
    }
 }
 
@@ -494,19 +494,19 @@ void Simulator::checkCycleDurationSet() {
 
 void Simulator::assertNothingQueued() const
 {
-   if(!queued_report_assertions_.empty()) {
-      this->error() << "Keyboard report assertions are left in queue";
+   if(!queued_report_actions_.empty()) {
+      this->error() << "Keyboard report actions are left in queue";
    }
    
-   if(!queued_cycle_assertions_.empty()) {
-      this->error() << "Cycle assertions are left in queue";
+   if(!queued_cycle_actions_.empty()) {
+      this->error() << "Cycle actions are left in queue";
    }
 }
 
-void Simulator::assertCondition(bool cond, const char *assertion_code) const
+void Simulator::assertCondition(bool cond, const char *action_code) const
 {
    if(!cond) {
-      this->error() << "Assertion failed: " << assertion_code;
+      this->error() << "Action failed: " << action_code;
    }
 }
 

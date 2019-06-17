@@ -18,46 +18,56 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/Action_.h"
 
-#include "kaleidoscope/key_defs.h"
+#include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-
-/// @brief Asserts nothing but dumps the current report instead.
+namespace actions {
+   
+/// @brief Asserts that a given layer is active.
 ///
-class DumpReport {
+class AssertLayerIsActive {
    
    public:
       
-      KT_ASSERTION_STD_CONSTRUCTOR(DumpReport)
+      /// @brief Constructor.
+      /// @param layer_id The id of the layer that must be active for
+      ///        the action to pass.
+      ///
+      AssertLayerIsActive(int layer_id) 
+         : AssertLayerIsActive(DelegateConstruction{}, layer_id) 
+      {}
    
    private:
       
-      class Assertion : public ReportAssertion_ {
-            
+      class Action : public Action_ {
+   
          public:
 
+            Action(int layer_id) : layer_id_(layer_id) {}
+
             virtual void describe(const char *add_indent = "") const override {
-               this->getReport().dump(*this->getSimulator(), add_indent);
+               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
+               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
             }
 
             virtual bool evalInternal() override {
-               this->describe();
-               return true;
+               return Layer.isActive((uint8_t)layer_id_);
             }
-
+            
+         private:
+            
+            int layer_id_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(DumpReport)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertLayerIsActive)
 };
-
-} // namespace assertions
+   
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

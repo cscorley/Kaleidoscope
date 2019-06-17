@@ -18,60 +18,58 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-#include "kaleidoscope/key_defs.h"
-
-#include <functional>
+#include "actions/Action_.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
-/// @brief Executes a lambda function of type bool(const Simulator &).
-/// @details The lambda must return true to signal that the assertion passed
-///        and false otherwise.      
+/// @brief Checks the number of overall reports of a specific type.
+/// @details Asserts that there was a specific number of reports 
+///          generated since testing started.
 ///
-class CustomAssertion {
+template<typename _ReportType>
+class AssertNumOverallReportsEquals {
    
    public:
       
       /// @brief Constructor.
-      /// @param func The function object to evaluate.
+      /// @param n_overall_reports The expected overall number of reports 
+      ///                          of type _ReportType
       ///
-      CustomAssertion(const std::function<bool()> &func)
-         : CustomAssertion(DelegateConstruction{}, func)
+      AssertNumOverallReportsEquals(int n_overall_reports) 
+         : AssertNumOverallReportsEquals(DelegateConstruction{}, n_overall_reports) 
       {}
-      
+         
    private:
       
-      class Assertion : public Assertion_ {
-            
+      class Action : public Action_ {
+      
          public:
             
-            Assertion(const std::function<bool()> &func)
-               : func_(func)
-            {}
+            Action(int n_overall_reports) 
+               : n_overall_reports_(n_overall_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Custom keyboard report assertion";
+               this->getSimulator()->log() << add_indent << n_overall_reports_ << " overall " << _ReportType::typeString() << " reports expected";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Custom keyboard report assertion failed";
+               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedOverallReports<_ReportType>() << " overall " << _ReportType::typeString() << " reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return func_();
+               return this->getSimulator()->getNumTypedOverallReports<_ReportType>() == n_overall_reports_;
             }
             
          private:
             
-            std::function<bool()> func_;
+            int n_overall_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(CustomAssertion)
+   KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertNumOverallReportsEquals<_ReportType>)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

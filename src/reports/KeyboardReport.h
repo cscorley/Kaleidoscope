@@ -102,7 +102,7 @@ class KeyboardReport : public Report_ {
       /// @brief Checks if any modifier keycode is active.
       /// @returns [bool] True if any modifier keycode is active, false otherwise.
       ///
-      bool isAnyModifierActive() const;
+      bool isAssertAnyModifierActive() const;
       
       /// @brief Checks if any key keycode is active.
       /// @returns [bool] True if any key keycode is active, false otherwise.

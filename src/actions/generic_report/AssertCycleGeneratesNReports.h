@@ -18,58 +18,57 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
+#include "actions/Action_.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
-/// @brief Checks the number of overall reports of a specific type.
-/// @details Asserts that there was a specific number of reports 
-///          generated since testing started.
+/// @brief Asserts that there was a specific number of reports of a given
+///        type generated within a specific scan cycle.
 ///
 template<typename _ReportType>
-class NumOverallReportsGenerated {
+class AssertCycleGeneratesNReports {
    
    public:
       
       /// @brief Constructor.
-      /// @param n_overall_reports The expected overall number of reports 
-      ///                          of type _ReportType
+      /// @param n_reports The number of reports that must have been
+      ///        generated.
       ///
-      NumOverallReportsGenerated(int n_overall_reports) 
-         : NumOverallReportsGenerated(DelegateConstruction{}, n_overall_reports) 
+      AssertCycleGeneratesNReports(int n_reports) 
+         : AssertCycleGeneratesNReports(DelegateConstruction{}, n_reports) 
       {}
-         
+   
    private:
       
-      class Assertion : public Assertion_ {
-      
+      class Action : public Action_ {
+         
          public:
-            
-            Assertion(int n_overall_reports) 
-               : n_overall_reports_(n_overall_reports) {}
+
+            Action(int n_reports) : n_reports_(n_reports) {}
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << n_overall_reports_ << " overall " << _ReportType::typeString() << " reports expected";
+               this->getSimulator()->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedOverallReports<_ReportType>() << " overall " << _ReportType::typeString() << " reports encountered";
+               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() << " keyboard reports encountered";
             }
 
             virtual bool evalInternal() override {
-               return this->getSimulator()->getNumTypedOverallReports<_ReportType>() == n_overall_reports_;
+               return this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() == n_reports_;
             }
             
          private:
             
-            int n_overall_reports_ = -1;      
+            int n_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(NumOverallReportsGenerated<_ReportType>)
+   KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertCycleGeneratesNReports<_ReportType>)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

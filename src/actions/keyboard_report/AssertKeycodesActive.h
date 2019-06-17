@@ -18,116 +18,115 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/generic_report/ReportAction.h"
 #include "aux/keycodes.h"
 
 #include "kaleidoscope/key_defs.h"
 
-#include <algorithm>
-
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
    
 inline
-uint8_t toModifier(uint8_t modifier) { return modifier; }
+uint8_t toKeycode(uint8_t keycode) { return keycode; }
 
 inline
-uint8_t toModifier(Key key) { return key.keyCode; }
+uint8_t toKeycode(Key key) { return key.keyCode; }
 
-/// @brief Asserts that a specific list of modifiers is active in the keyboard report.
+/// @brief Asserts that a specific set of keys is active in the keyboard report.
 ///
-class ModifiersActive {
+class AssertKeycodesActive {
    
    public:
       
       /// @brief Constructor.
-      /// @param modifiers A list of modifier keycodes.
-      /// @param exclusively If true only the listed modifiers may
-      ///                  be part of the keyboard report for the
-      ///                  assertion to pass.
       ///
-      ModifiersActive(const std::vector<uint8_t> &modifiers, 
+      /// @param keycodes A collection of keycodes.
+      /// @param exclusively If enabled no other keys than the listed 
+      ///                 ones must be part of the checked keyboard report.
+      ///
+      AssertKeycodesActive(const std::vector<uint8_t> &keycodes, 
                   bool exclusively = false) 
-         :  ModifiersActive(DelegateConstruction{}, modifiers, exclusively)
+         : AssertKeycodesActive(DelegateConstruction{}, keycodes, exclusively)
       {}
       
       /// @brief Constructor.
-      /// @tparam key_info A list of key information values. Those
-      ///        may be a mixture of keycodes or Key values.
+      ///
+      /// @tparam key_info A list of key information objects. This
+      ///         can be a mixture of keycodes or Key specifications.
       ///
       template<typename..._KeyInfo>
-      ModifiersActive(_KeyInfo...key_info) 
-         :  ModifiersActive(DelegateConstruction{}, std::forward<_KeyInfo>(key_info)...)
+      AssertKeycodesActive(_KeyInfo...key_info) 
+         : AssertKeycodesActive(DelegateConstruction{}, std::forward<_KeyInfo>(key_info)...)
       {}
       
-      /// @details After this was called, no other modifiers than the listed 
+      /// @details After this was called, no other keys than the listed 
       ///          ones are allowed in the keyboard report for the
-      ///          assertion to pass.
+      ///          action to pass.
       ///
-      void exclusively() { assertion_->setExclusively(true); }
-      
+      void exclusively() { action_->setExclusively(true); }
+   
    private:
       
-      class Assertion : public ReportAssertion<KeyboardReport> {
+      class Action : public ReportAction<KeyboardReport> {
    
          public:
       
-            Assertion(const std::vector<uint8_t> &modifiers, 
+            Action(const std::vector<uint8_t> &keycodes, 
                       bool exclusively = false) 
-               :  modifiers_(modifiers),
+               :  keycodes_(keycodes),
                   exclusively_(exclusively) 
             {}
 
             template<typename..._KeyInfo>
-            Assertion(_KeyInfo...key_info) 
-               :  modifiers_{toModifier(std::forward<_KeyInfo>(key_info))...},
+            Action(_KeyInfo...key_info) 
+               :  keycodes_{toKeycode(std::forward<_KeyInfo>(key_info))...},
                   exclusively_(false) 
             {}
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Modifiers active: ";
+               this->getSimulator()->log() << add_indent << "Keycodes active: ";
                
-               if(modifiers_.empty()) {
+               if(keycodes_.empty()) {
                   this->getSimulator()->log() << "<none>";
                   return;
                }
                
-               for(auto modifier: modifiers_) {
-                  this->getSimulator()->log() << keycodes::keycodeToName(modifier) << " ";
+               for(auto keycode: keycodes_) {
+                  this->getSimulator()->log() << keycodes::keycodeToName(keycode) << " ";
                }
             }
 
             virtual void describeState(const char *add_indent = "") const {
                
-               this->getSimulator()->log() << add_indent << "Modifiers actually active: ";
+               this->getSimulator()->log() << add_indent << "Keycodes actually active: ";
                
-               auto active_modifiers = this->getReport().getActiveModifiers();
+               auto active_keycodes = this->getReport().getActiveKeycodes();
                               
-               if(active_modifiers.empty()) {
+               if(active_keycodes.empty()) {
                   this->getSimulator()->log() << "<none>";
                   return;
                }
-               for(auto modifier: active_modifiers) {
-                  this->getSimulator()->log() << keycodes::keycodeToName(modifier) << " ";
+               for(auto keycode: active_keycodes) {
+                  this->getSimulator()->log() << keycodes::keycodeToName(keycode) << " ";
                }
             }
 
             virtual bool evalInternal() override {
                
-               for(auto modifier: modifiers_) {
-                  if(!this->getReport().isModifierKeycodeActive(modifier)) {
+               for(auto keycode: keycodes_) {
+                  if(!this->getReport().isKeycodeActive(keycode)) {
                      return false;
                   }
                }
                   
                if(exclusively_) {
                   
-                  auto active_modifiers = this->getReport().getActiveModifiers();
+                  auto active_keycodes = this->getReport().getActiveKeycodes();
                
-                  for(auto modifier: active_modifiers) {
+                  for(auto keycode: active_keycodes) {
                      
-                     if(std::find(modifiers_.begin(), modifiers_.end(), modifier) == modifiers_.end()) {
+                     if(std::find(keycodes_.begin(), keycodes_.end(), keycode) == keycodes_.end()) {
                         return false;
                      }
                   }
@@ -136,13 +135,13 @@ class ModifiersActive {
                return true;
             }
             
-            /// @brief Set exclusivity of the modifiers allowed in the keyboard
+            /// @brief Set exclusivity of the keycodes allowed in the keyboard
             ///        report.
             /// @param state The exclusivity state.
             ///
             void setExclusively(bool state) { exclusively_ = state; }
             
-            /// @brief Retreives the state of exclusivity of modifiers in the  
+            /// @brief Retreives the state of exclusivity of keycodes in the  
             ///        keyboard report.
             /// @return [bool] The exclusivity state.
             ///
@@ -150,13 +149,13 @@ class ModifiersActive {
             
          private:
             
-            std::vector<uint8_t> modifiers_;
+            std::vector<uint8_t> keycodes_;
             bool exclusively_ = false;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ModifiersActive)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertKeycodesActive)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

@@ -19,7 +19,7 @@
 #include "AglaisInterface.h"
 #include "aglais/src/Aglais.h"
 #include "aglais/src/Consumer_.h"
-#include "assertions/generic_report/ReportEquals.h"
+#include "actions/generic_report/AssertReportEquals.h"
 
 namespace kaleidoscope {
 namespace simulator {
@@ -49,8 +49,8 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
          simulator_.log() << "Aglais: end_cycle " << cycle_id << ' ' << cycle_end_time; 
          simulator_.cycle();
          
-         if(!simulator_.reportAssertionsQueue().empty()) {
-            simulator_.error() << "Report assertions are left in queue";
+         if(!simulator_.reportActionsQueue().empty()) {
+            simulator_.error() << "Report actions are left in queue";
          }
          
          simulator_.setTime(cycle_end_time);
@@ -84,24 +84,24 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
             case HID_REPORTID_MOUSE_ABSOLUTE:
                {
                   assert(length == sizeof(HID_MouseAbsoluteReport_Data_t));
-                  simulator_.reportAssertionsQueue().queue(
-                     assertions::ReportEquals<AbsoluteMouseReport>{data}
+                  simulator_.reportActionsQueue().queue(
+                     actions::AssertReportEquals<AbsoluteMouseReport>{data}
                   );
                }
                break;
             case HID_REPORTID_MOUSE:
                {
                   assert(length == sizeof(HID_MouseReport_Data_t));
-                  simulator_.reportAssertionsQueue().queue(
-                     assertions::ReportEquals<MouseReport>{data}
+                  simulator_.reportActionsQueue().queue(
+                     actions::AssertReportEquals<MouseReport>{data}
                   );
                }
                break;
             case HID_REPORTID_NKRO_KEYBOARD:
                {
                   assert(length == sizeof(HID_KeyboardReport_Data_t));
-                  simulator_.reportAssertionsQueue().queue(
-                     assertions::ReportEquals<KeyboardReport>{data}
+                  simulator_.reportActionsQueue().queue(
+                     actions::AssertReportEquals<KeyboardReport>{data}
                   );
                }
                break;
@@ -137,7 +137,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
 
 void processAglaisDocument(const char *code, Simulator &simulator)
 {
-   auto rwqa_state = simulator.getErrorIfReportWithoutQueuedAssertions();
+   auto rwqa_state = simulator.getErrorIfReportWithoutQueuedActions();
    
    aglais::Aglais a;
    //a.setDebug(true);
@@ -145,7 +145,7 @@ void processAglaisDocument(const char *code, Simulator &simulator)
    SimulatorConsumerAdaptor sca(simulator);
    a.parse(code, sca);
    
-   simulator.setErrorIfReportWithoutQueuedAssertions(rwqa_state);
+   simulator.setErrorIfReportWithoutQueuedActions(rwqa_state);
 }
 
 } // namespace simulator

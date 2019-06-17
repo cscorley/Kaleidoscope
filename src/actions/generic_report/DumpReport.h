@@ -16,35 +16,48 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Grouped.h"
-#include "Simulator.h"
+#pragma once
+
+#include "actions/generic_report/ReportAction.h"
+
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
+
+/// @brief Asserts nothing but dumps the current report instead.
+///
+class DumpReport {
    
-void Grouped<ReportAssertion_>::Assertion::determineGroupType()
-{
-   auto report_type_ = assertions_[0]->getReportTypeId();
+   public:
+      
+      KT_ACTION_STD_CONSTRUCTOR(DumpReport)
    
-   for(const auto &assertion: assertions_) {
+   private:
       
-      auto new_type = assertion->getReportTypeId();
-      
-      if(new_type != GenericReportTypeId) {
-         if(report_type_ == GenericReportTypeId) {
-            report_type_ = new_type;
-         }
-         else if(report_type_ != new_type) {
-            this->getSimulator()->error()
-               << "Error grouping report assertions. Trying to group non-generic assertions of different type";
-            assertions_.clear();
-            report_type_ = GenericReportTypeId;
-            break;
-         }
-      }
-   }
-}
-} // namespace assertions
+      class Action : public ReportAction_ {
+            
+         public:
+
+            virtual void describe(const char *add_indent = "") const override {
+               this->getReport().dump(*this->getSimulator(), add_indent);
+            }
+
+            virtual void describeState(const char *add_indent = "") const {
+               this->describe(add_indent);
+            }
+
+            virtual bool evalInternal() override {
+               this->describe();
+               return true;
+            }
+
+      };
+   
+   KT_AUTO_DEFINE_ACTION_INVENTORY(DumpReport)
+};
+
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

@@ -18,55 +18,44 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-
-#include "kaleidoscope/layers.h"
+#include "actions/generic_report/ReportAction.h"
+#include "kaleidoscope/key_defs.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-   
-/// @brief Asserts that a given layer is the current top layer.
+namespace actions {
+
+/// @brief Asserts that the current report is empty.
 ///
-class TopActiveLayerIs {
+class AssertReportEmpty {
    
    public:
-   
-      /// @brief Constructor.
-      /// @param[in] layer_id The id of the layer to check as top active.
-      ///
-      TopActiveLayerIs(int layer_id)
-         : TopActiveLayerIs(DelegateConstruction{}, layer_id)
-      {}
       
+      KT_ACTION_STD_CONSTRUCTOR(AssertReportEmpty)
+   
    private:
       
-      class Assertion : public Assertion_ {
-   
+      class Action : public ReportAction_ {
+            
          public:
 
-            Assertion(int layer_id) : layer_id_(layer_id) {}
-
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Top active layer is " << layer_id_;
+               this->getSimulator()->log() << add_indent << "Report empty";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Top active layer is " << Layer.top();
+               this->getSimulator()->log() << add_indent << "Report: ";
+               this->getReport().dump(*this->getSimulator(), add_indent);
             }
 
             virtual bool evalInternal() override {
-               return Layer.top() == (uint8_t)layer_id_;
+               return this->getReport().isEmpty();
             }
-            
-         private:
-            
-            int layer_id_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(TopActiveLayerIs)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertReportEmpty)
 };
-   
-} // namespace assertions
+
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

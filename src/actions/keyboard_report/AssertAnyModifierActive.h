@@ -18,44 +18,43 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
-#include "kaleidoscope/key_defs.h"
+#include "actions/generic_report/ReportAction.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
-/// @brief Asserts that the current report is empty.
+/// @brief Asserts that any modifiers are active in the current keyboard report.
 ///
-class ReportEmpty {
+class AssertAnyModifierActive {
    
    public:
       
-      KT_ASSERTION_STD_CONSTRUCTOR(ReportEmpty)
+      KT_ACTION_STD_CONSTRUCTOR(AssertAnyModifierActive)
    
    private:
       
-      class Assertion : public ReportAssertion_ {
+      class Action : public ReportAction<KeyboardReport> {
             
          public:
 
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Report empty";
+               this->getSimulator()->log() << add_indent << "Any modifiers active";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Report: ";
-               this->getReport().dump(*this->getSimulator(), add_indent);
+               this->getSimulator()->log() << add_indent << "Any modifiers active: ";
+               this->getSimulator()->log() << this->getReport().isAssertAnyModifierActive();
             }
 
             virtual bool evalInternal() override {
-               return this->getReport().isEmpty();
+               return this->getReport().isAssertAnyModifierActive();
             }
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(ReportEmpty)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyModifierActive)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

@@ -16,35 +16,35 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
-
-#include "Kaleidoscope-Simulator.h"
-#include "AglaisInterface.h"
-
-#include <iostream>
-#include <sstream>
-   
-KALEIDOSCOPE_SIMULATOR_INIT
+#include "Grouped.h"
+#include "Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {
+namespace actions {
    
-extern const char aglais_test_recording[];
+void Grouped<ReportAction_>::Action::determineGroupType()
+{
+   auto report_type_ = actions_[0]->getReportTypeId();
    
-void runSimulator(Simulator &simulator) {
-   
-   using namespace actions;
-   
-   auto test = simulator.newTest("Aglais test");
-
-   processAglaisDocument(aglais_test_recording, simulator);
+   for(const auto &action: actions_) {
+      
+      auto new_type = action->getReportTypeId();
+      
+      if(new_type != GenericReportTypeId) {
+         if(report_type_ == GenericReportTypeId) {
+            report_type_ = new_type;
+         }
+         else if(report_type_ != new_type) {
+            this->getSimulator()->error()
+               << "Error grouping report actions. Trying to group non-generic actions of different type";
+            actions_.clear();
+            report_type_ = GenericReportTypeId;
+            break;
+         }
+      }
+   }
 }
-
-const char aglais_test_recording[] =
-#include "IO_protocoll.agl"
-;
-
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope
-
-#endif

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "assertions/Grouped.h"
+#include "actions/Grouped.h"
 #include "aux/demangle.h"
 
 // Undefine some macros that are defined by Arduino
@@ -34,73 +34,73 @@ namespace simulator {
    
 class Simulator;
    
-/// @brief An auxiliary class that represents a container of assertion objects.
+/// @brief An auxiliary class that represents a container of action objects.
 ///
-template<typename _AssertionType>
-class AssertionContainer
+template<typename _ActionType>
+class ActionContainer
 {
    public:
       
-      typedef AssertionContainer<_AssertionType> ThisType;
-      typedef _AssertionType AssertionType;
+      typedef ActionContainer<_ActionType> ThisType;
+      typedef _ActionType ActionType;
       
       /// @brief Constructor.
       /// @param simulator The associated Simulator object.
       ///
-      AssertionContainer(Simulator &simulator) 
+      ActionContainer(Simulator &simulator) 
          :  simulator_(simulator)
       {}
       
-      /// @brief Adds assertions.
+      /// @brief Adds actions.
       ///
-      /// @param assertions The assertions to be added to the container.
+      /// @param actions The actions to be added to the container.
       ///
-      ThisType &add(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
+      ThisType &add(const std::vector<std::shared_ptr<_ActionType>> &actions);
       
-      /// @brief Adds assertions.
+      /// @brief Adds actions.
       ///
-      /// @tparam assertions The assertions to be added to the container.
+      /// @tparam actions The actions to be added to the container.
       ///
-      template<typename..._Assertions>
-      ThisType &add(_Assertions...assertions) {
-         this->add(std::vector<std::shared_ptr<_AssertionType>>{std::forward<_Assertions>(assertions)...});
+      template<typename..._Actions>
+      ThisType &add(_Actions...actions) {
+         this->add(std::vector<std::shared_ptr<_ActionType>>{std::forward<_Actions>(actions)...});
          return *this;
       }
       
-      /// @brief Adds a list of assertion.
+      /// @brief Adds a list of actions.
       ///
-      /// @param assertions The assertions to be added to the container.
+      /// @param actions The actions to be added to the container.
       ///
-      ThisType &addGrouped(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
+      ThisType &addGrouped(const std::vector<std::shared_ptr<_ActionType>> &actions);
       
-      /// @brief Adds a list of assertion.
+      /// @brief Adds a list of actions.
       ///
-      /// @tparam assertions The assertions to be added to the container.
+      /// @tparam actions The actions to be added to the container.
       ///
-      template<typename..._Assertions>
-      ThisType &addGrouped(_Assertions...assertions) {
+      template<typename..._Actions>
+      ThisType &addGrouped(_Actions...actions) {
          return this->addGrouped(
-            std::vector<std::shared_ptr<_AssertionType>>{std::forward<_Assertions>(assertions)...}
+            std::vector<std::shared_ptr<_ActionType>>{std::forward<_Actions>(actions)...}
          );
       }
       
-      /// @brief Removes an assertion.
+      /// @brief Removes an action.
       ///
-      /// @param assertion The assertion to be removed from the container.
+      /// @param action The action to be removed from the container.
       ///
-      ThisType &remove(const std::shared_ptr<_AssertionType> &assertion);
+      ThisType &remove(const std::shared_ptr<_ActionType> &action);
       
-      /// @brief Removes a list of assertions.
+      /// @brief Removes a list of actions.
       ///
-      /// @param assertions The assertions to be removed from the container.
+      /// @param actions The actions to be removed from the container.
       /// 
-      ThisType &remove(const std::vector<std::shared_ptr<_AssertionType>> &assertions);
+      ThisType &remove(const std::vector<std::shared_ptr<_ActionType>> &actions);
       
-      /// @brief Removes the assertion at the head of the container and returns it.
+      /// @brief Removes the action at the head of the container and returns it.
       ///
       /// @returns The former front element of the container.
       ///
-      std::shared_ptr<_AssertionType> popFront();
+      std::shared_ptr<_ActionType> popFront();
       
       /// @brief Retreives the number of entries in the container.
       ///
@@ -123,21 +123,21 @@ class AssertionContainer
       
       /// @brief Enables direct access to the undelying std::deque object.
       ///
-      const std::deque<std::shared_ptr<_AssertionType>> &directAccess() {
+      const std::deque<std::shared_ptr<_ActionType>> &directAccess() {
          return container_;
       }
       
    private:
       
-      void configureAssertion(const std::shared_ptr<_AssertionType> &assertion);
+      void configureAction(const std::shared_ptr<_ActionType> &action);
       
-      std::shared_ptr<_AssertionType> generateAssertionGroup(
-            const std::vector<std::shared_ptr<_AssertionType>> &assertions);
+      std::shared_ptr<_ActionType> generateActionGroup(
+            const std::vector<std::shared_ptr<_ActionType>> &actions);
       
    private:
       
       Simulator &simulator_;
-      std::deque<std::shared_ptr<_AssertionType>> container_;
+      std::deque<std::shared_ptr<_ActionType>> container_;
 };
 
 } // namespace simulator

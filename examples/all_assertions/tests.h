@@ -28,9 +28,9 @@ namespace simulator {
    
 void runSimulator(Simulator &simulator) {
    
-   using namespace assertions;
+   using namespace actions;
    
-   //simulator.permanentKeyboardReportAssertions().add(DumpReport{});
+   //simulator.permanentKeyboardReportActions().add(DumpReport{});
    
    //***************************************************************************
    {
@@ -38,12 +38,12 @@ void runSimulator(Simulator &simulator) {
       
       // Assert that the next cycle generates exactly one keyboard report.
       //
-      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleActionsQueue().queue(AssertCycleGeneratesNReports<KeyboardReport>{1});
       
       simulator.tapKey(2, 1); // A
-      simulator.cycleExpectReports(KeycodesActive{Key_A});
+      simulator.cycleExpectReports(AssertKeycodesActive{Key_A});
 
-      simulator.cycleExpectReports(ReportEmpty{});
+      simulator.cycleExpectReports(AssertReportEmpty{});
    }
    
    //***************************************************************************
@@ -51,16 +51,16 @@ void runSimulator(Simulator &simulator) {
       auto test = simulator.newTest("1");
          
       simulator.pressKey(2, 1); // A
-      simulator.cycleExpectReports(KeycodesActive{Key_A});
+      simulator.cycleExpectReports(AssertKeycodesActive{Key_A});
          
-      simulator.reportAssertionsQueue().queue(
+      simulator.reportActionsQueue().queue(
          group(
-            KeycodesActive{Key_A},
-            KeycodesActive{Key_B},
-            ReportEmpty{}.negate(),
-            AnyModifierActive{}.negate(),
-            AnyKeycodeActive{},
-            ReportNthInCycle{1},
+            AssertKeycodesActive{Key_A},
+            AssertKeycodesActive{Key_B},
+            AssertReportEmpty{}.negate(),
+            AssertAnyModifierActive{}.negate(),
+            AssertAnyKeycodeActive{},
+            AssertReportIsNthInCycle{1},
             DumpReport{}
          )
       );
@@ -77,13 +77,13 @@ void runSimulator(Simulator &simulator) {
       auto test = simulator.newTest("2");
          
       simulator.pressKey(2, 1); // A
-      simulator.cycleExpectReports(KeycodesActive{Key_A});
+      simulator.cycleExpectReports(AssertKeycodesActive{Key_A});
          
       simulator.pressKey(3, 5); // B
       simulator.cycleExpectReports(
          group(
-            KeycodesActive{Key_A},
-            KeycodesActive{Key_B}
+            AssertKeycodesActive{Key_A},
+            AssertKeycodesActive{Key_B}
          )
       );
       
@@ -100,7 +100,7 @@ void runSimulator(Simulator &simulator) {
       simulator.pressKey(2, 1); // A
       simulator.cycle();
       simulator.pressKey(3, 5); // B
-      simulator.cycleExpectReports(KeycodesActive{Key_A, Key_B});
+      simulator.cycleExpectReports(AssertKeycodesActive{Key_A, Key_B});
       
       simulator.releaseKey(2, 1);
       simulator.releaseKey(3, 5);
@@ -111,48 +111,48 @@ void runSimulator(Simulator &simulator) {
    {
       auto test = simulator.newTest("4");
 
-      auto layer_check = TopActiveLayerIs{0};
-      simulator.permanentCycleAssertions().add(layer_check);
+      auto layer_check = AssertTopActiveLayerIs{0};
+      simulator.permanentCycleActions().add(layer_check);
       simulator.cycle();
-      simulator.permanentCycleAssertions().remove(layer_check);
+      simulator.permanentCycleActions().remove(layer_check);
    }
    
    //***************************************************************************
    {
       auto test = simulator.newTest("5");
       
-      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleActionsQueue().queue(AssertCycleGeneratesNReports<KeyboardReport>{1});
       simulator.tapKey(3, 7); // left shift
-      simulator.cycleExpectReports(ModifiersActive{Key_LeftShift});
+      simulator.cycleExpectReports(AssertModifiersActive{Key_LeftShift});
       
-      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
-      simulator.cycleExpectReports(ReportEmpty{});
+      simulator.cycleActionsQueue().queue(AssertCycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleExpectReports(AssertReportEmpty{});
    }
    
    //***************************************************************************
    {
       auto test = simulator.newTest("6");
 
-      simulator.cycleAssertionsQueue().queue(CycleGeneratesNReports<KeyboardReport>{1});
+      simulator.cycleActionsQueue().queue(AssertCycleGeneratesNReports<KeyboardReport>{1});
       simulator.pressKey(3, 7); // left shift
       simulator.cycleExpectReports(
          group(
-            ModifiersActive{Key_LeftShift},
-            AnyModifierActive{}
+            AssertModifiersActive{Key_LeftShift},
+            AssertAnyModifierActive{}
          )
       );
         
       simulator.pressKey(0, 7); // left control
       simulator.cycleExpectReports(
          group(
-            ModifiersActive{Key_LeftShift, Key_LeftControl},
-            AnyKeycodeActive{}.negate()
+            AssertModifiersActive{Key_LeftShift, Key_LeftControl},
+            AssertAnyKeycodeActive{}.negate()
          )
       );
       
       simulator.releaseKey(3, 7); // left shift
       simulator.releaseKey(0, 7); // left control
-      simulator.cycleExpectReports(ReportEmpty{});
+      simulator.cycleExpectReports(AssertReportEmpty{});
       
       simulator.cycles(4);
    }
@@ -161,10 +161,10 @@ void runSimulator(Simulator &simulator) {
    {
       auto test = simulator.newTest("7");
    
-      simulator.cycleAssertionsQueue().queueGrouped(
-         NumOverallReportsGenerated<KeyboardReport>{16},
-         CycleIsNth{34},
-         ElapsedTimeGreater{160}
+      simulator.cycleActionsQueue().queueGrouped(
+         AssertNumOverallReportsEquals<KeyboardReport>{16},
+         AssertCycleIsNth{34},
+         AssertElapsedTimeGreater{160}
       );
       simulator.cycle();
    }
@@ -197,9 +197,9 @@ void runSimulator(Simulator &simulator) {
       
       simulator.tapKey(3, 7); // left shift
       simulator.cycleExpectReports(
-         CustomReportAssertion<KeyboardReport>{
+         CustomReportAction<KeyboardReport>{
             [&](const KeyboardReport &kr) -> bool {
-               simulator.log() << "Custom keyboard report assertion triggered";
+               simulator.log() << "Custom keyboard report action triggered";
                return true;
             }
          }
@@ -213,9 +213,9 @@ void runSimulator(Simulator &simulator) {
       
       simulator.tapKey(3, 7); // left shift
       simulator.cycleExpectReports(
-         CustomReportAssertion<Report_>{
+         CustomReportAction<Report_>{
             [&](const Report_ &report) -> bool {
-               simulator.log() << "Custom cycle assertion triggered";
+               simulator.log() << "Custom cycle action triggered";
                return true;
             }
          }
@@ -240,7 +240,7 @@ void runSimulator(Simulator &simulator) {
       simulator.multiTapKey(15 /*num. taps*/, 
                          0 /*row*/, 6/*col*/, 
                          50 /* num. cycles after each tap */,
-                         CustomAssertion{
+                         CustomAction{
                             [&]() -> bool {
                                renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
                                return true;
@@ -259,7 +259,7 @@ void runSimulator(Simulator &simulator) {
       simulator.multiTapKey(4 /*num. taps*/, 
                          0 /*row*/, 6/*col*/, 
                          1 /* num. cycles after each tap */,
-                         CustomAssertion{
+                         CustomAction{
                             [&]() -> bool {
                                simulator.log() << "KeyboardHardware.getCrgbAt(0, 0).r = " 
                                  << (int)KeyboardHardware.getCrgbAt(0, 0).r;

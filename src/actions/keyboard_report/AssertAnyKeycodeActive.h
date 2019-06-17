@@ -18,57 +18,43 @@
 
 #pragma once
 
-#include "assertions/Assertion_.h"
-#include "Simulator.h"
+#include "actions/generic_report/ReportAction.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
+namespace actions {
 
-/// @brief Asserts that there was a specific number of reports of a given
-///        type generated within a specific scan cycle.
+/// @brief Asserts that any keycodes are active in the current report.
 ///
-template<typename _ReportType>
-class CycleGeneratesNReports {
+class AssertAnyKeycodeActive {
    
    public:
       
-      /// @brief Constructor.
-      /// @param n_reports The number of reports that must have been
-      ///        generated.
-      ///
-      CycleGeneratesNReports(int n_reports) 
-         : CycleGeneratesNReports(DelegateConstruction{}, n_reports) 
-      {}
-   
+      KT_ACTION_STD_CONSTRUCTOR(AssertAnyKeycodeActive)
+      
    private:
       
-      class Assertion : public Assertion_ {
-         
+      class Action : public ReportAction<KeyboardReport> {
+            
          public:
 
-            Assertion(int n_reports) : n_reports_(n_reports) {}
-
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
+               this->getSimulator()->log() << add_indent << "Any keycodes active";
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() << " keyboard reports encountered";
+               this->getSimulator()->log() << add_indent << "Any keycodes active: ";
+               this->getSimulator()->log() << this->getReport().isAnyKeyActive();
             }
 
             virtual bool evalInternal() override {
-               return this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() == n_reports_;
+               return this->getReport().isAnyKeyActive();
             }
-            
-         private:
-            
-            int n_reports_ = -1;      
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY_TMPL(CycleGeneratesNReports<_ReportType>)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyKeycodeActive)
 };
 
-} // namespace assertions
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

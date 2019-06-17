@@ -18,43 +18,55 @@
 
 #pragma once
 
-#include "assertions/generic_report/ReportAssertion.h"
+#include "actions/Action_.h"
+
+#include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
 namespace simulator {
-namespace assertions {
-
-/// @brief Asserts that any modifiers are active in the current keyboard report.
+namespace actions {
+   
+/// @brief Asserts that a given layer is the current top layer.
 ///
-class AnyModifierActive {
+class AssertTopActiveLayerIs {
    
    public:
-      
-      KT_ASSERTION_STD_CONSTRUCTOR(AnyModifierActive)
    
+      /// @brief Constructor.
+      /// @param[in] layer_id The id of the layer to check as top active.
+      ///
+      AssertTopActiveLayerIs(int layer_id)
+         : AssertTopActiveLayerIs(DelegateConstruction{}, layer_id)
+      {}
+      
    private:
       
-      class Assertion : public ReportAssertion<KeyboardReport> {
-            
+      class Action : public Action_ {
+   
          public:
 
+            Action(int layer_id) : layer_id_(layer_id) {}
+
             virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Any modifiers active";
+               this->getSimulator()->log() << add_indent << "Top active layer is " << layer_id_;
             }
 
             virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Any modifiers active: ";
-               this->getSimulator()->log() << this->getReport().isAnyModifierActive();
+               this->getSimulator()->log() << add_indent << "Top active layer is " << Layer.top();
             }
 
             virtual bool evalInternal() override {
-               return this->getReport().isAnyModifierActive();
+               return Layer.top() == (uint8_t)layer_id_;
             }
+            
+         private:
+            
+            int layer_id_;
       };
    
-   KT_AUTO_DEFINE_ASSERTION_INVENTORY(AnyModifierActive)
+   KT_AUTO_DEFINE_ACTION_INVENTORY(AssertTopActiveLayerIs)
 };
-
-} // namespace assertions
+   
+} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

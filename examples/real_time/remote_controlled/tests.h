@@ -37,7 +37,7 @@ namespace simulator {
    
 void runSimulator(Simulator &simulator) {
    
-   using namespace assertions;
+   using namespace actions;
    using namespace terminal_escape_sequences;
 
    // Check out https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control
@@ -51,7 +51,7 @@ void runSimulator(Simulator &simulator) {
                         1 /* num. cycles after each tap */
    );
 
-   simulator.permanentReportAssertions().add(DumpReport{});
+   simulator.permanentReportActions().add(DumpReport{});
    
    std::cout << clear_screen << std::flush;
    std::cout << cursor_to_upper_left << std::flush;
