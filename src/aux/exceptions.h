@@ -24,6 +24,8 @@
 namespace kaleidoscope {
 namespace simulator {
    
+/// @private
+///
 struct OStringStreamWrapper
 {
    template<typename _T>

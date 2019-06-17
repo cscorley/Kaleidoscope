@@ -34,6 +34,8 @@ namespace simulator {
 class Simulator;
 class Report_;
 
+/// @private
+///
 class VoidReport {};
    
 /// @brief An abstract assertion.

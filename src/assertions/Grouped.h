@@ -24,10 +24,16 @@
 
 #include <vector>
 
+/// @file
+/// @brief This files contains classes and functions to 
+///        group assertions.
+
 namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
-    
+  
+/// @private
+///
 template<typename _AssertionType>
 class GroupedAssertion_ : public _AssertionType {
    

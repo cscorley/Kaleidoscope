@@ -25,7 +25,7 @@ namespace kaleidoscope {
 namespace simulator {
 namespace assertions {
 
-/// @details Asserts that there was a specific number of reports of a given
+/// @brief Asserts that there was a specific number of reports of a given
 ///        type generated within a specific scan cycle.
 ///
 template<typename _ReportType>

@@ -24,6 +24,8 @@
 namespace kaleidoscope {
 namespace simulator {
    
+/// @private
+///
 class SimulatorConsumerAdaptor : public aglais::Consumer_
 {
    public:

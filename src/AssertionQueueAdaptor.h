@@ -22,6 +22,11 @@
 namespace kaleidoscope {
 namespace simulator {
    
+/// @brief An adaptor template that restricts access to 
+///        assertion containers.
+/// @details The adaptor provides the necessary access method
+///        of a typical queue container.
+///
 template<typename _ContainerType>
 class AssertionQueueAdaptor
 {
