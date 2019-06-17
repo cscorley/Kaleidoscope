@@ -135,7 +135,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
       
 };
 
-void parseAglaisScript(const char *code, Simulator &simulator)
+void processAglaisDocument(const char *code, Simulator &simulator)
 {
    auto rwqa_state = simulator.getErrorIfReportWithoutQueuedAssertions();
    
