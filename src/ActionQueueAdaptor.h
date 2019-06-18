@@ -55,7 +55,11 @@ class ActionQueueAdaptor
       ///
       template<typename..._Actions>
       ThisType &queue(_Actions...actions) {
-         container_.add(std::vector<std::shared_ptr<ActionType>>{std::forward<_Actions>(actions)...});
+         container_.add(
+            std::vector<std::shared_ptr<ActionType>>{
+               actions.ptr()...,
+            }
+         );
          return *this;
       }
       
@@ -75,7 +79,9 @@ class ActionQueueAdaptor
       template<typename..._Actions>
       ThisType &queueGrouped(_Actions...actions) {
          container_.addGrouped(
-            std::vector<std::shared_ptr<ActionType>>{std::forward<_Actions>(actions)...}
+            std::vector<std::shared_ptr<ActionType>>{
+               actions.ptr()...,
+            }
          );
          return *this;
       }

@@ -91,22 +91,22 @@ class MouseReport : public Report_ {
       /// @brief Queries the x-movement stored in the report.
       /// @returns The x-movement.
       ///
-      signed char getXMovement() const;
+      int8_t getXMovement() const;
       
       /// @brief Queries the y-movement stored in the report.
       /// @returns The y-movement.
       ///
-      signed char getYMovement() const;
+      int8_t getYMovement() const;
       
       /// @brief Queries the verical wheel movement.
       /// @returns The vertical wheel movement.
       ///
-      signed char getVerticalWheel() const;  
+      int8_t getVerticalWheel() const;  
       
       /// @brief Queries the horizontal wheel movement.
       /// @returns The horizontal wheel movement.
       ///
-      signed char getHorizontalWheel() const;
+      int8_t getHorizontalWheel() const;
           
       /// @brief Checks if the report is empty.
       /// @details Empty means that no buttons are active and
@@ -124,6 +124,8 @@ class MouseReport : public Report_ {
       /// @param report_data The new report data struct.
       ///
       void setReportData(const HID_MouseReport_Data_t &report_data);
+      
+      const HID_MouseReport_Data_t& getReportData() const { return report_data_; }
       
       static const char *typeString() { return "mouse"; }
       virtual const char *getTypeString() const override { return typeString(); }

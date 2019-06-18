@@ -47,7 +47,14 @@ std::ostream &SimulatorStream_::getOStream() const
    return simulator_->getOStream();
 }
 
+bool SimulatorStream_::mute() const
+{ 
+   return simulator_->getQuiet(); 
+}
+
 void SimulatorStream_::checkLineStart() {
+   
+   if(this->mute()) { return; }
    
    if(!line_start_) { return; }
    
@@ -57,20 +64,24 @@ void SimulatorStream_::checkLineStart() {
 }
 
 void SimulatorStream_::reactOnLineStart()
-{
+{   
+   if(this->mute()) { return; }
+   
    this->getOStream() << "t=" << /*std::fixed << std::setw(4) << */simulator_->getTime() 
                       << ", c=" << /*std::fixed << std::setw(4) << */simulator_->getCycleId()
                       << ": ";
 }
 
 void SimulatorStream_::reactOnLineEnd() 
-{
+{   
+   if(this->mute()) { return; }
+   
    this->getOStream() << "\n";
 }
    
 ErrorStream::ErrorStream(const Simulator *simulator) 
    :  SimulatorStream_(simulator)
-{
+{   
    auto &out = this->getOStream();
    
    // Foreground color red
@@ -81,8 +92,8 @@ ErrorStream::ErrorStream(const Simulator *simulator)
    out << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 }
       
-ErrorStream::~ErrorStream() {
-   
+ErrorStream::~ErrorStream() 
+{   
    this->getOStream() << "\n";
    this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
@@ -103,6 +114,39 @@ void ErrorStream::reactOnLineStart()
    this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "!!! ";
 }
+   
+DebugStream::DebugStream(const Simulator *simulator) 
+   :  SimulatorStream_(simulator)
+{
+   if(this->mute()) { return; }
+   
+   auto &out = this->getOStream();
+   
+   // Foreground color blue
+   //
+   out << "\x1B[34;1m";
+   
+   this->SimulatorStream_::reactOnLineStart();
+}
+      
+DebugStream::~DebugStream()
+{   
+   if(this->mute()) { return; }
+   
+   this->getOStream() << "\n";
+   
+   // Restore color to neutral.
+   //
+   this->getOStream() << "\x1B[0m";
+}
+
+void DebugStream::reactOnLineStart()
+{
+   if(this->mute()) { return; }
+   
+   this->SimulatorStream_::reactOnLineStart();
+   this->getOStream() << "***Debug: ";
+}
 
 LogStream::LogStream(const Simulator *simulator) 
    :  SimulatorStream_(simulator)
@@ -110,12 +154,16 @@ LogStream::LogStream(const Simulator *simulator)
 }
 
 LogStream::~LogStream() {
+   if(this->mute()) { return; }
+   
    this->getOStream() << "\n";
 }
 
 HeaderStream::HeaderStream(const Simulator *simulator) 
    :  SimulatorStream_(simulator)
 {  
+   if(this->mute()) { return; }
+   
    // Foreground color red
    //
    this->getOStream() << "\x1B[32;1m";
@@ -125,6 +173,9 @@ HeaderStream::HeaderStream(const Simulator *simulator)
 }
 
 HeaderStream::~HeaderStream() {
+   
+   if(this->mute()) { return; }
+   
    this->getOStream() << "\n";
    this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "################################################################################\n";
@@ -136,6 +187,8 @@ HeaderStream::~HeaderStream() {
 
 void HeaderStream::reactOnLineStart()
 {
+   if(this->mute()) { return; }
+   
    this->SimulatorStream_::reactOnLineStart();
    this->getOStream() << "### ";
 }

@@ -65,22 +65,22 @@ bool MouseReport::isRightButtonPressed() const
    return report_data_.buttons & MOUSE_RIGHT;
 }
 
-signed char MouseReport::getXMovement() const
+int8_t MouseReport::getXMovement() const
 {
    return report_data_.xAxis;
 }
 
-signed char MouseReport::getYMovement() const
+int8_t MouseReport::getYMovement() const
 {
    return report_data_.yAxis;
 }
 
-signed char MouseReport::getVerticalWheel() const
+int8_t MouseReport::getVerticalWheel() const
 {
    return report_data_.vWheel;
 }  
 
-signed char MouseReport::getHorizontalWheel() const
+int8_t MouseReport::getHorizontalWheel() const
 {
    return report_data_.hWheel;
 }

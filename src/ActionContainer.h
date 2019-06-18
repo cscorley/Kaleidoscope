@@ -51,6 +51,12 @@ class ActionContainer
          :  simulator_(simulator)
       {}
       
+      /// @brief Adds an action.
+      ///
+      /// @param actions The actions to be added to the container.
+      ///
+      ThisType &add(const std::shared_ptr<_ActionType> &action);
+      
       /// @brief Adds actions.
       ///
       /// @param actions The actions to be added to the container.
@@ -63,7 +69,11 @@ class ActionContainer
       ///
       template<typename..._Actions>
       ThisType &add(_Actions...actions) {
-         this->add(std::vector<std::shared_ptr<_ActionType>>{std::forward<_Actions>(actions)...});
+         this->add(
+            std::vector<std::shared_ptr<_ActionType>>{
+               actions.ptr()...
+            }      
+         );
          return *this;
       }
       
@@ -80,8 +90,11 @@ class ActionContainer
       template<typename..._Actions>
       ThisType &addGrouped(_Actions...actions) {
          return this->addGrouped(
-            std::vector<std::shared_ptr<_ActionType>>{std::forward<_Actions>(actions)...}
+            std::vector<std::shared_ptr<_ActionType>>{
+               actions.ptr()...
+            }      
          );
+         return *this;
       }
       
       /// @brief Removes an action.
@@ -130,9 +143,6 @@ class ActionContainer
    private:
       
       void configureAction(const std::shared_ptr<_ActionType> &action);
-      
-      std::shared_ptr<_ActionType> generateActionGroup(
-            const std::vector<std::shared_ptr<_ActionType>> &actions);
       
    private:
       

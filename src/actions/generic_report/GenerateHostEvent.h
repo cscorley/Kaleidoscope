@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "actions/Action_.h"
+#include "actions/generic_report/ReportAction.h"
 #include "reports/Report_.h"
 
 #include <cassert>
@@ -30,17 +30,19 @@ namespace simulator {
 ///        processed by the host.
 ///
 template<typename _ReportType>
-class GenerateHostEvent : public ReportAction<_ReportType>
+class GenerateHostEvent
 {
    public:
 
-      KT_ACTION_STD_CONSTRUCTOR(AssertAnyKeycodeActive)
+      KT_ACTION_STD_CONSTRUCTOR(GenerateHostEvent)
    
    private:
       
       class Action : public ReportAction<_ReportType> {
    
          public:
+            
+            ~Action();
 
             virtual void describe(const char *add_indent = "") const override {
                this->getSimulator()->log() << add_indent << "Generating host event";
@@ -51,9 +53,19 @@ class GenerateHostEvent : public ReportAction<_ReportType>
             }
 
             virtual bool evalInternal() override;
+            
+         private:
+         
+            void cachePreviousReport() {
+               previous_report_ = this->getReport();
+            }
+            
+         private:
+            
+            _ReportType previous_report_;
       };
    
-   KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertReportEquals<_ReportType>)
+   KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(GenerateHostEvent<_ReportType>)
 };
 
 } // namespace simulator

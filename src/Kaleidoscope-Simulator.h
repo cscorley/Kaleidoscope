@@ -39,6 +39,7 @@
 #include "actions/generic_report/AssertReportIsNthInCycle.h"
 #include "actions/generic_report/CustomReportAction.h"
 #include "actions/generic_report/AssertCycleGeneratesNReports.h"
+#include "actions/generic_report/GenerateHostEvent.h"
 
 #include "actions/keyboard_report/AssertModifiersActive.h"
 #include "actions/keyboard_report/AssertAnyKeycodeActive.h"

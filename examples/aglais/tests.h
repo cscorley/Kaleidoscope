@@ -35,7 +35,13 @@ void runSimulator(Simulator &simulator) {
    
    using namespace actions;
    
+   //;dool :DOOLsimulator.setQuiet();
+   
    auto test = simulator.newTest("Aglais test");
+   
+   simulator.permanentKeyboardReportActions().add(GenerateHostEvent<KeyboardReport>{});
+   simulator.permanentMouseReportActions().add(GenerateHostEvent<MouseReport>{});
+   simulator.permanentAbsoluteMouseReportActions().add(GenerateHostEvent<AbsoluteMouseReport>{});
 
    processAglaisDocument(aglais_test_recording, simulator);
 }

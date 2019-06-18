@@ -127,6 +127,8 @@ class SimulatorStream_ {
          this->getOStream() << std::endl;
       }
       
+      bool mute() const;
+      
    protected:
       
       const Simulator *simulator_;
@@ -157,6 +159,28 @@ class ErrorStream : public SimulatorStream_ {
       virtual void reactOnLineStart() override;
 };
 
+/// @brief A stream class for debug output.
+///
+class DebugStream : public SimulatorStream_ {
+   
+   public:
+      
+      DebugStream(const Simulator *simulator);
+      
+      template<typename _T>
+      DebugStream &operator<<(const _T &t) { 
+         if(this->mute()) { return *this; }
+         this->output(t);
+         return *this; 
+      }
+      
+      virtual ~DebugStream() override;
+
+   private:
+   
+      virtual void reactOnLineStart() override;
+};
+
 /// @brief A stream class for log output.
 ///
 class LogStream : public SimulatorStream_ {
@@ -168,6 +192,7 @@ class LogStream : public SimulatorStream_ {
       
       template<typename _T>
       LogStream &operator<<(const _T &t) { 
+         if(this->mute()) { return *this; }
          this->output(t);
          return *this; 
       }
@@ -183,6 +208,7 @@ class HeaderStream : public SimulatorStream_ {
       
       template<typename _T>
       HeaderStream &operator<<(const _T &t) { 
+         if(this->mute()) { return *this; }
          this->output(t);
          return *this; 
       }
@@ -223,6 +249,7 @@ class Simulator {
       
       std::ostream *out_;
       bool debug_;
+      bool quiet_ = false;
       int cycle_duration_;
       bool abort_on_first_error_;
       
@@ -461,6 +488,12 @@ class Simulator {
       /// @returns The header log stream object.
       /// 
       HeaderStream header() const { return HeaderStream{this}; }
+      
+      /// @brief Retreives a log stream for debug output.
+      ///
+      /// @returns The debug stream object.
+      /// 
+      DebugStream debug() const { return DebugStream{this}; }
          
       /// @brief Retrieves a log stream for error output.
       ///
@@ -502,11 +535,32 @@ class Simulator {
       ///
       /// @param state The new state of debugging output.
       ///
-      void setDebug(bool state) { debug_ = state; }
+      void setDebug(bool state = true) { debug_ = state; }
       
       /// @brief Retreives the current debugging state.
       ///
       bool getDebug() const { return debug_; }
+            
+      /// @brief Sets the simulator to quiet mode (no output).
+      ///
+      /// @param state The new state of quiet mode.
+      ///
+      void setQuiet(bool state = true) { 
+         if(state != quiet_) {
+            if(quiet_) {
+               quiet_ = state;
+               this->log() << "Quiet mode disabled.";
+            }
+            else {
+               this->log() << "Quiet mode enabled.";
+               quiet_ = state;
+            }
+         }
+      }
+      
+      /// @brief Retreives the current quiet state.
+      ///
+      bool getQuiet() const { return quiet_; }
       
       /// @brief Asserts that no actions (keyboard report and cycle)
       ///        are currently queued.

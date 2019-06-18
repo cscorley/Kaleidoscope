@@ -130,6 +130,8 @@ class KeyboardReport : public Report_ {
       ///
       void setReportData(const HID_KeyboardReport_Data_t &report_data);
       
+      const HID_KeyboardReport_Data_t& getReportData() const { return report_data_; }
+      
       static const char *typeString() { return "keyboard"; }
       virtual const char *getTypeString() const override { return typeString(); }
       

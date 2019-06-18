@@ -101,7 +101,7 @@ class AbsoluteMouseReport : public Report_ {
       /// @brief Queries the absolute wheel-position.
       /// @returns The absolute wheel-position.
       ///
-      uint16_t getWheelPosition() const;
+      int8_t getWheelPosition() const;
           
       /// @brief Checks if the report is empty.
       /// @details Empty means that no buttons are active and
@@ -119,6 +119,8 @@ class AbsoluteMouseReport : public Report_ {
       /// @param report_data The new report data struct.
       ///
       void setReportData(const HID_MouseAbsoluteReport_Data_t &report_data);
+      
+      const HID_MouseAbsoluteReport_Data_t& getReportData() const { return report_data_; }
       
       static const char *typeString() { return "absolute mouse"; }
       virtual const char *getTypeString() const override { return typeString(); }

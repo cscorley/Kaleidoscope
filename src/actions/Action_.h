@@ -184,8 +184,11 @@ class Action_ {
          : action_{new WRAPPER::Action{std::forward<_Args>(args)...}}          \
       {}                                                                       \
                                                                                \
-      operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> () { return action_; }                                                           \
-      std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> ptr() { return action_; }                                                           \
+      /*operator std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> () { return action_; }                                                           */\
+      operator std::shared_ptr<WRAPPER::Action> () { return action_; }                                                           \
+      std::shared_ptr<WRAPPER::Action> ptr() { return action_; }                                                           \
+                                                                               \
+      /*std::shared_ptr<TYPENAME_KEYWORD WRAPPER::Action::ActionBaseType> ptr() { return action_; }                                                           */\
                                                                                \
       WRAPPER &negate(bool state = true) { action_->negate(state); return *this; }
       

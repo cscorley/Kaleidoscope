@@ -36,13 +36,22 @@ namespace simulator {
 template<typename _ActionType>
 ActionContainer<_ActionType> &
    ActionContainer<_ActionType>
+      ::add(const std::shared_ptr<_ActionType> &action) 
+{
+   this->configureAction(action);
+   container_.push_back(action);
+   simulator_.log() << "Adding " << _ActionType::typeString() << " action: " 
+         << type(*action);
+   return *this;
+}
+
+template<typename _ActionType>
+ActionContainer<_ActionType> &
+   ActionContainer<_ActionType>
       ::add(const std::vector<std::shared_ptr<_ActionType>> &actions) 
 {
    for(auto &action: actions) {
-      this->configureAction(action);
-      container_.push_back(action);
-      simulator_.log() << "Adding " << _ActionType::typeString() << " action: " 
-         << type(*action);
+      this->add(action);
    }
    return *this;
 }
@@ -52,9 +61,19 @@ ActionContainer<_ActionType> &
    ActionContainer<_ActionType>
       ::addGrouped(const std::vector<std::shared_ptr<_ActionType>> &actions)
 {
-   container_.push_back(
-      this->generateActionGroup(actions)
-   );
+   for(auto &action: actions) {
+      this->configureAction(action);
+   } 
+   
+   std::shared_ptr<_ActionType> grouped_actions 
+      = std::static_pointer_cast<_ActionType>(
+         actions::Grouped<_ActionType>{actions}.ptr()
+      );
+   
+   this->configureAction(grouped_actions);
+
+   this->configureAction(grouped_actions);
+   container_.push_back(grouped_actions);
    
    simulator_.log() << "Adding grouped " << _ActionType::typeString() << " actions";
    for(const auto &action: actions) {
@@ -119,26 +138,6 @@ void
       ::configureAction(const std::shared_ptr<_ActionType> &action)
 {
    action->setSimulator(&simulator_);
-}
-
-template<typename _ActionType>
-std::shared_ptr<_ActionType>
-   ActionContainer<_ActionType>
-      ::generateActionGroup(
-      const std::vector<std::shared_ptr<_ActionType>> &actions)
-{
-   for(auto &action: actions) {
-      this->configureAction(action);
-   } 
-   
-   std::shared_ptr<_ActionType> grouped_actions 
-      = std::static_pointer_cast<_ActionType>(
-         actions::Grouped<_ActionType>{actions}.ptr()
-      );
-   
-   this->configureAction(grouped_actions);
-   
-   return grouped_actions;
 }
 
 } // namespace simulator

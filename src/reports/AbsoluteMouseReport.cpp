@@ -75,7 +75,7 @@ uint16_t AbsoluteMouseReport::getYPosition() const
    return report_data_.yAxis;
 }
 
-uint16_t AbsoluteMouseReport::getWheelPosition() const
+int8_t AbsoluteMouseReport::getWheelPosition() const
 {
    return report_data_.wheel;
 }
