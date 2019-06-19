@@ -100,10 +100,10 @@ void MouseReport::dump(const Simulator &simulator, const char *add_indent) const
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
   simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
-  simulator.log() << add_indent << "  x-axis motion: " << this->getXMovement();
-  simulator.log() << add_indent << "  y-axis motion: " << this->getYMovement();
-  simulator.log() << add_indent << "  horizontal wheel motion: " << this->getHorizontalWheel();
-  simulator.log() << add_indent << "  vertical wheel motion: " << this->getVerticalWheel();
+  simulator.log() << add_indent << "  x-axis motion: " << (int)this->getXMovement();
+  simulator.log() << add_indent << "  y-axis motion: " << (int)this->getYMovement();
+  simulator.log() << add_indent << "  horizontal wheel motion: " << (int)this->getHorizontalWheel();
+  simulator.log() << add_indent << "  vertical wheel motion: " << (int)this->getVerticalWheel();
 }
 
 void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data)

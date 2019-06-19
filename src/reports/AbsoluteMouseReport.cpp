@@ -94,9 +94,9 @@ void AbsoluteMouseReport::dump(const Simulator &simulator, const char *add_inden
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
   simulator.log() << add_indent << "  right button: " << this->isRightButtonPressed();
-  simulator.log() << add_indent << "  x-axis position: " << this->getXPosition();
-  simulator.log() << add_indent << "  y-axis position: " << this->getYPosition();
-  simulator.log() << add_indent << "  wheel position: " << this->getWheelPosition();
+  simulator.log() << add_indent << "  x-axis position: " << (int)this->getXPosition();
+  simulator.log() << add_indent << "  y-axis position: " << (int)this->getYPosition();
+  simulator.log() << add_indent << "  wheel position: " << (int)this->getWheelPosition();
 }
 
 void AbsoluteMouseReport::setReportData(const HID_MouseAbsoluteReport_Data_t &report_data)

@@ -19,6 +19,7 @@
 #include "Simulator.h"
 #include "ActionContainer_Impl.h"
 #include "actions/Action_.h"
+#include "aux/WallTimer.h"
 
 #include "Kaleidoscope.h"
 #include "kaleidoscope/hid.h"
@@ -26,7 +27,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <ctime>
 #include <sstream>
 
 namespace kaleidoscope {
@@ -568,30 +568,37 @@ void Simulator::runRealtime(TimeType duration,
 {
    auto n_cycles = duration/cycle_duration_;
    
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
+   WallTimer timer;
       
    for(decltype(n_cycles) i = 0; i < n_cycles; ++i) {
       
-      auto begin_cycle = std::clock();
+      timer.start();
       
       this->cycle();
       cycle_function();
       
       // Slow down the simulation if necessary.
       //
-      double elapsed_ms = 0;
-      do {
-         auto cur_time = std::clock();
-         elapsed_ms = 1000*double(cur_time - begin_cycle)*inv_clocks_per_sec;
-      } while(elapsed_ms < 5);
+      do {} while(timer.elapsed() < cycle_duration_);
    }
 }
       
-void Simulator::runRemoteControlled(const std::function<void()> &cycle_function)
+void Simulator::runRemoteControlled(const std::function<void()> &cycle_callback,
+                                    bool realtime
+)
 {
+   WallTimer timer;
+   
+   std::string line;
    while(1) {
       
-      std::string line;
+      if(realtime) {
+         timer.start();
+      }
+      
+      if(std::cin.peek() == EOF) {
+         continue;
+      }
       std::getline(std::cin, line);
       
       if(line.empty() || line[0] == '.') {
@@ -637,8 +644,19 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_function)
          }
       }
       
-      cycleInternal(true /*only log reports*/);
-      cycle_function();
+      this->cycleInternal(true /*only log reports*/);
+      
+      cycle_callback();
+      
+      // Slow down the simulation if necessary.
+      //
+      if(realtime) {
+         double elapsed = 0;
+         do {
+            elapsed = timer.elapsed();
+            //std::cout << "Elapsed: " << elapsed << std::endl;
+         } while(elapsed < cycle_duration_);
+      }
    }
 }
       

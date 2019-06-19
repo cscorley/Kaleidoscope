@@ -18,44 +18,24 @@
 
 #pragma once
 
-#include "actions/generic_report/ReportAction.h"
+#include <chrono>
 
 namespace kaleidoscope {
 namespace simulator {
-namespace actions {
-
-/// @brief Asserts nothing but dumps the current report instead.
-///
-class DumpReport {
-   
+    
+class WallTimer
+{
    public:
       
-      KT_ACTION_STD_CONSTRUCTOR(DumpReport)
-   
+      void start();
+      double elapsed(); // ms
+      
    private:
       
-      class Action : public ReportAction_ {
-            
-         public:
-
-            virtual void describe(const char *add_indent = "") const override {
-               this->getReport().dump(*this->getSimulator(), add_indent);
-            }
-
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
-
-            virtual bool evalInternal() override {
-               this->describe();
-               return true;
-            }
-
-      };
-   
-   KT_AUTO_DEFINE_ACTION_INVENTORY(DumpReport)
+      typedef decltype(std::chrono::high_resolution_clock::now()) TimerType;
+      
+      TimerType start_time_;
 };
 
-} // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

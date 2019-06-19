@@ -309,7 +309,7 @@ class Simulator {
       ///
       Simulator(std::ostream &out, 
              bool debug, 
-             int cycle_duration = 5, 
+             int cycle_duration = 1, 
              bool abort_on_first_error = false);
       
       ~Simulator();
@@ -628,9 +628,12 @@ class Simulator {
       /// @brief Runs the simulator in a continuous loop an reacts on stdin.
       /// @details Key state information is read from stdin in each loop cycle.
       ///
-      /// @param cycle_function A function that is executed after every cycle.
+      /// @param cycle_callback A function that is executed after every cycle.
+      /// @param realtime If this parameter is true, the simulator waits 
+      ///                 if necessary at the end of cycles to synchronize.
       ///
-      void runRemoteControlled(const std::function<void()> &cycle_function);
+      void runRemoteControlled(const std::function<void()> &cycle_callback,
+                              bool realtime = false);
       
       int getNumReportsInCycle() const { return n_typed_reports_in_cycle_[AnyTypeReportSid]; }
       int getNumOverallReports() const { return n_typed_overall_reports_[AnyTypeReportSid]; }

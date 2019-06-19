@@ -19,7 +19,6 @@
 #pragma once
 
 #include "actions/Action_.h"
-#include "kaleidoscope/key_defs.h"
 
 #include <functional>
 

@@ -35,6 +35,18 @@
 namespace kaleidoscope {
 namespace simulator {
    
+   HostEventAction::HostEventAction()
+      :  display_{XOpenDisplay(NULL)}
+{
+}   
+
+   HostEventAction::~HostEventAction()
+{
+   auto d = static_cast<Display*>(display_);
+   XSync(d, 0);
+   XCloseDisplay(d);
+}
+   
 namespace {
 unsigned const int modifiers[] = {
    KEY_LEFTCTRL, KEY_LEFTSHIFT, KEY_LEFTALT, KEY_LEFTMETA,
@@ -131,24 +143,18 @@ class KeyEventCheck {
 } // namespace
 
 template<>
-   GenerateHostEvent<KeyboardReport>::Action::~Action()
-{
-   XSync(XOpenDisplay(NULL), 0);
-}
-
-template<>
 bool GenerateHostEvent<KeyboardReport>::Action::evalInternal()
 {
-   auto display = XOpenDisplay(NULL);
+   auto d = static_cast<Display*>(display_);
    
    KeyEventCheck{
       *this->getSimulator(),
-      display,
+      d,
       previous_report_, 
       this->getReport()
    }.compareReports();
    
-   XFlush(display);
+   XSync(d, 0);
    
    this->cachePreviousReport();
 
@@ -159,21 +165,16 @@ bool GenerateHostEvent<KeyboardReport>::Action::evalInternal()
 }
 
 template<>
-GenerateHostEvent<MouseReport>::Action::~Action()
-{
-   XSync(XOpenDisplay(NULL), 0);
-}
-
-template<>
 bool GenerateHostEvent<MouseReport>::Action::evalInternal()
 {
    const auto &report = this->getReport();
    
-   Display *display = XOpenDisplay (NULL);
+   auto d = static_cast<Display*>(display_);
+   
    XEvent event;
    
    /* Get the current pointer position */
-   XQueryPointer (display, RootWindow (display, 0), 
+   XQueryPointer (d, RootWindow (d, 0), 
                   &event.xbutton.root,
                   &event.xbutton.window, 
                   &event.xbutton.x_root,
@@ -182,14 +183,14 @@ bool GenerateHostEvent<MouseReport>::Action::evalInternal()
                   &event.xbutton.y,
                   &event.xbutton.state);
    
-   XTestFakeRelativeMotionEvent (display,
-                  event.xbutton.x + report.getXMovement(),
-                  event.xbutton.y + report.getYMovement(),
+   XTestFakeRelativeMotionEvent (d,
+                  /*event.xbutton.x + */report.getXMovement(),
+                  /*event.xbutton.y + */report.getYMovement(),
                   CurrentTime);
    
-   XTestFakeButtonEvent (display, 1, report.isLeftButtonPressed(),  CurrentTime);
-   XTestFakeButtonEvent (display, 2, report.isMiddleButtonPressed(),  CurrentTime);
-   XTestFakeButtonEvent (display, 3, report.isRightButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 1, report.isLeftButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 2, report.isMiddleButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 3, report.isRightButtonPressed(),  CurrentTime);
    
    auto v_wheel = report.getVerticalWheel();
    auto h_wheel = report.getHorizontalWheel();
@@ -199,13 +200,13 @@ bool GenerateHostEvent<MouseReport>::Action::evalInternal()
    //
    if(v_wheel > 0) {
       for(int i = 0; i < v_wheel; ++i) {
-         XTestFakeButtonEvent (display, 4, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 4, True,  CurrentTime);
          // Release events can be ignored
       }
    }
    else if(v_wheel < 0) {
       for(int i = 0; i > v_wheel; --i) {
-         XTestFakeButtonEvent (display, 5, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 5, True,  CurrentTime);
       }
    }
    
@@ -214,24 +215,18 @@ bool GenerateHostEvent<MouseReport>::Action::evalInternal()
    //
    if(h_wheel > 0) {
       for(int i = 0; i < h_wheel; ++i) {
-         XTestFakeButtonEvent (display, 6, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 6, True,  CurrentTime);
       }
    }
    else if(h_wheel < 0) {
       for(int i = 0; i > h_wheel; --i) {
-         XTestFakeButtonEvent (display, 7, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 7, True,  CurrentTime);
       }
    }
          
-   XFlush(display);
+   XSync(d, 0);
    
    return true;
-}
-
-template<>
-GenerateHostEvent<AbsoluteMouseReport>::Action::~Action()
-{
-   XSync(XOpenDisplay(NULL), 0);
 }
 
 template<>
@@ -239,11 +234,12 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
 {
    const auto &report = this->getReport();
    
-   Display *display = XOpenDisplay (NULL);
+   auto d = static_cast<Display*>(display_);
+   
    XEvent event;
    
    /* Get the current pointer position */
-   XQueryPointer (display, RootWindow (display, 0), 
+   XQueryPointer (d, RootWindow (d, 0), 
                   &event.xbutton.root,
                   &event.xbutton.window, 
                   &event.xbutton.x_root,
@@ -252,14 +248,14 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
                   &event.xbutton.y,
                   &event.xbutton.state);
    
-   XTestFakeMotionEvent (display, 0, 
+   XTestFakeMotionEvent (d, 0, 
                   event.xbutton.x + report.getXPosition(),
                   event.xbutton.y + report.getYPosition(),
                   CurrentTime);
    
-   XTestFakeButtonEvent (display, 1, report.isLeftButtonPressed(),  CurrentTime);
-   XTestFakeButtonEvent (display, 2, report.isMiddleButtonPressed(),  CurrentTime);
-   XTestFakeButtonEvent (display, 3, report.isRightButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 1, report.isLeftButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 2, report.isMiddleButtonPressed(),  CurrentTime);
+   XTestFakeButtonEvent (d, 3, report.isRightButtonPressed(),  CurrentTime);
    
    auto v_wheel = report.getWheelPosition();
    //auto h_wheel = report.getHorizontalWheel();
@@ -269,13 +265,13 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
    //
    if(v_wheel > 0) {
       for(int i = 0; i < v_wheel; ++i) {
-         XTestFakeButtonEvent (display, 4, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 4, True,  CurrentTime);
          // Release events can be ignored
       }
    }
    else if(v_wheel < 0) {
       for(int i = 0; i > v_wheel; --i) {
-         XTestFakeButtonEvent (display, 5, True,  CurrentTime);
+         XTestFakeButtonEvent (d, 5, True,  CurrentTime);
       }
    }
    
@@ -286,16 +282,16 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
    //
 //    if(h_wheel > 0) {
 //       for(int i = 0; i < h_wheel; ++i) {
-//          XTestFakeButtonEvent (display, 6, True,  CurrentTime);
+//          XTestFakeButtonEvent (d, 6, True,  CurrentTime);
 //       }
 //    }
 //    else if(h_wheel < 0) {
 //       for(int i = 0; i > h_wheel; --i) {
-//          XTestFakeButtonEvent (display, 7, True,  CurrentTime);
+//          XTestFakeButtonEvent (d, 7, True,  CurrentTime);
 //       }
 //    }
          
-   XFlush(display);
+   XSync(d, 0);
    
    return true;
 }

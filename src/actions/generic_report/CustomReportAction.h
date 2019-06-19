@@ -19,7 +19,6 @@
 #pragma once
 
 #include "actions/generic_report/ReportAction.h"
-#include "kaleidoscope/key_defs.h"
 
 #include <functional>
 

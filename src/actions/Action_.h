@@ -25,9 +25,6 @@
 #include <ostream>
 #include <memory>
 
-// #include <iostream>
-// #include "aux/demangle.h"
-
 namespace kaleidoscope {
 namespace simulator {
    

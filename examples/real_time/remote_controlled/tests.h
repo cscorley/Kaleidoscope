@@ -39,6 +39,10 @@ void runSimulator(Simulator &simulator) {
    
    using namespace actions;
    using namespace terminal_escape_sequences;
+   
+   simulator.permanentKeyboardReportActions().add(GenerateHostEvent<KeyboardReport>{});
+   simulator.permanentMouseReportActions().add(GenerateHostEvent<MouseReport>{});
+   simulator.permanentAbsoluteMouseReportActions().add(GenerateHostEvent<AbsoluteMouseReport>{});
 
    // Check out https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control
          
@@ -70,6 +74,10 @@ void runSimulator(Simulator &simulator) {
       "\n"
       "   cat /dev/ttyACM0 | " << executable_name << " -t\n"
       "\n"
+      "This is a usage example for a typical GNU/Linux system, it is possible\n"
+      "that your keyboard is not sending at /dev/ttyACM0 but a one of the\n"
+      "other ttyACM*. Please try them all if you encounter problems.\n"
+      "\n"
       "See the documentation of Kaleidoscope-Simulator and Kaleidoscope-Simulator-Control\n"
       "to see how input for real-time simulations can be generated.\n"
       "\n"
@@ -85,11 +93,12 @@ void runSimulator(Simulator &simulator) {
    std::cout << clear_screen << std::flush;
    
    simulator.runRemoteControlled( 
-      [&]() {
+       [&]() {
          std::cout << cursor_to_upper_left << std::flush;
          renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
-      }
-   );
+       },
+       false
+    );
 }
 
 } // namespace simulator

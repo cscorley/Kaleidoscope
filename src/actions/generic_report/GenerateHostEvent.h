@@ -26,6 +26,21 @@
 namespace kaleidoscope {
 namespace simulator {
    
+/// @private
+///
+class HostEventAction
+{
+   public:
+      
+      HostEventAction();
+            
+      ~HostEventAction();
+      
+   protected:
+      
+      void *display_ = nullptr;
+};
+   
 /// @brief Generates an event that has the same effect as the report being
 ///        processed by the host.
 ///
@@ -38,11 +53,10 @@ class GenerateHostEvent
    
    private:
       
-      class Action : public ReportAction<_ReportType> {
-   
+      class Action : public ReportAction<_ReportType>, 
+                     public HostEventAction
+      {
          public:
-            
-            ~Action();
 
             virtual void describe(const char *add_indent = "") const override {
                this->getSimulator()->log() << add_indent << "Generating host event";
