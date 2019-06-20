@@ -29,6 +29,8 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <thread>
+#include <mutex>  
 
 namespace kaleidoscope {
 namespace simulator {
@@ -551,66 +553,89 @@ void Simulator::runRealtime(TimeType duration,
       do {} while(timer.elapsed() < cycle_duration_);
    }
 }
+
+class DataCollectorThread
+{
+   public:
       
+      static constexpr uint8_t n_bytes_per_row = 8;
+      
+      void operator()()     
+      {
+         std::string line;
+         
+         while(1) {
+            
+            if(std::cin.peek() == EOF) {
+               continue;
+            }
+            std::getline(std::cin, line);
+            
+            if(line.empty() || line[0] == '.') {
+               continue;
+            }
+
+            std::unique_lock<std::mutex> lock(mutex_);
+            
+            std::istringstream line_stream(line);
+            for(uint8_t byte_id = 0; byte_id < n_bytes_per_row; ++byte_id) {
+               line_stream >> key_bitfield_[byte_id];
+            }
+         }
+      }
+      
+   private:
+   
+      uint16_t key_bitfield_[n_bytes_per_row] = {};
+      std::mutex mutex_;
+      
+      friend class Simulator;
+};
+ 
 void Simulator::runRemoteControlled(const std::function<void()> &cycle_callback,
                                     bool realtime
 )
 {
    WallTimer timer;
    
-   std::string line;
+   DataCollectorThread dct;
+   
+   std::thread thread_obj(std::ref(dct));
+   
    while(1) {
       
       if(realtime) {
          timer.start();
       }
       
-      if(std::cin.peek() == EOF) {
-         continue;
-      }
-      std::getline(std::cin, line);
-      
-      if(line.empty() || line[0] == '.') {
-         continue;
-      }
-      
-      constexpr uint8_t n_bytes = 8;
-      uint16_t key_bitfield[n_bytes] = {}; // We use uint16_t here as 
-                                           // uint8_t is parsed as char
-                                           // during stream input.
-      
-      std::istringstream line_stream(line);
-      for(uint8_t byte_id = 0; byte_id < n_bytes; ++byte_id) {
-         line_stream >> key_bitfield[byte_id];
-      }
+      // The additional scope is necessary to limit the lifetime
+      // of the mutex lock
+      //
+      {
+      std::unique_lock<std::mutex> lock(dct.mutex_);
    
       for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
          for(uint8_t col = 0; col < KeyboardHardware.matrix_columns; ++col) {
             uint16_t pos = row*KeyboardHardware.matrix_columns + col;
             
-            uint8_t byte_id = pos/n_bytes;
-            uint8_t bit_id = pos%n_bytes;
+            uint8_t byte_id = pos/DataCollectorThread::n_bytes_per_row;
+            uint8_t bit_id = pos%DataCollectorThread::n_bytes_per_row;
             
-            bool is_keyswitch_pressed = bitRead(key_bitfield[byte_id], bit_id);// & (1 << bit_id);
+            bool is_keyswitch_pressed = bitRead(dct.key_bitfield_[byte_id], bit_id);// & (1 << bit_id);
             
             if(is_keyswitch_pressed) {
                
                if(!KeyboardHardware.wasKeyswitchPressed(row, col)) {
-//                   std::cout << "byte_id: " << (int)byte_id << std::endl;
-//                   std::cout << "bit_id: " << (int)bit_id << std::endl;
-//                   std::cout << "byte: " << (int)key_bitfield[byte_id] << std::endl;
-//                   std::cout << "Keyswitch (" << (int)row << ", " << (int)col << ") pressed" << std::endl;
-//                   std::cout << "line: " << line << std::endl;
                   KeyboardHardware.setKeystate(row, col, Virtual::PRESSED);
                }
             }
             else {
                if(KeyboardHardware.wasKeyswitchPressed(row, col)) {
-                  //std::cout << "Keyswitch (" << (int)row << ", " << (int)col << ") released" << std::endl;
                   KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
                }
             }
          }
+      }
       }
       
       this->cycleInternal(true /*only log reports*/);
@@ -627,6 +652,8 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_callback,
          } while(elapsed < cycle_duration_);
       }
    }
+   
+   thread_obj.join();
 }
 
 Simulator &Simulator::getInstance() {
