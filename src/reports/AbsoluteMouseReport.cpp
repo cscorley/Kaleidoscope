@@ -27,9 +27,18 @@ namespace simulator {
 {
 }
 
-   AbsoluteMouseReport::AbsoluteMouseReport(const HID_MouseAbsoluteReport_Data_t &report_data)
+   AbsoluteMouseReport::AbsoluteMouseReport(const AbsoluteMouseReport::ReportDataType &report_data)
 {
    this->setReportData(report_data);
+}
+
+AbsoluteMouseReport &AbsoluteMouseReport::operator=(const AbsoluteMouseReport &other)
+{
+   if(this == &other) { return *this; }
+   
+   this->setReportData(other.report_data_);
+   
+   return *this;
 }
 
    AbsoluteMouseReport::AbsoluteMouseReport(const void *data)
@@ -99,9 +108,9 @@ void AbsoluteMouseReport::dump(const Simulator &simulator, const char *add_inden
   simulator.log() << add_indent << "  wheel position: " << (int)this->getWheelPosition();
 }
 
-void AbsoluteMouseReport::setReportData(const HID_MouseAbsoluteReport_Data_t &report_data)
+void AbsoluteMouseReport::setReportData(const AbsoluteMouseReport::ReportDataType &report_data)
 {
-   memcpy(&report_data_, &report_data_, sizeof(report_data_));
+   memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
 
 } // namespace simulator

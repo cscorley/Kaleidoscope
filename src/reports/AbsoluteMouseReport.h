@@ -43,7 +43,11 @@ class AbsoluteMouseReport : public Report_ {
       
       typedef HID_MouseAbsoluteReport_Data_t ReportDataType;
       
-      static constexpr uint8_t hid_report_type_ = HID_REPORTID_MOUSE_ABSOLUTE;
+      static constexpr uint8_t hid_report_type_ 
+            = HID_REPORTID_MOUSE_ABSOLUTE;
+      
+      static constexpr uint16_t max_x_coordinate = 32767;
+      static constexpr uint16_t max_y_coordinate = 32767;
       
       /// @brief Default consturctor.
       /// @details Creates an empty report.
@@ -59,7 +63,9 @@ class AbsoluteMouseReport : public Report_ {
       /// @brief Constructs based on a report data object.
       /// @param report_data The report data object to read.
       ///
-      AbsoluteMouseReport(const HID_MouseAbsoluteReport_Data_t &report_data);
+      AbsoluteMouseReport(const ReportDataType &report_data);
+      
+      AbsoluteMouseReport &operator=(const AbsoluteMouseReport &other);
       
       /// @brief Checks equality with another report.
       /// @param other Another report to compare with.
@@ -118,16 +124,16 @@ class AbsoluteMouseReport : public Report_ {
       /// @brief Associates the object with new report data.
       /// @param report_data The new report data struct.
       ///
-      void setReportData(const HID_MouseAbsoluteReport_Data_t &report_data);
+      void setReportData(const ReportDataType &report_data);
       
-      const HID_MouseAbsoluteReport_Data_t& getReportData() const { return report_data_; }
+      const ReportDataType& getReportData() const { return report_data_; }
       
       static const char *typeString() { return "absolute mouse"; }
       virtual const char *getTypeString() const override { return typeString(); }
       
    private:
    
-      HID_MouseAbsoluteReport_Data_t report_data_;
+      ReportDataType report_data_;
 };
 
 } // namespace simulator

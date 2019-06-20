@@ -24,6 +24,7 @@
 #include "Kaleidoscope.h"
 #include "kaleidoscope/hid.h"
 #include "MultiReport/Keyboard.h"
+#include "HIDReportObserver.h"
 
 #include <iostream>
 #include <iomanip>
@@ -211,37 +212,6 @@ Test::~Test() {
    }
 }
 
-void Simulator::HIDReportConsumer::processHIDReport(
-                  uint8_t id, const void* data, int len)
-{
-   switch(id) {
-      // TODO: React appropriately on the following
-      //
-      case HID_REPORTID_GAMEPAD:
-      case HID_REPORTID_CONSUMERCONTROL:
-      case HID_REPORTID_SYSTEMCONTROL:
-         simulator_.log() << "***Ignoring hid report with id = " << id;
-         break;
-      case HID_REPORTID_MOUSE_ABSOLUTE:
-         {
-            simulator_.processReport(AbsoluteMouseReport{data});
-         }
-         break;
-      case HID_REPORTID_MOUSE:
-         {
-            simulator_.processReport(MouseReport{data});
-         }
-         break;
-      case HID_REPORTID_NKRO_KEYBOARD:
-         {
-            simulator_.processReport(KeyboardReport{data});
-         }
-         break;
-      default:
-         simulator_.error() << "Encountered unknown HID report with id = " << id;
-   }
-}
-
 Simulator::Simulator(std::ostream &out, 
          bool debug, 
          int cycle_duration, 
@@ -254,19 +224,18 @@ Simulator::Simulator(std::ostream &out,
       
       queued_report_actions_{*this},
       
+      permanent_boot_keyboard_report_actions_{*this},
       permanent_keyboard_report_actions_{*this},
       permanent_mouse_report_actions_{*this},
       permanent_absolute_mouse_report_actions_{*this},
       permanent_generic_report_actions_{*this},
       
       queued_cycle_actions_{*this},
-      permanent_cycle_actions_{*this},
-      
-      hid_report_consumer_{*this}
+      permanent_cycle_actions_{*this}
 {
+   HIDReportObserver::resetHook(&Simulator::processHIDReport);
+   
    KeyboardHardware.setEnableReadMatrix(false);
-
-   ::kaleidoscope::setHIDReportConsumer(hid_report_consumer_);
 
    this->headerText();
 }
@@ -657,6 +626,49 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_callback,
             //std::cout << "Elapsed: " << elapsed << std::endl;
          } while(elapsed < cycle_duration_);
       }
+   }
+}
+
+Simulator &Simulator::getInstance() {
+   static Simulator sim(std::cout, false);
+   return sim;
+}
+
+void Simulator::processHIDReport(uint8_t id, const void* data, 
+                                    int len, int result)
+{
+   auto &simulator = Simulator::getInstance();
+   
+   switch(id) {
+      // TODO: React appropriately on the following
+      //
+      case HID_REPORTID_GAMEPAD:
+      case HID_REPORTID_CONSUMERCONTROL:
+      case HID_REPORTID_SYSTEMCONTROL:
+         simulator.log() << "***Ignoring hid report with id = " << id;
+         break;
+      case HID_REPORTID_KEYBOARD:
+         {
+            simulator.processReport(BootKeyboardReport{data});
+         }
+         break;
+      case HID_REPORTID_MOUSE_ABSOLUTE:
+         {
+            simulator.processReport(AbsoluteMouseReport{data});
+         }
+         break;
+      case HID_REPORTID_MOUSE:
+         {
+            simulator.processReport(MouseReport{data});
+         }
+         break;
+      case HID_REPORTID_NKRO_KEYBOARD:
+         {
+            simulator.processReport(KeyboardReport{data});
+         }
+         break;
+      default:
+         simulator.error() << "Encountered unknown HID report with id = " << id;
    }
 }
       

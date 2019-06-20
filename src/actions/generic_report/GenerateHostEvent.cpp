@@ -17,6 +17,7 @@
  */
 
 #include "actions/generic_report/GenerateHostEvent.h"
+#include "reports/BootKeyboardReport.h"
 #include "reports/KeyboardReport.h"
 #include "reports/MouseReport.h"
 #include "reports/AbsoluteMouseReport.h"
@@ -27,6 +28,8 @@
 #include <X11/extensions/XTest.h>
 #include <unistd.h>
 #include <linux/input-event-codes.h>
+
+#include <set>
 
 // see /usr/include/linux/input-event-codes.h
 // and /usr/share/X11/xkb/keycodes/evdev
@@ -73,11 +76,11 @@ unsigned const int keycodes[][8] = {
    { KEY_VOLUMEUP, KEY_VOLUMEDOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN }
 };
 
-class KeyEventCheck {
+class KeyboardReportEventCheck {
    
    public:
       
-      KeyEventCheck(const Simulator &simulator,
+      KeyboardReportEventCheck(const Simulator &simulator,
                     Display *display,
                     const KeyboardReport &previous_report, 
                     const KeyboardReport &current_report)
@@ -139,15 +142,120 @@ class KeyEventCheck {
       const KeyboardReport::ReportDataType &current_report_data_;
 };
 
+class BootKeyboardReportEventCheck {
+   
+   public:
+      
+      BootKeyboardReportEventCheck(const Simulator &simulator,
+                    Display *display,
+                    const BootKeyboardReport &previous_report, 
+                    const BootKeyboardReport &current_report)
+      :  simulator_{simulator},
+         display_{display},
+         previous_report_data_{previous_report.getReportData()},
+         current_report_data_{current_report.getReportData()}
+      {
+      }
+      
+      void compareReports() {
+            
+         for(int j = 0; j < 8; ++j) {
+            this->modifierCheck(j);
+         }
+         
+         this->keyCheck();
+      }
+      
+   private:
+      
+      void modifierCheck(int j)
+      {   
+         auto old_state = bitRead(previous_report_data_.modifiers, j);
+         auto new_state = bitRead(current_report_data_.modifiers, j);
+         
+         if(old_state == new_state) { return; }
+         
+         auto keycode = modifiers[j] + 8;
+         
+         bool is_pressed = (new_state) ? true : false;
+         
+         XTestFakeKeyEvent(display_, keycode, is_pressed, CurrentTime);
+      }
+      
+      void keyCheck()
+      {   
+         std::set<uint8_t> previous_report_keycodes,
+                           current_report_keycodes;
+      
+         for(int i = 0; i < 6; ++i) {
+            if(previous_report_data_.keycodes[i] != 0) {
+               previous_report_keycodes.insert(
+                  previous_report_data_.keycodes[i]
+               );
+            }
+            if(current_report_data_.keycodes[i] != 0) {
+               current_report_keycodes.insert(
+                  current_report_data_.keycodes[i]
+               );
+            }
+         }
+         
+         for(const auto &keycode: previous_report_keycodes) {
+            if(current_report_keycodes.find(keycode) == current_report_keycodes.end()) {
+               
+               // Keycode only present in previous report 
+               // => key released
+               XTestFakeKeyEvent(display_, keycode, False, CurrentTime);
+            }
+         }
+         for(const auto &keycode: current_report_keycodes) {
+            if(previous_report_keycodes.find(keycode) == previous_report_keycodes.end()) {
+               
+               // Keycode only present in current report 
+               // => key pressed
+               XTestFakeKeyEvent(display_, keycode, True, CurrentTime);
+            }
+         }
+      }
+      
+   private:
+      
+      const Simulator &simulator_;
+      Display *display_;
+      const BootKeyboardReport::ReportDataType &previous_report_data_;
+      const BootKeyboardReport::ReportDataType &current_report_data_;
+};
 
 } // namespace
+
+template<>
+bool GenerateHostEvent<BootKeyboardReport>::Action::evalInternal()
+{
+   auto d = static_cast<Display*>(display_);
+   
+   BootKeyboardReportEventCheck{
+      *this->getSimulator(),
+      d,
+      previous_report_, 
+      this->getReport()
+   }.compareReports();
+   
+   XSync(d, 0);
+   
+   this->cachePreviousReport();
+
+   // We ignore any further key bytes in the report as we do not have
+   // any defined keycodes for those.
+   
+   return true;
+}
 
 template<>
 bool GenerateHostEvent<KeyboardReport>::Action::evalInternal()
 {
    auto d = static_cast<Display*>(display_);
    
-   KeyEventCheck{
+   KeyboardReportEventCheck{
       *this->getSimulator(),
       d,
       previous_report_, 
@@ -171,21 +279,9 @@ bool GenerateHostEvent<MouseReport>::Action::evalInternal()
    
    auto d = static_cast<Display*>(display_);
    
-   XEvent event;
-   
-   /* Get the current pointer position */
-   XQueryPointer (d, RootWindow (d, 0), 
-                  &event.xbutton.root,
-                  &event.xbutton.window, 
-                  &event.xbutton.x_root,
-                  &event.xbutton.y_root, 
-                  &event.xbutton.x, 
-                  &event.xbutton.y,
-                  &event.xbutton.state);
-   
    XTestFakeRelativeMotionEvent (d,
-                  /*event.xbutton.x + */report.getXMovement(),
-                  /*event.xbutton.y + */report.getYMovement(),
+                  report.getXMovement(),
+                  report.getYMovement(),
                   CurrentTime);
    
    XTestFakeButtonEvent (d, 1, report.isLeftButtonPressed(),  CurrentTime);
@@ -236,21 +332,14 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
    
    auto d = static_cast<Display*>(display_);
    
-   XEvent event;
-   
-   /* Get the current pointer position */
-   XQueryPointer (d, RootWindow (d, 0), 
-                  &event.xbutton.root,
-                  &event.xbutton.window, 
-                  &event.xbutton.x_root,
-                  &event.xbutton.y_root, 
-                  &event.xbutton.x, 
-                  &event.xbutton.y,
-                  &event.xbutton.state);
+   auto x_pos = DisplayWidth(d, 0)*report.getXPosition()
+                  / AbsoluteMouseReport::max_x_coordinate;
+   auto y_pos = DisplayHeight(d, 0)*report.getYPosition()
+                  / AbsoluteMouseReport::max_y_coordinate;
    
    XTestFakeMotionEvent (d, 0, 
-                  event.xbutton.x + report.getXPosition(),
-                  event.xbutton.y + report.getYPosition(),
+                  x_pos,
+                  y_pos,
                   CurrentTime);
    
    XTestFakeButtonEvent (d, 1, report.isLeftButtonPressed(),  CurrentTime);

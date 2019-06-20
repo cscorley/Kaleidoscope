@@ -20,12 +20,11 @@
 
 #include "ActionContainer.h"
 #include "ActionQueueAdaptor.h"
+#include "reports/BootKeyboardReport.h"
 #include "reports/KeyboardReport.h"
 #include "reports/MouseReport.h"
 #include "reports/AbsoluteMouseReport.h"
 #include "actions/generic_report/ReportAction.h"
-
-#include "HIDReportConsumer_.h"
 
 #include <vector>
 #include <functional>
@@ -60,9 +59,18 @@ struct ReportTraits {};
 
 enum {
    AnyTypeReportSid = 0,
-   KeyboardReportSid = 1,
-   MouseReportSid = 2,
-   AbsoluteMouseReportSid = 3
+   BootKeyboardReportSid = 1,
+   KeyboardReportSid = 2,
+   MouseReportSid = 3,
+   AbsoluteMouseReportSid = 4
+};
+
+/// @private
+///
+template<>
+struct ReportTraits<BootKeyboardReport>
+{
+   static constexpr int sid = BootKeyboardReportSid;
 };
 
 /// @private
@@ -264,14 +272,15 @@ class Simulator {
       
       bool error_if_report_without_queued_actions_ = false;
       
-      int n_typed_reports_in_cycle_[4] = {};
-      int n_typed_overall_reports_[4] = {};
+      int n_typed_reports_in_cycle_[5] = {};
+      int n_typed_overall_reports_[5] = {};
       
       int n_reports_in_cycle_ = 0;
       int n_overall_reports_ = 0;
       
       ActionContainer<ReportAction_> queued_report_actions_;
-      
+            
+      ActionContainer<ReportAction<BootKeyboardReport>> permanent_boot_keyboard_report_actions_;
       ActionContainer<ReportAction<KeyboardReport>> permanent_keyboard_report_actions_;
       ActionContainer<ReportAction<MouseReport>> permanent_mouse_report_actions_;
       ActionContainer<ReportAction<AbsoluteMouseReport>> permanent_absolute_mouse_report_actions_;
@@ -280,37 +289,7 @@ class Simulator {
       ActionContainer<Action_> queued_cycle_actions_;
       ActionContainer<Action_> permanent_cycle_actions_;
       
-      class HIDReportConsumer : public HIDReportConsumer_
-      {
-         public:
-            
-            HIDReportConsumer(Simulator &simulator) : simulator_(simulator) {}
-
-            virtual void processHIDReport(uint8_t id, const void* data, 
-                                    int len) override;
-                           
-         private:
-            
-            Simulator &simulator_;
-            
-      } hid_report_consumer_;
-      
-      friend class HIDReportConsumer;
-      
    public:
-      
-      /// @brief Constructor.
-      ///
-      /// @param out The output stream that is used for all output.
-      /// @param debug Generates additional debug information if enabled.
-      /// @param cycle_duration The duration in ms of one scan cycle.
-      /// @param abort_on_first_error If enabled, testing is aborted after
-      ///        the first error occurred.
-      ///
-      Simulator(std::ostream &out, 
-             bool debug, 
-             int cycle_duration = 1, 
-             bool abort_on_first_error = false);
       
       ~Simulator();
       
@@ -333,6 +312,12 @@ class Simulator {
       
       ActionQueueAdaptor<ActionContainer<ReportAction_>> reportActionsQueue() {
          return ActionQueueAdaptor<ActionContainer<ReportAction_>>{queued_report_actions_};
+      }
+      
+      /// @brief Retreives the permanent boot keyboard report actions.
+      ///
+      ActionContainer<ReportAction<BootKeyboardReport>> &permanentBootKeyboardReportActions() {
+         return permanent_boot_keyboard_report_actions_;
       }
       
       /// @brief Retreives the permanent keyboard report actions.
@@ -638,6 +623,9 @@ class Simulator {
       int getNumReportsInCycle() const { return n_typed_reports_in_cycle_[AnyTypeReportSid]; }
       int getNumOverallReports() const { return n_typed_overall_reports_[AnyTypeReportSid]; }
       
+      int getNumBootKeyboardReportsInCycle() const { return n_typed_reports_in_cycle_[BootKeyboardReportSid]; }
+      int getNumOverallBootKeyboardReports() const { return n_typed_overall_reports_[BootKeyboardReportSid]; }
+      
       int getNumKeyboardReportsInCycle() const { return n_typed_reports_in_cycle_[KeyboardReportSid]; }
       int getNumOverallKeyboardReports() const { return n_typed_overall_reports_[KeyboardReportSid]; }
       
@@ -657,7 +645,24 @@ class Simulator {
          return n_typed_overall_reports_[ReportTraits<_ReportType>::sid];
       }
       
+      /// @brief Access the global simulator singleton.
+      ///
+      static Simulator &getInstance();
+      
    private:
+      
+      /// @brief Constructor.
+      ///
+      /// @param out The output stream that is used for all output.
+      /// @param debug Generates additional debug information if enabled.
+      /// @param cycle_duration The duration in ms of one scan cycle.
+      /// @param abort_on_first_error If enabled, testing is aborted after
+      ///        the first error occurred.
+      ///
+      Simulator(std::ostream &out, 
+             bool debug, 
+             int cycle_duration = 1, 
+             bool abort_on_first_error = false);
       
       bool checkStatus();
             
@@ -668,6 +673,10 @@ class Simulator {
       void cycleInternal(bool only_log_reports = false);
       
       void checkCycleDurationSet();
+      
+      ActionContainer<ReportAction<BootKeyboardReport>> &getPermanentReportActions(ReportType<BootKeyboardReport>) {
+         return permanent_boot_keyboard_report_actions_;
+      }
       
       ActionContainer<ReportAction<KeyboardReport>> &getPermanentReportActions(ReportType<KeyboardReport>) {
          return permanent_keyboard_report_actions_;
@@ -785,6 +794,9 @@ class Simulator {
       
       void cyclesInternal(int n, 
                   const std::vector<std::shared_ptr<Action_>> &cycle_action_list);
+      
+      static void processHIDReport(uint8_t id, const void* data, 
+                                    int len, int result);
 };
 
 /// @brief Asserts a condition.

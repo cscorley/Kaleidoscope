@@ -38,7 +38,7 @@ namespace simulator {
 }
 
    KeyboardReport
-      ::KeyboardReport(const HID_KeyboardReport_Data_t &report_data) 
+      ::KeyboardReport(const KeyboardReport::ReportDataType &report_data) 
 {
    this->setReportData(report_data);
 }
@@ -168,7 +168,7 @@ bool
       
 void 
    KeyboardReport
-      ::setReportData(const HID_KeyboardReport_Data_t &report_data)
+      ::setReportData(const KeyboardReport::ReportDataType &report_data)
 {
    memcpy(&report_data_, &report_data, sizeof(report_data_));
 }

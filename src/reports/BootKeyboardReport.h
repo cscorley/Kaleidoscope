@@ -35,37 +35,37 @@ namespace simulator {
    
 class Simulator;
   
-/// @brief An interface hat facilitates analyzing keyboard reports.
+/// @brief An interface hat facilitates analyzing boot keyboard reports.
 ///
-class KeyboardReport : public Report_ {
+class BootKeyboardReport : public Report_ {
    
    public:
       
-      typedef HID_KeyboardReport_Data_t ReportDataType;
+      typedef HID_BootKeyboardReport_Data_t ReportDataType;
       
-      static constexpr uint8_t hid_report_type_ = HID_REPORTID_NKRO_KEYBOARD;
+      static constexpr uint8_t hid_report_type_ = HID_REPORTID_KEYBOARD;
       
       /// @brief Default consturctor.
       /// @details Creates an empty report.
       ///
-      KeyboardReport();
+      BootKeyboardReport();
       
       /// @brief Constructs based on a raw pointer to report data.
       /// @details Only use this if you know what you are doning!
       /// @param data The address where the report data starts.
       ///
-      KeyboardReport(const void *data);
+      BootKeyboardReport(const void *data);
       
       /// @brief Constructs based on a report data object.
       /// @param report_data The report data object to read.
       ///
-      KeyboardReport(const ReportDataType &report_data);
+      BootKeyboardReport(const ReportDataType &report_data);
       
       /// @brief Checks equality with another key report.
       /// @param other Another key report to compare with.
       /// @returns [bool] True if both reports are equal.
       ///
-      bool operator==(const KeyboardReport &other) const;
+      bool operator==(const BootKeyboardReport &other) const;
       
       /// @brief Checks if a keycode is active in the keyboard report.
       /// @param keycode The keycode to check for.

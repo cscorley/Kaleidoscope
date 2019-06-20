@@ -68,6 +68,6 @@ extern void executeTestFunction();
     */                                                                         \
    void executeTestFunction() {                                                \
       setup(); /* setup Kaleidoscope */                                        \
-      kaleidoscope::simulator::Simulator simulator(std::cout, false);          \
-      kaleidoscope::simulator::runSimulator(simulator);                        \
+      using namespace kaleidoscope::simulator;                                 \
+      runSimulator(Simulator::getInstance());                                  \
    }
