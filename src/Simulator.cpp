@@ -451,11 +451,11 @@ void Simulator::footerText() {
    this->log() << "duration: " << time_ << " ms = " << cycle_id_ << " cycles";
    this->log() << "error_count: " << error_count_;
    this->log() << "";
-   this->log() << "num. overall reports processed: " << n_typed_reports_in_cycle_[AnyTypeReportSid];
-   this->log() << "num. boot keyboard reports processed: " << n_typed_reports_in_cycle_[BootKeyboardReportSid];
-   this->log() << "num. keyboard reports processed: " << n_typed_reports_in_cycle_[KeyboardReportSid];
-   this->log() << "num. mouse reports processed: " << n_typed_reports_in_cycle_[MouseReportSid];
-   this->log() << "num. absolute mouse reports processed: " << n_typed_reports_in_cycle_[AbsoluteMouseReportSid];
+   this->log() << "num. overall reports processed: " << n_typed_overall_reports_[AnyTypeReportSid];
+   this->log() << "num. boot keyboard reports processed: " << n_typed_overall_reports_[BootKeyboardReportSid];
+   this->log() << "num. keyboard reports processed: " << n_typed_overall_reports_[KeyboardReportSid];
+   this->log() << "num. mouse reports processed: " << n_typed_overall_reports_[MouseReportSid];
+   this->log() << "num. absolute mouse reports processed: " << n_typed_overall_reports_[AbsoluteMouseReportSid];
    this->log() << "";
    this->checkStatus();
    this->getOStream() << "\x1B[33;1m";
