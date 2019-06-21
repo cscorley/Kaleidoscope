@@ -40,7 +40,7 @@ namespace simulator {
 class Simulator;
 class Action_;
 
-/// @brief An auxlialary tag template for method selection.
+/// @brief An auxiliary tag template for method selection.
 /// @details This class is necessary as C++ does not allow
 ///        for proper method template specialization.
 ///        An instance of this class is passed to some method
@@ -407,7 +407,10 @@ class Simulator {
          
       /// @brief Runs a scan cycle and processes actions afterwards.
       ///
-      void cycle();
+      /// @param suppress_cycle_info_output Suppresses log output
+      ///        about the cycle.
+      ///
+      void cycle(bool suppress_cycle_info_log = false);
          
       /// @brief Runs a number of scan cycles and processes actions afterwards.
       ///

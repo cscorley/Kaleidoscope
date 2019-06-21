@@ -42,12 +42,13 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
       }
       
       virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) override {
-         simulator_.log() << "Aglais: start_cycle " << cycle_id << ' ' << cycle_start_time;
+         //simulator_.log() << "Aglais: start_cycle " << cycle_id << ' ' << cycle_start_time;
          simulator_.setTime(cycle_start_time);
       }
       virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) override {
-         simulator_.log() << "Aglais: end_cycle " << cycle_id << ' ' << cycle_end_time; 
-         simulator_.cycle();
+         //simulator_.log() << "Aglais: end_cycle " << cycle_id << ' ' << cycle_end_time; 
+         
+         simulator_.cycle(true /*suppress cycle log info*/);
          
          if(!simulator_.reportActionsQueue().empty()) {
             simulator_.error() << "Report actions are left in queue";
@@ -81,9 +82,16 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
             case HID_REPORTID_SYSTEMCONTROL:
                simulator_.log() << "***Ignoring hid report with id = " << id;
                break;
+            case HID_REPORTID_KEYBOARD:{
+                  assert(length == sizeof(BootKeyboardReport::ReportDataType));
+                  simulator_.reportActionsQueue().queue(
+                     actions::AssertReportEquals<BootKeyboardReport>{data}
+                  );
+               }
+               break;
             case HID_REPORTID_MOUSE_ABSOLUTE:
                {
-                  assert(length == sizeof(HID_MouseAbsoluteReport_Data_t));
+                  assert(length == sizeof(AbsoluteMouseReport::ReportDataType));
                   simulator_.reportActionsQueue().queue(
                      actions::AssertReportEquals<AbsoluteMouseReport>{data}
                   );
@@ -91,7 +99,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
                break;
             case HID_REPORTID_MOUSE:
                {
-                  assert(length == sizeof(HID_MouseReport_Data_t));
+                  assert(length == sizeof(MouseReport::ReportDataType));
                   simulator_.reportActionsQueue().queue(
                      actions::AssertReportEquals<MouseReport>{data}
                   );
@@ -99,7 +107,7 @@ class SimulatorConsumerAdaptor : public aglais::Consumer_
                break;
             case HID_REPORTID_NKRO_KEYBOARD:
                {
-                  assert(length == sizeof(HID_KeyboardReport_Data_t));
+                  assert(length == sizeof(KeyboardReport::ReportDataType));
                   simulator_.reportActionsQueue().queue(
                      actions::AssertReportEquals<KeyboardReport>{data}
                   );

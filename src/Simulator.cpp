@@ -30,7 +30,7 @@
 #include <iomanip>
 #include <sstream>
 #include <thread>
-#include <mutex>  
+#include <mutex>
 
 namespace kaleidoscope {
 namespace simulator {
@@ -312,10 +312,16 @@ void Simulator::clearAllKeys() {
    }
 }
 
-void Simulator::cycle() {
-   this->log() << "Running single scan cycle";
+void Simulator::cycle(bool suppress_cycle_info_log) {
+   if(!suppress_cycle_info_log) {
+      this->log() << "Running single scan cycle";
+   }
+   
    this->cycleInternal(true);
-   this->log() << "";
+   
+   if(!suppress_cycle_info_log) {
+      this->log() << "";
+   }
 }
 
 void Simulator::cyclesInternal(int n, 
@@ -446,6 +452,7 @@ void Simulator::footerText() {
    this->log() << "error_count: " << error_count_;
    this->log() << "";
    this->log() << "num. overall reports processed: " << n_typed_reports_in_cycle_[AnyTypeReportSid];
+   this->log() << "num. boot keyboard reports processed: " << n_typed_reports_in_cycle_[BootKeyboardReportSid];
    this->log() << "num. keyboard reports processed: " << n_typed_reports_in_cycle_[KeyboardReportSid];
    this->log() << "num. mouse reports processed: " << n_typed_reports_in_cycle_[MouseReportSid];
    this->log() << "num. absolute mouse reports processed: " << n_typed_reports_in_cycle_[AbsoluteMouseReportSid];
@@ -520,7 +527,7 @@ void Simulator::checkCycleDurationSet() {
 void Simulator::assertNothingQueued() const
 {
    if(!queued_report_actions_.empty()) {
-      this->error() << "Keyboard report actions are left in queue";
+      this->error() << "Report actions are left in queue";
    }
    
    if(!queued_cycle_actions_.empty()) {

@@ -179,7 +179,6 @@ class BootKeyboardReportEventCheck {
          
          bool is_pressed = (new_state) ? true : false;
          
-         std::cout << "Generating modifier event. keycode = " << (int)keycode << ", is_pressed = " << is_pressed << std::endl;
          XTestFakeKeyEvent(display_, keycode, is_pressed, CurrentTime);
       }
       
