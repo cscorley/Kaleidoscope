@@ -40,6 +40,7 @@ void runSimulator(Simulator &simulator) {
    using namespace actions;
    using namespace terminal_escape_sequences;
    
+   simulator.permanentBootKeyboardReportActions().add(GenerateHostEvent<BootKeyboardReport>{});   
    simulator.permanentKeyboardReportActions().add(GenerateHostEvent<KeyboardReport>{});
    simulator.permanentMouseReportActions().add(GenerateHostEvent<MouseReport>{});
    simulator.permanentAbsoluteMouseReportActions().add(GenerateHostEvent<AbsoluteMouseReport>{});

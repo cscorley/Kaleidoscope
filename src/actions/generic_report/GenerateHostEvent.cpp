@@ -179,6 +179,7 @@ class BootKeyboardReportEventCheck {
          
          bool is_pressed = (new_state) ? true : false;
          
+         std::cout << "Generating modifier event. keycode = " << (int)keycode << ", is_pressed = " << is_pressed << std::endl;
          XTestFakeKeyEvent(display_, keycode, is_pressed, CurrentTime);
       }
       
@@ -200,22 +201,30 @@ class BootKeyboardReportEventCheck {
             }
          }
          
-         for(const auto &keycode: previous_report_keycodes) {
-            if(current_report_keycodes.find(keycode) == current_report_keycodes.end()) {
+         for(const auto &k: previous_report_keycodes) {
+            if(current_report_keycodes.find(k) == current_report_keycodes.end()) {
+               
+               auto actual_keycode = getActualKeycode(k);
                
                // Keycode only present in previous report 
                // => key released
-               XTestFakeKeyEvent(display_, keycode, False, CurrentTime);
+               XTestFakeKeyEvent(display_, actual_keycode, False, CurrentTime);
             }
          }
-         for(const auto &keycode: current_report_keycodes) {
-            if(previous_report_keycodes.find(keycode) == previous_report_keycodes.end()) {
+         for(const auto &k: current_report_keycodes) {
+            if(previous_report_keycodes.find(k) == previous_report_keycodes.end()) {
+               
+               auto actual_keycode = getActualKeycode(k);
                
                // Keycode only present in current report 
                // => key pressed
-               XTestFakeKeyEvent(display_, keycode, True, CurrentTime);
+               XTestFakeKeyEvent(display_, actual_keycode, True, CurrentTime);
             }
          }
+      }
+      
+      static uint8_t getActualKeycode(uint8_t k) {
+         return keycodes[k/8][k%8] + 8;
       }
       
    private:

@@ -39,6 +39,7 @@ unsigned long millis = 0;
 
 // Explicit template instanciations
 //
+template class ActionContainer<ReportAction<BootKeyboardReport>>;
 template class ActionContainer<ReportAction<KeyboardReport>>;
 template class ActionContainer<ReportAction<MouseReport>>;
 template class ActionContainer<ReportAction<AbsoluteMouseReport>>;
