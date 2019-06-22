@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,12 +17,17 @@
 
 #pragma once
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
 class Simulator;
 
-static constexpr uint8_t GenericReportTypeId = 255;
+enum {
+   AnyTypeReportType = 0,
+   BootKeyboardReportType = 1,
+   KeyboardReportType = 2,
+   MouseReportType = 3,
+   AbsoluteMouseReportType = 4
+};
   
 /// @brief A common base class for HID reports.
 ///
@@ -31,7 +35,20 @@ class Report_ {
    
    public:
       
-      static constexpr uint8_t hid_report_type_ = GenericReportTypeId;
+      static constexpr uint8_t type_ = AnyTypeReportType;
+      
+      /// @brief Creates a copy of the report.
+      /// @returns A pointer to the created copy.
+      ///
+      virtual std::shared_ptr<Report_> clone() const = 0;
+      
+      /// @brief Checks two reports for equality.
+      /// @details If the two reports are of different type,
+      ///        the equality check fails.
+      /// @returns True if both reports are of same time and
+      ///        identical content.
+      ///
+      virtual bool equals(const Report_ &other) const = 0;
       
       /// @brief Checks if the report is empty.
       /// @details Empty means neither key nor modifier keycodes are active.
@@ -48,5 +65,4 @@ class Report_ {
       virtual const char *getTypeString() const { return typeString(); }
 };
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

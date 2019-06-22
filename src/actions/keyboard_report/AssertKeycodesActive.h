@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,17 +20,14 @@
 #include "actions/generic_report/ReportAction.h"
 #include "aux/keycodes.h"
 
-#include "kaleidoscope/key_defs.h"
-
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
 namespace actions {
    
+/// @brief Overload this function if you intent to use any other data type
+///        that can be mapped to a keycode.
+///
 inline
 uint8_t toKeycode(uint8_t keycode) { return keycode; }
-
-inline
-uint8_t toKeycode(Key key) { return key.keyCode; }
 
 /// @brief Asserts that a specific set of keys is active in the keyboard report.
 ///
@@ -157,5 +153,4 @@ class AssertKeycodesActive {
 };
 
 } // namespace actions
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

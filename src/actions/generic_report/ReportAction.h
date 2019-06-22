@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
  * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope absolute mouse 
- *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -23,8 +22,7 @@
 
 #include <cassert>
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
 /// @brief An abstract report action.
 /// @details This abstract class serves as base class for any
@@ -71,7 +69,7 @@ class ReportAction : public ReportAction_
       typedef _ReportType ReportType;
       
       virtual uint8_t getReportTypeId() const override {
-         return _ReportType::hid_report_type_;
+         return _ReportType::type_;
       }
       
       static const char *typeString() { 
@@ -90,5 +88,4 @@ class ReportAction : public ReportAction_
       }
 };
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

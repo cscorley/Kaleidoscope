@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,8 +20,7 @@
 #include "actions/generic_report/ReportAction.h"
 #include "Simulator.h"
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
 namespace actions {
 
 /// @brief Asserts that the current report equals another report.
@@ -36,7 +34,7 @@ class AssertReportEquals {
       ///
       /// @param report The report to compare with.
       ///
-      AssertReportEquals(const _ReportType &report)
+      AssertReportEquals(const std::shared_ptr<_ReportType> &report)
          : AssertReportEquals(DelegateConstruction{}, report)
       {}
       
@@ -64,31 +62,30 @@ class AssertReportEquals {
 
             virtual void describe(const char *add_indent = "") const override {
                this->getSimulator()->log() << add_indent << "Report equals: ";
-               report_.dump(*this->getSimulator(), add_indent);
+               report_->dump(*this->getSimulator(), add_indent);
             }
 
             virtual void describeState(const char *add_indent = "") const {
                
                this->getSimulator()->log() << add_indent << "Reports differ: ";
                this->getSimulator()->log() << add_indent << "expected: ";
-               report_.dump(*this->getSimulator(), add_indent);
+               report_->dump(*this->getSimulator(), add_indent);
                this->getSimulator()->log() << add_indent << "actual: ";
                this->getReport().dump(*this->getSimulator(), add_indent);
             }
 
             virtual bool evalInternal() override {
                
-               return this->getReport() == report_;
+               return this->getReport().equals(*report_);
             }
             
          private:
             
-            _ReportType report_;
+            std::shared_ptr<_ReportType> report_;
       };
    
    KT_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertReportEquals<_ReportType>)
 };
 
 } // namespace actions
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

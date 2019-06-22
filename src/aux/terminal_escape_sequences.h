@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,8 +17,7 @@
 
 #pragma once
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
 namespace terminal_escape_sequences {
    
 constexpr char reset_formatting[] = "\x1B[0m";
@@ -28,5 +26,5 @@ constexpr char clear_screen[] = "\033[2J\033[1;1H";
 constexpr char cursor_to_upper_left[] = "\x1B[0;0H";
 
 } // namespace terminal_escape_sequences
-} // namespace simulator
+} // namespace papilio
 } // namespace kaleidoscop

@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -19,8 +18,7 @@
 #include "Grouped.h"
 #include "Simulator.h"
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
 namespace actions {
    
 void Grouped<ReportAction_>::Action::determineGroupType()
@@ -46,5 +44,4 @@ void Grouped<ReportAction_>::Action::determineGroupType()
    }
 }
 } // namespace actions
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

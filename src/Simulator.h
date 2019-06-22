@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -29,15 +28,12 @@
 #include <vector>
 #include <functional>
 
-/// @namespace kaleidoscope
+/// @namespace papilio
 ///
-namespace kaleidoscope {
-
-/// @namespace simulator
-///
-namespace simulator {
+namespace papilio {
    
 class Simulator;
+class SimulatorCore_;
 class Action_;
 
 /// @brief An auxiliary tag template for method selection.
@@ -56,14 +52,6 @@ struct ReportType {};
 ///
 template<typename _ReportType>
 struct ReportTraits {};
-
-enum {
-   AnyTypeReportSid = 0,
-   BootKeyboardReportSid = 1,
-   KeyboardReportSid = 2,
-   MouseReportSid = 3,
-   AbsoluteMouseReportSid = 4
-};
 
 /// @private
 ///
@@ -289,6 +277,8 @@ class Simulator {
       ActionContainer<Action_> queued_cycle_actions_;
       ActionContainer<Action_> permanent_cycle_actions_;
       
+      std::shared_ptr<SimulatorCore_> simulator_core_;
+      
    public:
       
       ~Simulator();
@@ -496,9 +486,9 @@ class Simulator {
       ///
       int getErrorCount() const { return error_count_; }
       
-      /// @brief Resets the keyboard to initial state.
+      /// @brief Resets the simulator to initial state.
       ///
-      void initKeyboard();
+      void init();
       
       /// @brief Retreives the state of the AbortOnFirstError condition.
       ///
@@ -652,6 +642,11 @@ class Simulator {
       ///
       static Simulator &getInstance();
       
+      const SimulatorCore_ &getCore() const { 
+         assert(simulator_core_);
+         return *simulator_core_;
+      }
+      
    private:
       
       /// @brief Constructor.
@@ -758,12 +753,12 @@ class Simulator {
             
             auto report_type = action->getReportTypeId();
             
-            if(report_type == Report_::hid_report_type_) {
+            if(report_type == Report_::type_) {
                // Generic report
                //
                this->processReportAction(*action, report);
             }
-            else if(report_type == _ReportType::hid_report_type_) {
+            else if(report_type == _ReportType::type_) {
                auto &typed_action = static_cast<ReportAction<_ReportType>&>(*action);
                this->processReportAction(typed_action, report);
             }
@@ -780,7 +775,7 @@ class Simulator {
          }
 
          for(auto &action: permanent_generic_report_actions_.directAccess()) {
-            if(   (action->getReportTypeId() == _ReportType::hid_report_type_)
+            if(   (action->getReportTypeId() == _ReportType::type_)
                || (action->getReportTypeId() == GenericReportTypeId)) {
                this->processReportAction(*action, report);
             }
@@ -810,5 +805,4 @@ class Simulator {
 #define KT_ASSERT_CONDITION(DRIVER, ...)                                       \
    DRIVER.assertCondition((__VA_ARGS__), #__VA_ARGS__)
       
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

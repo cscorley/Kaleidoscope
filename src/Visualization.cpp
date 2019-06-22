@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,7 +17,6 @@
 
 #include "Visualization.h"
 #include "Simulator.h"
-#include "Kaleidoscope.h"
 #include "aux/terminal_escape_sequences.h"
 
 // Undef those stupid Arduino-macros conflicting with stl stuff
@@ -31,8 +29,7 @@
 #include <regex>
 #include <iostream>
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
 std::map<uint8_t, const char*> hid_code_to_string = {
    { 0x04 , "A   " }, // HID_KEYBOARD_A_AND_A
@@ -170,66 +167,77 @@ std::map<uint8_t, const char*> hid_code_to_string = {
    
 typedef std::map<uint8_t, std::string> KeyAddrToKeyString;
 
-std::string generateColorEscSeq(uint8_t row, uint8_t col) {
-   
-   using namespace terminal_escape_sequences;
+class KeyboardRenderer
+{
+   public:
       
-   auto color = KeyboardHardware.getCrgbAt(row, col);
-   
-   int col_norm = color.r*color.r + color.g*color.g + color.b*color.b;
-   
-   int foreground_color = 30;
-   
-   // Have dark grey text on light background color and light grey
-   // on dark background.
-   //
-   if(col_norm <= 49152) {
-      foreground_color = 37;
-   }
-   
-   static const char * const empty = "";
-   const char *activation_highlight = empty;
-   if(KeyboardHardware.wasKeyswitchPressed(row, col)) {
-      activation_highlight = underlined;
-   }
-      
-   std::ostringstream o;
-   o << "\x1B[48;2;" << (int)color.r << ";" << (int)color.g << ";" << (int)color.b << "m"
-         "\x1B[" << foreground_color << "m" 
-         << activation_highlight;
-   return o.str();
-}
-   
-void generateLookup(KeyAddrToKeyString &lookup) {
-   
-   using namespace terminal_escape_sequences;
-   
-   for(uint8_t row = 0; row < KeyboardHardware.matrix_rows; ++row) {
-      for(uint8_t col = 0; col < KeyboardHardware.matrix_columns; ++col) {
-            
-         auto key = Layer.lookupOnActiveLayer(row, col);
+      KeyboardRenderer(const SimulatorCore_ &simulator_core)
+         :  simulator_core_(simulator_core)
+      {}
+
+      std::string generateColorEscSeq(uint8_t row, uint8_t col) {
          
-         const char *key_string = "****";
-         if(key.flags == KEY_FLAGS) {
+         using namespace terminal_escape_sequences;
+         
+         uint8_t red = 0, green = 0,  = 0;
             
-            // Map the keycode to a string that matches the key
-            //            
-            auto it = hid_code_to_string.find(key.keyCode);
-            if(it != hid_code_to_string.end()) {
-               key_string = it->second;
-            }
+         simulator_core_.getCurrentKeyLEDColor(row, col, red, green, );
+         
+         int col_norm = red*red + green*green + blue*blue;
+         
+         int foreground_color = 30;
+         
+         // Have dark grey text on light background color and light grey
+         // on dark background.
+         //
+         if(col_norm <= 49152) {
+            foreground_color = 37;
          }
          
-         std::string color_string = generateColorEscSeq(row, col);
-         
-         uint8_t pos = row*KeyboardHardware.matrix_columns + col;
-         
-         //std::cout << (int)pos << ": color: \"" << color_string << "\", key_string: \"" << key_string << "\"\n";
-         
-         lookup[pos] = color_string + key_string + reset_formatting;
+         static const char * const empty = "";
+         const char *activation_highlight = empty;
+         if(simulator_core_.isKeyPressed(row, col)) {
+            activation_highlight = underlined;
+         }
+            
+         std::ostringstream o;
+         o << "\x1B[48;2;" << (int)red << ";" << (int)green << ";" << (int)blue << "m"
+               "\x1B[" << foreground_color << "m" 
+               << activation_highlight;
+         return o.str();
       }
-   }
-}
+         
+      void generateLookup(KeyAddrToKeyString &lookup) {
+         
+         using namespace terminal_escape_sequences;
+         
+         uint8_t n_rows = 0, n_cols = 0;
+         
+         simulator_core_.getKeyMatrixDimensions(rows, cols);
+         
+         for(uint8_t row = 0; row < n_rows; ++row) {
+            for(uint8_t col = 0; col < n_cols; ++col) {
+                  
+               auto key = Layer.lookupOnActiveLayer(row, col);
+               
+               std::string key_string("****");
+               simulator_core_.getCurrentKeyLabel(row, col, key_string);
+               
+               std::string color_string = generateColorEscSeq(row, col);
+               
+               uint8_t pos = row*n_cols + col;
+               
+               //std::cout << (int)pos << ": color: \"" << color_string << "\", key_string: \"" << key_string << "\"\n";
+               
+               lookup[pos] = color_string + key_string + reset_formatting;
+            }
+         }
+      }
+      
+   private:
+      
+      const SimulatorCore_ &simulator_core_;
+};
    
 void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard) {
    
@@ -270,5 +278,4 @@ void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard) {
     }
 }
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

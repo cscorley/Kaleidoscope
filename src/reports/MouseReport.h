@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,7 +17,6 @@
 
 #pragma once
 
-#include "MultiReport/Mouse.h"
 #include "reports/Report_.h"
 
 // Undefine some macros defined by Arduino
@@ -26,12 +24,10 @@
 #undef min
 #undef max
 
-#include <vector>
 #include <stdint.h>
 #include <ostream>
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
 class Simulator;
   
@@ -43,97 +39,51 @@ class MouseReport : public Report_ {
       
       typedef HID_MouseReport_Data_t ReportDataType;
       
-      static constexpr uint8_t hid_report_type_ = HID_REPORTID_MOUSE;
-      
-      /// @brief Default consturctor.
-      /// @details Creates an empty report.
-      ///
-      MouseReport();
-      
-      /// @brief Constructs based on a raw pointer to report data.
-      /// @details Only use this if you know what you are doning!
-      /// @param data The address where the report data starts.
-      ///
-      MouseReport(const void *data);
-      
-      /// @brief Constructs based on a report data object.
-      /// @param report_data The report data object to read.
-      ///
-      MouseReport(const HID_MouseReport_Data_t &report_data);
-      
-      /// @brief Checks equality with another report.
-      /// @param other Another report to compare with.
-      /// @returns [bool] True if both reports are equal.
-      ///
-      bool operator==(const MouseReport &other) const;
+      static constexpr uint8_t type_ = MouseReportType;
       
       /// @brief Checks if a set of buttons is pressed.
       /// @param button_state The state of the mouse buttons to check.
       /// @returns True if the button state matches the given one.
       ///
-      bool areButtonsPressed(uint8_t button_state) const;
+      virtual bool areButtonsPressed(uint8_t button_state) const = 0
       
       /// @brief Queries if the left button is pressed.
       /// @returns True if the left button is pressed.
       ///
-      bool isLeftButtonPressed() const; 
+      virtual bool isLeftButtonPressed() const = 0;
       
       /// @brief Queries if the middle button is pressed.
       /// @returns True if the middle button is pressed.
       ///
-      bool isMiddleButtonPressed() const;  
+      virtual bool isMiddleButtonPressed() const = 0;
       
       /// @brief Queries if the right button is pressed.
       /// @returns True if the right button is pressed.
       ///
-      bool isRightButtonPressed() const;
+      virtual bool isRightButtonPressed() const = 0;
       
       /// @brief Queries the x-movement stored in the report.
       /// @returns The x-movement.
       ///
-      int8_t getXMovement() const;
+      virtual int8_t getXMovement() const = 0;
       
       /// @brief Queries the y-movement stored in the report.
       /// @returns The y-movement.
       ///
-      int8_t getYMovement() const;
+      virtual int8_t getYMovement() const = 0;
       
       /// @brief Queries the verical wheel movement.
       /// @returns The vertical wheel movement.
       ///
-      int8_t getVerticalWheel() const;  
+      virtual int8_t getVerticalWheel() const = 0;
       
       /// @brief Queries the horizontal wheel movement.
       /// @returns The horizontal wheel movement.
       ///
-      int8_t getHorizontalWheel() const;
-          
-      /// @brief Checks if the report is empty.
-      /// @details Empty means that no buttons are active and
-      ///        no motion or wheel activity is present.
-      ///
-      virtual bool isEmpty() const override;
-      
-      /// @brief Writes a formatted representation of the keyboard report 
-      ///        to the simulator's log stream.
-      /// @param add_indent An additional indentation string.
-      ///
-      virtual void dump(const Simulator &simulator, const char *add_indent = "") const override;
-      
-      /// @brief Associates the object with new report data.
-      /// @param report_data The new report data struct.
-      ///
-      void setReportData(const HID_MouseReport_Data_t &report_data);
-      
-      const HID_MouseReport_Data_t& getReportData() const { return report_data_; }
-      
+      virtual int8_t getHorizontalWheel() const = 0;
+               
       static const char *typeString() { return "mouse"; }
-      virtual const char *getTypeString() const override { return typeString(); }
-      
-   private:
-   
-      HID_MouseReport_Data_t report_data_;
+      virtual const char *getTypeString() const override { return typeString(); }_;
 };
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

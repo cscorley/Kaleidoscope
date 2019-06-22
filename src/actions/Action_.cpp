@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,8 +19,7 @@
 #include "aux/demangle.h"
 #include "Simulator.h"
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
 
 void Action_::report(const char *add_indent) const 
 {
@@ -62,5 +60,4 @@ void Action_::describeState(const char *add_indent) const {
    }
 }
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio

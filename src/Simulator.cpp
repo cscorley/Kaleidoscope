@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,21 +20,13 @@
 #include "actions/Action_.h"
 #include "aux/WallTimer.h"
 
-#include "Kaleidoscope.h"
-#include "kaleidoscope/hid.h"
-#include "MultiReport/Keyboard.h"
-#include "HIDReportObserver.h"
-
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <thread>
 #include <mutex>
 
-namespace kaleidoscope {
-namespace simulator {
-   
-unsigned long millis = 0;
+namespace papilio {
 
 // Explicit template instanciations
 //
@@ -252,21 +243,19 @@ Simulator::~Simulator() {
    }
 }
 
-using namespace kaleidoscope::hardware;
-
 void Simulator::pressKey(uint8_t row, uint8_t col) {
    this->log() << "+ Activating key (" << (unsigned)row << ", " << (unsigned)col << ")";
-   KeyboardHardware.setKeystate(row, col, Virtual::PRESSED);
+   simulator_core_->pressKey(row, col);
 }
 
 void Simulator::releaseKey(uint8_t row, uint8_t col) {
    this->log() << "+ Releasing key (" << (unsigned)row << ", " << (unsigned)col << ")";
-   KeyboardHardware.setKeystate(row, col, Virtual::NOT_PRESSED);
+   simulator_core_->releaseKey(row, col);
 }
 
 void Simulator::tapKey(uint8_t row, uint8_t col) {
    this->log() << "+- Tapping key (" << (unsigned)row << ", " << (unsigned)col << ")";
-   KeyboardHardware.setKeystate(row, col, Virtual::TAP);
+   simulator_core_->tapKey(row, col);
 }
 
 void Simulator::multiTapKey(int num_taps, uint8_t row, uint8_t col, 
@@ -380,9 +369,9 @@ void Simulator::advanceTimeTo(TimeType time)
    this->skipTimeInternal(delta_t);
 }
 
-void Simulator::initKeyboard() {
+void Simulator::init() {
    this->clearAllKeys();
-   kaleidoscope::hid::initializeKeyboard();
+   simulator_core_->init();
 }
 
 bool Simulator::checkStatus() {
@@ -422,7 +411,7 @@ void Simulator::headerText() {
    this->log() << "";
    this->log() << "################################################################################";
    this->log() << "";
-   this->log() << "Kaleidoscope-Simulator";
+   this->log() << "Papilio Keyboard Simulator";
    this->log() << "";
    this->log() << "author: noseglasses (https://github.com/noseglasses, shinynoseglasses@gmail.com)";
    this->log() << "";
@@ -484,7 +473,7 @@ void Simulator::cycleInternal(bool only_log_reports) {
    
    // Set the global simulator time.
    //
-   millis = time_;
+   simulator_core_->setTime(time_);
 
    ::loop();
    
@@ -498,8 +487,6 @@ void Simulator::cycleInternal(bool only_log_reports) {
    }
    
    time_ += cycle_duration_;
-   
-   //kaleidoscope.setMillis(time_)
    
    if(!queued_cycle_actions_.empty()) {
       this->log() << "Processing " << queued_cycle_actions_.size()
@@ -705,11 +692,4 @@ void Simulator::processHIDReport(uint8_t id, const void* data,
       default:
          simulator.error() << "Encountered unknown HID report with id = " << id;
    }
-}
-      
-} // namespace simulator
-} // namespace kaleidoscope
-
-unsigned long millis(void) {
-  return kaleidoscope::simulator::millis;
 }

@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
  * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope absolute mouse 
- *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -35,8 +34,7 @@
 // and /usr/share/X11/xkb/keycodes/evdev
 // for information of Linux and X11 keycodes 
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
    HostEventAction::HostEventAction()
       :  display_{XOpenDisplay(NULL)}
@@ -393,9 +391,7 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal()
    return true;
 }
    
-} // namespace simulator
-} // namespace kaleidoscope
-
+} // namespace papilio
 #else
 #error __CLANG_ATOMIC_LLONG_LOCK_FREE
 #endif

@@ -1,6 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
- *                         firmware.
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,7 +17,6 @@
 
 #pragma once
 
-#include "DeviceAPIs/AbsoluteMouseAPI.h"
 #include "reports/Report_.h"
 
 // Undefine some macros defined by Arduino
@@ -26,12 +24,10 @@
 #undef min
 #undef max
 
-#include <vector>
 #include <stdint.h>
 #include <ostream>
 
-namespace kaleidoscope {
-namespace simulator {
+namespace papilio {
    
 class Simulator;
   
@@ -41,100 +37,52 @@ class AbsoluteMouseReport : public Report_ {
    
    public:
       
-      typedef HID_MouseAbsoluteReport_Data_t ReportDataType;
-      
-      static constexpr uint8_t hid_report_type_ 
-            = HID_REPORTID_MOUSE_ABSOLUTE;
-      
-      static constexpr uint16_t max_x_coordinate = 32767;
-      static constexpr uint16_t max_y_coordinate = 32767;
-      
-      /// @brief Default consturctor.
-      /// @details Creates an empty report.
-      ///
-      AbsoluteMouseReport();
-      
-      /// @brief Constructs based on a raw pointer to report data.
-      /// @details Only use this if you know what you are doning!
-      /// @param data The address where the report data starts.
-      ///
-      AbsoluteMouseReport(const void *);
-      
-      /// @brief Constructs based on a report data object.
-      /// @param report_data The report data object to read.
-      ///
-      AbsoluteMouseReport(const ReportDataType &report_data);
-      
-      AbsoluteMouseReport &operator=(const AbsoluteMouseReport &other);
-      
-      /// @brief Checks equality with another report.
-      /// @param other Another report to compare with.
-      /// @returns [bool] True if both reports are equal.
-      ///
-      bool operator==(const AbsoluteMouseReport &other) const;
+      static constexpr uint8_t type_ 
+            = AbsoluteMouseReportType;
       
       /// @brief Checks if a set of buttons is pressed.
       /// @param button_state The state of the mouse buttons to check.
       /// @returns True if the button state matches the given one.
       ///
-      bool areButtonsPressed(uint8_t button_state) const;
+      virtual bool areButtonsPressed(uint8_t button_state) const = 0;
       
       /// @brief Queries if the left button is pressed.
       /// @returns True if the left button is pressed.
       ///
-      bool isLeftButtonPressed() const; 
+      virtual bool isLeftButtonPressed() const = 0;
       
       /// @brief Queries if the middle button is pressed.
       /// @returns True if the middle button is pressed.
       ///
-      bool isMiddleButtonPressed() const;  
+      virtual bool isMiddleButtonPressed() const = 0;
       
       /// @brief Queries if the right button is pressed.
       /// @returns True if the right button is pressed.
       ///
-      bool isRightButtonPressed() const;  
+      virtual bool isRightButtonPressed() const = 0;
       
       /// @brief Queries the absolute x-position.
       /// @returns The absolute x-position.
       ///
-      uint16_t getXPosition() const;
+      virtual uint16_t getXPosition() const = 0;
       
       /// @brief Queries the absolute y-position.
       /// @returns The absolute y-position.
       ///
-      uint16_t getYPosition() const;
+      virtual uint16_t getYPosition() const = 0;
             
-      /// @brief Queries the absolute wheel-position.
-      /// @returns The absolute wheel-position.
+      /// @brief Queries the verical wheel movement.
+      /// @returns The vertical wheel movement.
       ///
-      int8_t getWheelPosition() const;
-          
-      /// @brief Checks if the report is empty.
-      /// @details Empty means that no buttons are active and
-      ///        no motion or wheel activity is present.
+      virtual int8_t getVerticalWheel() const = 0;
+      
+      /// @brief Queries the horizontal wheel movement.
+      /// @returns The horizontal wheel movement.
       ///
-      virtual bool isEmpty() const override;
-      
-      /// @brief Writes a formatted representation of the keyboard report 
-      ///        to the simulator's log stream.
-      /// @param add_indent An additional indentation string.
-      ///
-      virtual void dump(const Simulator &simulator, const char *add_indent = "") const override;
-      
-      /// @brief Associates the object with new report data.
-      /// @param report_data The new report data struct.
-      ///
-      void setReportData(const ReportDataType &report_data);
-      
-      const ReportDataType& getReportData() const { return report_data_; }
-      
+      virtual int8_t getHorizontalWheel() const = 0;
+ 
       static const char *typeString() { return "absolute mouse"; }
       virtual const char *getTypeString() const override { return typeString(); }
-      
-   private:
-   
-      ReportDataType report_data_;
 };
 
-} // namespace simulator
-} // namespace kaleidoscope
+} // namespace papilio
