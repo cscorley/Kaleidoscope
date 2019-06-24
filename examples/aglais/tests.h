@@ -17,8 +17,8 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "Kaleidoscope-Simulator.h"
-#include "AglaisInterface.h"
+#include "papilio/src/Kaleidoscope-Simulator.h"
+#include "papilio/src/AglaisInterface.h"
 
 #include <iostream>
 #include <sstream>
@@ -46,7 +46,7 @@ void runSimulator(Simulator &simulator) {
 }
 
 const char aglais_test_recording[] =
-#include "IO_protocoll.agl"
+#include "papilio/src/IO_protocoll.agl"
 ;
 
 } // namespace papilio

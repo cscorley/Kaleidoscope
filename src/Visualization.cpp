@@ -15,9 +15,9 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Visualization.h"
-#include "Simulator.h"
-#include "aux/terminal_escape_sequences.h"
+#include "papilio/src/Visualization.h"
+#include "papilio/src/Simulator.h"
+#include "papilio/src/aux/terminal_escape_sequences.h"
 
 // Undef those stupid Arduino-macros conflicting with stl stuff
 //

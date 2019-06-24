@@ -15,10 +15,10 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Simulator.h"
-#include "ActionContainer_Impl.h"
-#include "actions/Action_.h"
-#include "aux/WallTimer.h"
+#include "papilio/src/Simulator.h"
+#include "papilio/src/ActionContainer_Impl.h"
+#include "papilio/src/actions/Action_.h"
+#include "papilio/src/aux/WallTimer.h"
 
 #include <iostream>
 #include <iomanip>

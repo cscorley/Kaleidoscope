@@ -15,9 +15,9 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "actions/Action_.h"
-#include "aux/demangle.h"
-#include "Simulator.h"
+#include "papilio/src/actions/Action_.h"
+#include "papilio/src/aux/demangle.h"
+#include "papilio/src/Simulator.h"
 
 namespace papilio {
 

@@ -15,7 +15,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
    
-#include "aux/demangle.h"
+#include "papilio/src/aux/demangle.h"
 #ifdef __GNUG__
 #include <cstdlib>
 #include <memory>

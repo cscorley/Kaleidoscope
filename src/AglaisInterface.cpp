@@ -15,10 +15,10 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AglaisInterface.h"
-#include "aglais/src/Aglais.h"
-#include "aglais/src/Consumer_.h"
-#include "actions/generic_report/AssertReportEquals.h"
+#include "papilio/src/AglaisInterface.h"
+#include "papilio/src/aglais/src/Aglais.h"
+#include "papilio/src/aglais/src/Consumer_.h"
+#include "papilio/src/actions/generic_report/AssertReportEquals.h"
 
 namespace papilio {
    

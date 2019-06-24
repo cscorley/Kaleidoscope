@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "reports/Report_.h"
+#include "papilio/src/reports/Report_.h"
 
 // Undefine some macros defined by Arduino
 //
@@ -33,7 +33,7 @@ class Simulator;
   
 /// @brief An interface hat facilitates analyzing absolute mouse reports.
 ///
-class AbsoluteMouseReport : public Report_ {
+class AbsoluteMouseReport_ : public Report_ {
    
    public:
       

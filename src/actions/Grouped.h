@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "Simulator.h"
-#include "actions/Action_.h"
-#include "actions/generic_report/ReportAction.h"
+#include "papilio/src/Simulator.h"
+#include "papilio/src/actions/Action_.h"
+#include "papilio/src/actions/generic_report/ReportAction.h"
 
 #include <vector>
 

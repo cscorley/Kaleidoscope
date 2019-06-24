@@ -15,12 +15,12 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "actions/generic_report/GenerateHostEvent.h"
-#include "reports/BootKeyboardReport.h"
-#include "reports/KeyboardReport.h"
-#include "reports/MouseReport.h"
-#include "reports/AbsoluteMouseReport.h"
-#include "Simulator.h"
+#include "papilio/src/actions/generic_report/GenerateHostEvent.h"
+#include "papilio/src/reports/BootKeyboardReport.h"
+#include "papilio/src/reports/KeyboardReport.h"
+#include "papilio/src/reports/MouseReport.h"
+#include "papilio/src/reports/AbsoluteMouseReport.h"
+#include "papilio/src/Simulator.h"
 
 #ifdef __unix__ /* __unix__ is usually defined by compilers targeting Unix systems */
 

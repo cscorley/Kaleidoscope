@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "reports/Report_.h"
+#include "papilio/src/reports/Report_.h"
 
 // Undefine some macros defined by Arduino
 //
@@ -32,26 +32,19 @@ namespace papilio {
    
 class Simulator;
   
-/// @brief An interface hat facilitates analyzing boot keyboard reports.
+/// @brief An interface hat facilitates analyzing keyboard reports.
 ///
-class BootKeyboardReport : public Report_ {
+class KeyboardReport_ : public Report_ {
    
    public:
       
-      static constexpr uint8_t type_ = BootKeyboardReportType;
+      static constexpr uint8_t type_ = KeyboardReportType;
       
       /// @brief Checks if a keycode is active in the keyboard report.
       /// @param keycode The keycode to check for.
       /// @returns [bool] True if the given keycode is active.
       ///
       virtual bool isKeycodeActive(uint8_t keycode) const = 0;
-      
-      /// @brief Checks if the keycode of a given Key is active in the keyboard report.
-      /// @details Please note that the flags part of the Key is ignored.
-      /// @param key The Key whose keycode to check for.
-      /// @returns [bool] True if the given Key's keycode is active.
-      ///
-      virtual bool isKeyActive(const Key &key) const = 0;
       
       /// @brief Retreives a list of all keycodes that are active in the
       ///        keyboard report.
@@ -86,8 +79,8 @@ class BootKeyboardReport : public Report_ {
       /// @returns A list of active modifier keycodes.
       ///
       virtual std::vector<uint8_t> getActiveModifiers() const = 0;
-            
-      static const char *typeString() { return "boot keyboard"; }
+      
+      static const char *typeString() { return "keyboard"; }
       virtual const char *getTypeString() const override { return typeString(); }
 };
 

@@ -15,7 +15,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "aux/WallTimer.h"
+#include "papilio/src/aux/WallTimer.h"
 
 namespace papilio {
       

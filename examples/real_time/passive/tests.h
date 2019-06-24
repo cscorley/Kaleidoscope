@@ -17,9 +17,9 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "Kaleidoscope-Simulator.h"
-#include "aux/terminal_escape_sequences.h"
-#include "vendors/keyboardio/model01.h"
+#include "papilio/src/Kaleidoscope-Simulator.h"
+#include "papilio/src/aux/terminal_escape_sequences.h"
+#include "papilio/src/vendors/keyboardio/model01.h"
 
 #include <iostream>
    

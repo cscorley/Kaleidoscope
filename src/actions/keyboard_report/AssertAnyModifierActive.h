@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "actions/generic_report/ReportAction.h"
+#include "papilio/src/actions/generic_report/ReportAction.h"
 
 namespace papilio {
 namespace actions {

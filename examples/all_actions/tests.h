@@ -17,8 +17,8 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "Kaleidoscope-Simulator.h"
-#include "vendors/keyboardio/model01.h"
+#include "papilio/src/Kaleidoscope-Simulator.h"
+#include "papilio/src/vendors/keyboardio/model01.h"
    
 KALEIDOSCOPE_SIMULATOR_INIT
 

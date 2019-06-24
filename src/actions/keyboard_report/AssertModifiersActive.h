@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "actions/generic_report/ReportAction.h"
-#include "aux/keycodes.h"
+#include "papilio/src/actions/generic_report/ReportAction.h"
+#include "papilio/src/aux/keycodes.h"
 
 #include <algorithm>
 

@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "ActionContainer.h"
-#include "actions/Grouped.h"
-#include "aux/demangle.h"
+#include "papilio/src/ActionContainer.h"
+#include "papilio/src/actions/Grouped.h"
+#include "papilio/src/aux/demangle.h"
 
 // Undefine some macros that are defined by Arduino
 #undef min

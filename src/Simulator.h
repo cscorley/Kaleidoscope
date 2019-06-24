@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "ActionContainer.h"
-#include "ActionQueueAdaptor.h"
-#include "reports/BootKeyboardReport.h"
-#include "reports/KeyboardReport.h"
-#include "reports/MouseReport.h"
-#include "reports/AbsoluteMouseReport.h"
-#include "actions/generic_report/ReportAction.h"
+#include "papilio/src/ActionContainer.h"
+#include "papilio/src/ActionQueueAdaptor.h"
+#include "papilio/src/reports/BootKeyboardReport.h"
+#include "papilio/src/reports/KeyboardReport.h"
+#include "papilio/src/reports/MouseReport.h"
+#include "papilio/src/reports/AbsoluteMouseReport.h"
+#include "papilio/src/actions/generic_report/ReportAction.h"
 
 #include <vector>
 #include <functional>

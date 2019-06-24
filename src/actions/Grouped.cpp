@@ -15,8 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Grouped.h"
-#include "Simulator.h"
+#include "papilio/src/Grouped.h"
+#include "papilio/src/Simulator.h"
 
 namespace papilio {
 namespace actions {

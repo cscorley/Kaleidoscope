@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "actions/Action_.h"
-#include "reports/Report_.h"
+#include "papilio/src/actions/Action_.h"
+#include "papilio/src/reports/Report_.h"
 
 #include <cassert>
 

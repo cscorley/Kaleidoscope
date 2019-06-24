@@ -86,11 +86,11 @@ class SimulatorCore_
       ///
       /// param time The current simulation time.
       ///
-      void setTime(uint32_t time) = 0;
+      virtual void setTime(uint32_t time) = 0;
    
       /// @brief Retrieves a short descriptive string that describes
       ///        a keycode.
       ///
-      const char *keycodeToName(uint8_t keycode) = 0;
+      virtual const char *keycodeToName(uint8_t keycode) = 0;
    
 } // namespace papilio

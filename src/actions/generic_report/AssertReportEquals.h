@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "actions/generic_report/ReportAction.h"
-#include "Simulator.h"
+#include "papilio/src/actions/generic_report/ReportAction.h"
+#include "papilio/src/Simulator.h"
 
 namespace papilio {
 namespace actions {

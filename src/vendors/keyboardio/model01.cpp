@@ -15,7 +15,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vendors/keyboardio/model01.h"
+#include "papilio/src/vendors/keyboardio/model01.h"
 
 namespace papilio {
 namespace keyboardio {
