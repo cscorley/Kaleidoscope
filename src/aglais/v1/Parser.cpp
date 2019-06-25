@@ -18,9 +18,9 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "aglais/src/Consumer_.h"
-#include "aglais/src/v1/Parser.h"
-#include "aglais/src/v1/Grammar.h"
+#include "aglais/Consumer_.h"
+#include "aglais/v1/Parser.h"
+#include "aglais/v1/Grammar.h"
 
 #include <vector>
 #include <map>

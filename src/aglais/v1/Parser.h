@@ -20,7 +20,7 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
       
-#include "aglais/src/v1/Grammar.h"
+#include "aglais/v1/Grammar.h"
 
 #include <string>
 #include <istream>

@@ -18,8 +18,8 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "aglais/src/Aglais.h"
-#include "aglais/src/v1/Parser.h"
+#include "Aglais.h"
+#include "aglais/v1/Parser.h"
 
 #include <string.h>
 #include <sstream>

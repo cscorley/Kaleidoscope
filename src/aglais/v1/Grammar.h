@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "aglais/src/Aglais.h"
+#include "Aglais.h"
 
 #include <stdint.h>
 
