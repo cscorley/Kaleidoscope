@@ -15,35 +15,20 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
-
-#include "papilio/Kaleidoscope-Simulator.h"
-#include "papilio/aux/terminal_escape_sequences.h"
-
-#include <iostream>
-#include <ctime>
-   
-KALEIDOSCOPE_SIMULATOR_INIT
+#include "papilio/aux/WallTimer.h"
 
 namespace papilio {
-   
-void runSimulator(Simulator &simulator) {
-
-   // Loop cycle timing
-   auto begin = std::clock();
-   
-   static constexpr int n_cycles = 10000;
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
-   
-   simulator.cycles(n_cycles);
-
-   auto end = std::clock();
-   double elapsed_secs = double(end - begin)*inv_clocks_per_sec;
-   double elapsed_secs_per_cycle = elapsed_secs/n_cycles;
-   
-   simulator.log() << "elapsed [s]: " << elapsed_secs;
-   simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
+      
+void WallTimer::start()
+{
+   start_time_ = std::chrono::high_resolution_clock::now();
 }
 
+double WallTimer::elapsed()
+{
+   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
+   auto cur_time = std::chrono::high_resolution_clock::now();
+   return std::chrono::duration<double, std::milli>(cur_time-start_time_).count();
+}
+  
 } // namespace papilio
-#endif

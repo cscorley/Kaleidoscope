@@ -15,35 +15,24 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+#pragma once
 
-#include "papilio/Kaleidoscope-Simulator.h"
-#include "papilio/aux/terminal_escape_sequences.h"
-
-#include <iostream>
-#include <ctime>
-   
-KALEIDOSCOPE_SIMULATOR_INIT
+#include <stdint.h>
 
 namespace papilio {
    
-void runSimulator(Simulator &simulator) {
+class Simulator;
 
-   // Loop cycle timing
-   auto begin = std::clock();
-   
-   static constexpr int n_cycles = 10000;
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
-   
-   simulator.cycles(n_cycles);
+/// @brief Dumps the state of the key LEDs as C++ code
+///
+void dumpKeyLEDState(const Simulator &simulator);
 
-   auto end = std::clock();
-   double elapsed_secs = double(end - begin)*inv_clocks_per_sec;
-   double elapsed_secs_per_cycle = elapsed_secs/n_cycles;
+/// @brief Compares the current state of the key LEDs to a representation
+///        stored in an array.
+/// @param key_led_colors An array of key LED state data to compare the current
+///                       state with.
+///
+void assertKeyLEDState(const Simulator &simulator,
+                       const uint8_t key_led_colors[][3]);
    
-   simulator.log() << "elapsed [s]: " << elapsed_secs;
-   simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
-}
-
 } // namespace papilio
-#endif

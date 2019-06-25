@@ -294,7 +294,7 @@ constructor of a special `Custom...Action` class, e.g.
 
 ```cpp
 simulator.reportActionsQueue().queue(
-   CustomReportAction<KeyboardReport>{
+   CustomReportAction<KeyboardReport_>{
       [&](const KeyboardReport &kr) -> bool {
          simulator.log() << "Custom keyboard report action triggered";
          return true;

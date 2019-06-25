@@ -15,35 +15,15 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
-
-#include "papilio/Kaleidoscope-Simulator.h"
-#include "papilio/aux/terminal_escape_sequences.h"
-
-#include <iostream>
-#include <ctime>
-   
-KALEIDOSCOPE_SIMULATOR_INIT
+#pragma once
 
 namespace papilio {
+namespace terminal_escape_sequences {
    
-void runSimulator(Simulator &simulator) {
+constexpr char reset_formatting[] = "\x1B[0m";
+constexpr char underlined[] = "\x1B[4m";
+constexpr char clear_screen[] = "\033[2J\033[1;1H";
+constexpr char cursor_to_upper_left[] = "\x1B[0;0H";
 
-   // Loop cycle timing
-   auto begin = std::clock();
-   
-   static constexpr int n_cycles = 10000;
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
-   
-   simulator.cycles(n_cycles);
-
-   auto end = std::clock();
-   double elapsed_secs = double(end - begin)*inv_clocks_per_sec;
-   double elapsed_secs_per_cycle = elapsed_secs/n_cycles;
-   
-   simulator.log() << "elapsed [s]: " << elapsed_secs;
-   simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
-}
-
+} // namespace terminal_escape_sequences
 } // namespace papilio
-#endif

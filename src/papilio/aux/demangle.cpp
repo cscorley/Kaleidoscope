@@ -14,36 +14,37 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
-
-#include "papilio/Kaleidoscope-Simulator.h"
-#include "papilio/aux/terminal_escape_sequences.h"
-
-#include <iostream>
-#include <ctime>
    
-KALEIDOSCOPE_SIMULATOR_INIT
+#include "papilio/aux/demangle.h"
+#ifdef __GNUG__
+#include <cstdlib>
+#include <memory>
+#include <cxxabi.h>
+#endif
 
 namespace papilio {
    
-void runSimulator(Simulator &simulator) {
+#ifdef __GNUG__
 
-   // Loop cycle timing
-   auto begin = std::clock();
-   
-   static constexpr int n_cycles = 10000;
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
-   
-   simulator.cycles(n_cycles);
+std::string demangle(const char* name) {
 
-   auto end = std::clock();
-   double elapsed_secs = double(end - begin)*inv_clocks_per_sec;
-   double elapsed_secs_per_cycle = elapsed_secs/n_cycles;
-   
-   simulator.log() << "elapsed [s]: " << elapsed_secs;
-   simulator.log() << "cycle duration: " << elapsed_secs_per_cycle;
+    int status = -4; // some arbitrary value to eliminate the compiler warning
+
+    // enable c++11 by passing the flag -std=c++11 to g++
+    std::unique_ptr<char, void(*)(void*)> res {
+        abi::__cxa_demangle(name, NULL, NULL, &status),
+        std::free
+    };
+
+    return (status==0) ? res.get() : name ;
 }
 
-} // namespace papilio
+#else
+
+// does nothing if not g++
+std::string demangle(const char* name) {
+    return name;
+}
+
 #endif
+} // namespace papilio

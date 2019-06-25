@@ -17,8 +17,8 @@
 
 #ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
-#include "papilio/src/Kaleidoscope-Simulator.h"
-#include "papilio/src/vendors/keyboardio/model01.h"
+#include "papilio/Kaleidoscope-Simulator.h"
+#include "papilio/vendors/keyboardio/model01.h"
    
 KALEIDOSCOPE_SIMULATOR_INIT
 
@@ -195,7 +195,7 @@ void runSimulator(Simulator &simulator) {
       
       simulator.tapKey(3, 7); // left shift
       simulator.cycleExpectReports(
-         CustomReportAction<KeyboardReport>{
+         CustomReportAction<KeyboardReport_>{
             [&](const KeyboardReport &kr) -> bool {
                simulator.log() << "Custom keyboard report action triggered";
                return true;
@@ -266,7 +266,7 @@ void runSimulator(Simulator &simulator) {
                          }
       );
       
-      KT_ASSERT_CONDITION(simulator, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
+      PAPILIO_ASSERT_CONDITION(simulator, KeyboardHardware.getCrgbAt(0, 0).r == solid_red_level);
    }
    
    //***************************************************************************
