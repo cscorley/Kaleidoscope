@@ -1,34 +1,28 @@
-# Kaleidoscope-Simulator
+# Papilio
 
-A development, debugging and testing API for virtual Kaleidoscope firmware builds.
+A keyboard simulation framework.
 
-## Scope of this plugin
+## Scope of this project
 
-The scope of Kaleidoscope-Simulator is to provide an API that allows to bundle
-integration tests with the keyboard firmware sketch file.
-
-Tests are executed by a virtual firmware which is a firmware 
-build to run on the host platform, e.g. an x86 system, 
-rather than on the actual physical keyboard.
+The scope of Papilio is to provide an API that allows to simulate a keyboard firmware.
+The actual firmware is represented by a simulator core that is registered with the simulator.
+A simulator core typically is a firmware binary that is cross compiled for e.g. the x86 architecture.
 
 Most parts of the physical keyboard's internal states are also represented 
-in the simulated keyboard. Among those the current keymaps, LED states, EEPROM, ...
-For more information, see Kaleidoscope's documentation of virtual builds.
+in the simulated keyboard. Among those the current keymaps and LED states.
 
-Apart from integration testing, the supported testing-API is also 
+Apart from integration testing, the supported API is also 
 meant to be used as a development tool.
-When e.g. being used together with a debugger like `gdb`, Kaleidoscope-Simulator's 
+When e.g. being used together with a debugger like `gdb`, Papilio's 
 unique features can help to deal with complex error scenarios that are otherwise
 hard to debug with the firmware traditionally running on the device.
 
-Additionally, Kaleidoscope-Simulator comes with an ASCII 
+Additionally, Papilio comes with an ASCII 
 visualization of the keyboard covering keyboard keycodes and LED colors.
 
 ## A brief example
 
-The following code snipped could be added to Kaleidoscope's stock
-firmware sketch file (****.ino) to run
-a very simple firmware test.
+The following code snipped is an example that demonstrates how Papilio is used by [Kaleidoscope-Simulator](https://github.com/CapeLeidokos/Kaleidoscope-Testing.git) within an Arduino firmware sketch.
 
 ```cpp
 // ... at end of the firmware file
@@ -43,8 +37,10 @@ namespace kaleidoscope {
 namespace simulator {
    
 void runSimulator(Simulator &simulator) {
-   
-   using namespace actions;
+
+   using namespace kaleidoscope::simulator::actions;
+   using namespace papilio::actions;
+   using namespace papilio;
 
    auto test = simulator.newTest("A simple test");
 
@@ -65,7 +61,7 @@ void runSimulator(Simulator &simulator) {
 #endif
 ```
 
-This very simple test checks if a keycode for the letter 'a' is present in a keyboard
+This very simple test checks if a keycode for the letter 'a' (defined as `Key_A` by the Kaleidoscope firmware) is present in a keyboard
 report that is generated as a reaction on a key at matrix position (row = 2, col = 1) being tapped 
 (pressed and immediately released). 
 
@@ -76,91 +72,13 @@ Although a very simple test, it could already catch multiple types
 of firmware programming issues, among those keymapping problems or reports accidentally not being
 generated.
 
-## A simple test in greater detail
-
-Let's look again at the above example, now with focus on the way the test is
-defined using Kaleidoscope-Simulator's API. 
-
-We will walk through the test line by line.
-
-First, we have to make sure that the compiler only sees our test in virtual firmware
-builds. This is important as the simulator API can not be used in actual 
-firmware builds for the target platform. That's because most target platforms resources
-are simply too limited.
-
-```cpp
-#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
-```
-
-Next, we bring the simulator API into scope.
-
-```cpp
-#include "Kaleidoscope-Simulator.h"
-```
-
-It is good custom to define code in namespaces to avoid symbol naming conflicts.
-
-```cpp
-namespace kaleidoscope {
-namespace simulator {
-```
-
-The test method as the standardized name `runTest` and a pre-defined signature.
-You are free to structure your tests if necessary by introducing additional
-test methods which can be called from `runSimulator(...)`. Please note that the `Simulator` object
-is the central object in simulation and testing. It e.g. coordinates timing and action handling.
-
-```cpp
-void runSimulator(Simulator &simulator) {
-```
-   
-The `using` statement is for mere convenience as all action classes live in namespace 
-`actions`. Otherwise we would need to write `actions::AssertKeycodesActive{Key_A}`
-instead of the more concise `AssertKeycodesActive{Key_A}`.
-
-```cpp
-   using namespace actions;
-```
-
-Next, we generate a test object. 
-It's only purpose lies in its lifetime that is defined by the scope where
-it is generated. It serves to group simulation and testing instructions and checks
-if a set of actions that are associated with a test are valid.
-
-```cpp
-   auto test = simulator.newTest("A simple test");
-```
-
-Tap a key at a given matrix position.
-
-```cpp
-   simulator.tapKey(2, 1); // (row = 2, col = 1) -> A
-```
-
-Finally, we run a scan cycle. This will call Arduinos `loop()`
-function under the hood. During this scan cycle the keyboard matrix
-is checked for keys being pressed or released. That is when our key at
-position (2, 1) is detected as having been tapped and a keyboard report is 
-issued. We pass an action `AssertKeycodesActive` that will check if key 'a' is active 
-in the generated keyboard report.
-
-```cpp
-   simulator.cycleExpectReports(AssertKeycodesActive{Key_A});
-```
-
-That's it. Close scopes and terminate the `#ifdef KALEIDOSCOPE_VIRTUAL_BUILD`.
-
-```cpp
-}
-} // namespace simulator
-} // namespace kaleidoscope
-
-#endif
-```
+See the documentation of [Kaleidoscope-Simulator](https://github.com/CapeLeidokos/Kaleidoscope-Testing.git)
+for more information about this example and about how Papilio can be used
+to test a firmware.
 
 ## Actions
 
-Actions are probably the most important aspect of Kaleidoscope-Simulators
+Actions are probably the most important aspect of Papilio's
 API. They are boolean conditions that are evaluated at specific
 points during the firmware simulation. If an action fails, an error
 message is produced and the test is considered as unsuccessfull.
@@ -205,10 +123,11 @@ and cycles. Please, check out the methods
 Simulator::reportActionsQueue()
 Simulator::cycleActionsQueue()
 
+Simulator::permanentBootKeyboardReportActions()
 Simulator::permanentKeyboardReportActions()
-
 Simulator::permanentMouseReportActions()
 Simulator::permanentAbsoluteMouseReportActions()
+
 Simulator::permanentReportActions()
 
 Simulator::permanentCycleActions()
@@ -295,7 +214,7 @@ constructor of a special `Custom...Action` class, e.g.
 ```cpp
 simulator.reportActionsQueue().queue(
    CustomReportAction<KeyboardReport_>{
-      [&](const KeyboardReport &kr) -> bool {
+      [&](const KeyboardReport_ &kr) -> bool {
          simulator.log() << "Custom keyboard report action triggered";
          return true;
       }
@@ -303,7 +222,7 @@ simulator.reportActionsQueue().queue(
 );
 ```
 
-**Note:** The template parameter `<KeyboardReport>` informs the action about what type of report to expect. The same would work with `<MouseReport>`, `<AbsoluteMouseReport>` and `<Report_>`. The latter for accessing any type of report.
+**Note:** The template parameter `<KeyboardReport_>` informs the action about what type of report to expect. The same would work with `<BootKeyboardReport_>`,  `<MouseReport_>`, `<AbsoluteMouseReport_>` and `<Report_>`. The latter for accessing any type of report.
 
 The lambda function in this example actually doesn't evaluate 
 any specific condition (the action returns the constant `true`).
@@ -493,7 +412,7 @@ in the log output.
 
 ## Verifying LED states
 
-Kaleidoscope-Simulator comes with functions that help integration testing of 
+Papilio comes with functions that help integration testing of 
 LED modes.
 
 During a reference run the function `dumpKeyLEDState()` may be used 
@@ -510,7 +429,7 @@ time during future test-runs.
 During development and when debugging it may be of great help to visualize
 what the actual keyboard would do, especially when it comes to LED effects.
 
-Kaleidoscope-Simulator allows to display an ASCII-text representation of the
+Papilio allows to display an ASCII-text representation of the
 keyboard via the `renderKeyboard(...)` function.
 
 This function is passed a string that is a template of the actual keyboard.
@@ -534,7 +453,7 @@ renderKeyboard(simulator, keyboardio::model01::ascii_keyboard);
 
 ### Realtime simulation
 
-Kaleidoscope-Simulator can simulate the
+Papilio can simulate the
 keyboard in realtime. Realtime means that the simulator runs approximately at
 the same speed as the real keyboard hardware would run.
 
@@ -558,9 +477,9 @@ to ensure that the resulting cycle times are as expected.
 #### `runRemoteControlled(...)`
 
 In this mode of operation, the simulator reads keyswitch information from stdin at the 
-beginning of every cycle. Keyswitch activation information is typically generated by the
+beginning of every cycle. Keyswitch activation information is typically generated by a suitable plugin running on the device, e.g.
 [Kaleidoscope-Simulator-Control](https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Control)
-plugin running on the device. That way it is possible to use the physical 
+for a Kaleidoscope driven firmware. That way it is possible to use the physical 
 keyboard to generate realtime keyswitch input for the simulator.
 
 The simulator waits for new input to arrive at the beginning of each cycle.
@@ -612,54 +531,13 @@ void runSimulator(Simulator &simulator) {
 With this approach it is more convenient to temporarily enable/disable
 tests by uncommenting/commenting the individual test function invokations.
 
-## Test recording with Aglais
-
-[Aglais](https://github.com/CapeLeidokos/Aglais.git) is an I/O recorder data format, 
-a library and a set of tools for USB-HID reporting keyboards.
-It interfaces nicely with Kaleidoscope-Simulator.
-
-Using Aglais, Kaleidoscope-Simulator can replay a session that was 
-recorded on the original physical keyboard. Any key-action 
-as well as all relevant HID report information is recorded with its exact timing.
-
-The idea behind this approach is that it is much more convenient to
-record a sample session on the original keyboard and use it for testing,
-than defining (programming) complex testing setups. This makes testing
-sophisticated plugins like Qukeys or One-Shot much more convenient.
-
-A test is allowed to pass only when the exact sequence and timing of HID
-reports generated by the simulator match those of the physical keyboard
-during the recorded run. Only 100% equivalence is acceptable.
-
-To record Aglais data-sets (documents), a dedicated 
-Kaleidoscope plugin [Kaleidoscope-Simulator-Recorder](https://github.com/CapeLeidokos/Kaleidoscope-Simulator-Recorder.git) exists.
-See the examples in its `examples` folder to find out how
-it is used with a firmware sketch.
-
-**Important:** Always take care that the configuration of the firmware
-that is used for recording matches the firmware that is later running in
-the simulator.
-
-## Examples
-
-There are several examples demonstrating Kaleidoscope-Simulator's features
-and how to use the API. All examples reside in the `examples` directory tree.
-
-To run an example, enter the following in your console window.
-
-```
-cd examples
-
-make <relative path to subdirectory containing a tests.h file>
-```
-
 ## Doxygen documentation
 
-To generate Kaleidoscope-Simulator's API documentation with [doxygen](http://doxygen.nl/)
+To generate Papilio's API documentation with [doxygen](http://doxygen.nl/)
 make sure doxygen is installed on you unixoid system (GNU/Linux & macOS) and run
 
 ```
 make doc
 ```
 
-in the root directory of plugin Kaleidoscope-Simulator.
+in the root directory of Papilio.

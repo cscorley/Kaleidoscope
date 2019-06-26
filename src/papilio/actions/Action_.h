@@ -37,7 +37,7 @@ class VoidReport {};
 /// @details This abstract class serves as base class for any
 ///        actions.
 ///
-///        **Important:** This class is not part of Kaleidoscope-Simulator's 
+///        **Important:** This class is not part of Papilio's 
 ///                   public API. It is meant for internal use only.
 ///
 class Action_ {

@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope absolute mouse 
+ * Papilio - A keyboard simulation framework 
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -28,7 +28,7 @@ namespace papilio {
 /// @details This abstract class serves as base class for any
 ///        report actions.
 ///
-///        **Important:** This class is not part of Kaleidoscope-Simulator's 
+///        **Important:** This class is not part of Papilio's 
 ///                   public API. It is meant for internal use only.
 ///
 class ReportAction_ : public Action_
@@ -58,7 +58,7 @@ class ReportAction_ : public Action_
    
 /// @brief A report action.
 ///
-///        **Important:** This class is not part of Kaleidoscope-Simulator's 
+///        **Important:** This class is not part of Papilio's 
 ///                   public API. It is meant for internal use only.
 ///
 template<typename _ReportType>
