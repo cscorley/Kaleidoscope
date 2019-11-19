@@ -47,8 +47,13 @@ class KeyboardRenderer
          using namespace terminal_escape_sequences;
          
          uint8_t red = 0, green = 0, blue = 0;
+         
+         uint8_t rows, cols;
+         simulator_core_.getKeyMatrixDimensions(rows, cols);
+         
+         uint8_t led_id = row*cols + col;
             
-         simulator_core_.getCurrentKeyLEDColor(row, col, red, green, blue);
+         simulator_core_.getCurrentKeyLEDColor(led_id, red, green, blue);
          
          int col_norm = red*red + green*green + blue*blue;
          

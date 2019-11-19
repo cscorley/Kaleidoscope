@@ -62,16 +62,21 @@ class SimulatorCore_
       ///
       virtual bool isKeyPressed(uint8_t row, uint8_t col) const = 0;
       
+      /// @brief Retrieves the numbers of LEDs
+      ///
+      /// @returns The number of LEDs
+      //
+      virtual uint8_t getNumLEDs() const = 0;
+      
       /// @brief Retreives the current key LED color.
       ///
-      /// @param[in] row The row index of the key.
-      /// @param[in] col The column index of the key.
+      /// @param[in] i The LED index.
       ///
       /// @param[out] red The red color portion. 
       /// @param[out] green The green color portion. 
       /// @param[out] blue The blue color portion.
       ///
-      virtual void getCurrentKeyLEDColor(uint8_t row, uint8_t col, 
+      virtual void getCurrentKeyLEDColor(uint8_t i, 
                                   uint8_t &red, uint8_t &green, uint8_t &blue) const = 0;
                           
       /// @brief The current label of the key.
