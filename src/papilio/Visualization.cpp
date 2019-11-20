@@ -51,9 +51,9 @@ class KeyboardRenderer
          uint8_t rows, cols;
          simulator_core_.getKeyMatrixDimensions(rows, cols);
          
-         uint8_t led_id = row*cols + col;
+         uint8_t key_offset = row*cols + col;
             
-         simulator_core_.getCurrentKeyLEDColor(led_id, red, green, blue);
+         simulator_core_.getCurrentKeyLEDColor(key_offset, red, green, blue);
          
          int col_norm = red*red + green*green + blue*blue;
          
