@@ -76,8 +76,10 @@ class SimulatorCore_
       /// @param[out] green The green color portion. 
       /// @param[out] blue The blue color portion.
       ///
-      virtual void getCurrentKeyLEDColor(uint8_t i, 
-                                  uint8_t &red, uint8_t &green, uint8_t &blue) const = 0;
+      virtual void getCurrentKeyLEDColor( uint8_t key_offset, 
+                                          uint8_t &red, 
+                                          uint8_t &green, 
+                                          uint8_t &blue) const = 0;
                           
       /// @brief The current label of the key.
       /// @details This is what describes briefly (few characters) what the
