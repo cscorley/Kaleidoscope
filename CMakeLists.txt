@@ -2,14 +2,15 @@ project(Aglais LANGUAGES CXX)
 cmake_minimum_required(VERSION 2.7)
 
 include_directories(
+   "${CMAKE_SOURCE_DIR}"
    "${CMAKE_SOURCE_DIR}/.."
    "src"
    "src/v1"
 )
 
 set(aglais_src
-   "src/Aglais.cpp"
-   "src/v1/Parser.cpp"
+   "src/aglais/Aglais.cpp"
+   "src/aglais/v1/Parser.cpp"
 )
 
 set_source_files_properties(${aglais_src} PROPERTIES COMPILE_DEFINITIONS "KALEIDOSCOPE_VIRTUAL_BUILD=1")
