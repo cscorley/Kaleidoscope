@@ -1,4 +1,0 @@
-BOARD_HARDWARE_PATH="/home/algernon/Arduino/hardware" /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/bin//kaleidoscope-builder build-all
-Building ./Classic 0.0.0 into /tmp/kaleidoscope-algernon/sketch/4386599-Classic.ino/output...
-- Size: firmware/Classic/Classic-0.0.0.elf
-make: *** [/home/algernon/Arduino/hardware/keyboardio/avr/build-tools/makefiles//rules.mk:80: build-all] Error 1
