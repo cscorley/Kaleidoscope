@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -21,99 +21,87 @@
 
 namespace kaleidoscope {
 namespace simulator {
-   
-   AbsoluteMouseReport::AbsoluteMouseReport()
-   :  report_data_{}
-{
+
+AbsoluteMouseReport::AbsoluteMouseReport()
+  :  report_data_{} {
 }
 
-   AbsoluteMouseReport::AbsoluteMouseReport(const AbsoluteMouseReport::ReportDataType &report_data)
-{
-   this->setReportData(report_data);
+AbsoluteMouseReport::AbsoluteMouseReport(const AbsoluteMouseReport::ReportDataType &report_data) {
+  this->setReportData(report_data);
 }
 
-AbsoluteMouseReport &AbsoluteMouseReport::operator=(const AbsoluteMouseReport &other)
-{
-   if(this == &other) { return *this; }
-   
-   this->setReportData(other.report_data_);
-   
-   return *this;
+AbsoluteMouseReport &AbsoluteMouseReport::operator=(const AbsoluteMouseReport &other) {
+  if (this == &other) {
+    return *this;
+  }
+
+  this->setReportData(other.report_data_);
+
+  return *this;
 }
 
-   AbsoluteMouseReport::AbsoluteMouseReport(const void *data)
-{
-   const ReportDataType &report_data
-            = *static_cast<const ReportDataType *>(data);
-   
-   this->setReportData(report_data);
+AbsoluteMouseReport::AbsoluteMouseReport(const void *data) {
+  const ReportDataType &report_data
+    = *static_cast<const ReportDataType *>(data);
+
+  this->setReportData(report_data);
 }
 
-std::shared_ptr<papilio::Report_> AbsoluteMouseReport::clone() const
-{
-   return std::shared_ptr<papilio::Report_>{ new AbsoluteMouseReport{*this} };
+std::shared_ptr<papilio::Report_> AbsoluteMouseReport::clone() const {
+  return std::shared_ptr<papilio::Report_> { new AbsoluteMouseReport{*this} };
 }
 
-bool AbsoluteMouseReport::equals(const papilio::Report_ &other) const
-{
-   const AbsoluteMouseReport *other_amr =
-      dynamic_cast<const AbsoluteMouseReport *>(&other);
-      
-   if(!other_amr) { return false; }
-   
-   return memcmp(&report_data_, &other_amr->report_data_, sizeof(report_data_)) == 0;
+bool AbsoluteMouseReport::equals(const papilio::Report_ &other) const {
+  const AbsoluteMouseReport *other_amr =
+    dynamic_cast<const AbsoluteMouseReport *>(&other);
+
+  if (!other_amr) {
+    return false;
+  }
+
+  return memcmp(&report_data_, &other_amr->report_data_, sizeof(report_data_)) == 0;
 }
 
-bool AbsoluteMouseReport::areButtonsPressed(uint8_t button_state) const
-{
-   return report_data_.buttons == button_state;
+bool AbsoluteMouseReport::areButtonsPressed(uint8_t button_state) const {
+  return report_data_.buttons == button_state;
 }
 
-bool AbsoluteMouseReport::isLeftButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_LEFT;
-} 
-
-bool AbsoluteMouseReport::isMiddleButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_MIDDLE;
-}  
-
-bool AbsoluteMouseReport::isRightButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_RIGHT;
+bool AbsoluteMouseReport::isLeftButtonPressed() const {
+  return report_data_.buttons & MOUSE_LEFT;
 }
 
-uint16_t AbsoluteMouseReport::getXPosition() const
-{
-   return report_data_.xAxis;
+bool AbsoluteMouseReport::isMiddleButtonPressed() const {
+  return report_data_.buttons & MOUSE_MIDDLE;
 }
 
-uint16_t AbsoluteMouseReport::getYPosition() const
-{
-   return report_data_.yAxis;
+bool AbsoluteMouseReport::isRightButtonPressed() const {
+  return report_data_.buttons & MOUSE_RIGHT;
 }
 
-int8_t AbsoluteMouseReport::getVerticalWheel() const
-{
-   return report_data_.wheel;
+uint16_t AbsoluteMouseReport::getXPosition() const {
+  return report_data_.xAxis;
 }
 
-int8_t AbsoluteMouseReport::getHorizontalWheel() const
-{
-   return 0;
+uint16_t AbsoluteMouseReport::getYPosition() const {
+  return report_data_.yAxis;
 }
 
-bool AbsoluteMouseReport::isEmpty() const
-{
-   return (report_data_.buttons == 0)
-       && (report_data_.xAxis == 0)
-       && (report_data_.yAxis == 0)
-       && (report_data_.wheel == 0);
+int8_t AbsoluteMouseReport::getVerticalWheel() const {
+  return report_data_.wheel;
 }
 
-void AbsoluteMouseReport::dump(const papilio::Simulator &simulator, const char *add_indent) const
-{
+int8_t AbsoluteMouseReport::getHorizontalWheel() const {
+  return 0;
+}
+
+bool AbsoluteMouseReport::isEmpty() const {
+  return (report_data_.buttons == 0)
+         && (report_data_.xAxis == 0)
+         && (report_data_.yAxis == 0)
+         && (report_data_.wheel == 0);
+}
+
+void AbsoluteMouseReport::dump(const papilio::Simulator &simulator, const char *add_indent) const {
   simulator.log() << add_indent << "Absolute mouse report content:";
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
@@ -123,9 +111,8 @@ void AbsoluteMouseReport::dump(const papilio::Simulator &simulator, const char *
   simulator.log() << add_indent << "  wheel position: " << (int)this->getVerticalWheel();
 }
 
-void AbsoluteMouseReport::setReportData(const AbsoluteMouseReport::ReportDataType &report_data)
-{
-   memcpy(&report_data_, &report_data, sizeof(report_data_));
+void AbsoluteMouseReport::setReportData(const AbsoluteMouseReport::ReportDataType &report_data) {
+  memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
 
 } // namespace simulator

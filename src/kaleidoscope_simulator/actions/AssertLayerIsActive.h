@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -25,49 +25,49 @@
 namespace kaleidoscope {
 namespace simulator {
 namespace actions {
-   
+
 /// @brief Asserts that a given layer is active.
 ///
 class AssertLayerIsActive {
-   
+
+ public:
+
+  /// @brief Constructor.
+  /// @param layer_id The id of the layer that must be active for
+  ///        the action to pass.
+  ///
+  AssertLayerIsActive(int layer_id)
+    : AssertLayerIsActive(DelegateConstruction{}, layer_id)
+  {}
+
+ private:
+
+  class Action : public papilio::Action_ {
+
    public:
-      
-      /// @brief Constructor.
-      /// @param layer_id The id of the layer that must be active for
-      ///        the action to pass.
-      ///
-      AssertLayerIsActive(int layer_id) 
-         : AssertLayerIsActive(DelegateConstruction{}, layer_id) 
-      {}
-   
+
+    Action(int layer_id) : layer_id_(layer_id) {}
+
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
+    }
+
+    virtual bool evalInternal() override {
+      return Layer.isActive((uint8_t)layer_id_);
+    }
+
    private:
-      
-      class Action : public papilio::Action_ {
-   
-         public:
 
-            Action(int layer_id) : layer_id_(layer_id) {}
+    int layer_id_;
+  };
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " expected to be active";
-            }
-
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Layer " << layer_id_ << " is active: " << Layer.isActive((uint8_t)layer_id_);
-            }
-
-            virtual bool evalInternal() override {
-               return Layer.isActive((uint8_t)layer_id_);
-            }
-            
-         private:
-            
-            int layer_id_;
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertLayerIsActive)
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertLayerIsActive)
 };
-   
+
 } // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope

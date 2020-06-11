@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -23,33 +23,33 @@
 
 #include <iostream>
 #include <sstream>
-   
+
 KALEIDOSCOPE_SIMULATOR_INIT
 
 namespace kaleidoscope {
 namespace simulator {
-   
+
 extern const char aglais_test_recording[];
-   
+
 void runSimulator(Simulator &simulator) {
-   
-   using namespace actions;
-   
-   //simulator.setQuiet();
-   
-   auto test = simulator.newTest("Aglais test");
-      
+
+  using namespace actions;
+
+  //simulator.setQuiet();
+
+  auto test = simulator.newTest("Aglais test");
+
 //    simulator.permanentBootKeyboardReportActions().add(GenerateHostEvent<BootKeyboardReport>{});
 //    simulator.permanentKeyboardReportActions().add(GenerateHostEvent<KeyboardReport>{});
 //    simulator.permanentMouseReportActions().add(GenerateHostEvent<MouseReport>{});
 //    simulator.permanentAbsoluteMouseReportActions().add(GenerateHostEvent<AbsoluteMouseReport>{});
 
-   processAglaisDocument(aglais_test_recording, simulator);
+  processAglaisDocument(aglais_test_recording, simulator);
 }
 
 const char aglais_test_recording[] =
 #include "IO_protocoll.agl"
-;
+  ;
 
 } // namespace simulator
 } // namespace kaleidoscope

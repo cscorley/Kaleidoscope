@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,28 +20,26 @@
 
 namespace papilio {
 namespace actions {
-   
-void Grouped<ReportAction_>::Action::determineGroupType()
-{
-   auto report_type_ = actions_[0]->getReportTypeId();
-   
-   for(const auto &action: actions_) {
-      
-      auto new_type = action->getReportTypeId();
-      
-      if(new_type != AnyTypeReportTypeId) {
-         if(report_type_ == AnyTypeReportTypeId) {
-            report_type_ = new_type;
-         }
-         else if(report_type_ != new_type) {
-            this->getSimulator()->error()
-               << "Error grouping report actions. Trying to group non-generic actions of different type";
-            actions_.clear();
-            report_type_ = AnyTypeReportTypeId;
-            break;
-         }
+
+void Grouped<ReportAction_>::Action::determineGroupType() {
+  auto report_type_ = actions_[0]->getReportTypeId();
+
+  for (const auto &action : actions_) {
+
+    auto new_type = action->getReportTypeId();
+
+    if (new_type != AnyTypeReportTypeId) {
+      if (report_type_ == AnyTypeReportTypeId) {
+        report_type_ = new_type;
+      } else if (report_type_ != new_type) {
+        this->getSimulator()->error()
+            << "Error grouping report actions. Trying to group non-generic actions of different type";
+        actions_.clear();
+        report_type_ = AnyTypeReportTypeId;
+        break;
       }
-   }
+    }
+  }
 }
 } // namespace actions
 } // namespace papilio

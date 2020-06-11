@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,43 +25,43 @@ namespace actions {
 /// @brief Asserts that the current report is the nth report in the current cycle.
 ///
 class AssertReportIsNthInCycle {
-   
+
+ public:
+
+  /// @brief Constructor.
+  /// @param report_id The id of the report to check against.
+  ///
+  AssertReportIsNthInCycle(int report_id)
+    : AssertReportIsNthInCycle(DelegateConstruction{}, report_id)
+  {}
+
+ private:
+
+  class Action : public ReportAction_ {
+
    public:
-      
-      /// @brief Constructor.
-      /// @param report_id The id of the report to check against.
-      ///
-      AssertReportIsNthInCycle(int report_id)
-         : AssertReportIsNthInCycle(DelegateConstruction{}, report_id)
-      {}
-      
+
+    Action(int report_id) : report_id_(report_id) {}
+
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Report " << report_id_ << ". in cycle";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Report is "
+                                  << this->getSimulator()->getNumReportsInCycle() << ". in cycle";
+    }
+
+    virtual bool evalInternal() override {
+      return this->getSimulator()->getNumReportsInCycle() == report_id_;
+    }
+
    private:
-      
-      class Action : public ReportAction_ {
-            
-         public:
 
-            Action(int report_id) : report_id_(report_id) {}
+    int report_id_ = -1;
+  };
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Report " << report_id_ << ". in cycle";
-            }
-
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Report is " 
-                  << this->getSimulator()->getNumReportsInCycle() << ". in cycle";
-            }
-
-            virtual bool evalInternal() override {
-               return this->getSimulator()->getNumReportsInCycle() == report_id_;
-            }
-            
-         private:
-            
-            int report_id_ = -1;
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertReportIsNthInCycle)
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertReportIsNthInCycle)
 };
 
 } // namespace actions

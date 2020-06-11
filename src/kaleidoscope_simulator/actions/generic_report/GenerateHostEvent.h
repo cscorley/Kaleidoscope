@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope absolute mouse 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope absolute mouse
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,62 +25,59 @@
 namespace kaleidoscope {
 namespace simulator {
 namespace actions {
-   
+
 /// @private
 ///
-class HostEventAction
-{
-   public:
-      
-      HostEventAction();
-            
-      ~HostEventAction();
-      
-   protected:
-      
-      void *display_ = nullptr;
+class HostEventAction {
+ public:
+
+  HostEventAction();
+
+  ~HostEventAction();
+
+ protected:
+
+  void *display_ = nullptr;
 };
-   
+
 /// @brief Generates an event that has the same effect as the report being
 ///        processed by the host.
 ///
 template<typename _ReportType>
-class GenerateHostEvent
-{
+class GenerateHostEvent {
+ public:
+
+  PAPILIO_ACTION_STD_CONSTRUCTOR(GenerateHostEvent)
+
+ private:
+
+  class Action : public papilio::ReportAction<typename _ReportType::BaseReportType>,
+    public HostEventAction {
    public:
 
-      PAPILIO_ACTION_STD_CONSTRUCTOR(GenerateHostEvent)
-   
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Generating host event";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->describe(add_indent);
+    }
+
+    virtual bool evalInternal() override;
+
    private:
-      
-      class Action : public papilio::ReportAction<typename _ReportType::BaseReportType>, 
-                     public HostEventAction
-      {
-         public:
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Generating host event";
-            }
+    void cachePreviousReport() {
+      previous_report_
+        = std::static_pointer_cast<_ReportType>(this->getReport().clone());
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
+   private:
 
-            virtual bool evalInternal() override;
-            
-         private:
-         
-            void cachePreviousReport() {
-               previous_report_ 
-                  = std::static_pointer_cast<_ReportType>(this->getReport().clone());
-            }
-            
-         private:
-            
-            std::shared_ptr<_ReportType> previous_report_;
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY_TMPL(GenerateHostEvent<_ReportType>)
+    std::shared_ptr<_ReportType> previous_report_;
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY_TMPL(GenerateHostEvent<_ReportType>)
 };
 
 } // namespace actions

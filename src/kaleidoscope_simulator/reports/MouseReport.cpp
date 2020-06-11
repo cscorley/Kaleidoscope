@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -17,95 +17,82 @@
  */
 
 #include "kaleidoscope_simulator/reports/MouseReport.h"
- 
+
 #include "papilio/Papilio_Simulator.h"
 namespace kaleidoscope {
 namespace simulator {
-   
-   MouseReport::MouseReport()
-   :  report_data_{}
-{
+
+MouseReport::MouseReport()
+  :  report_data_{} {
 }
 
-   MouseReport::MouseReport(const HID_MouseReport_Data_t &report_data)
-{
-   this->setReportData(report_data);
+MouseReport::MouseReport(const HID_MouseReport_Data_t &report_data) {
+  this->setReportData(report_data);
 }
 
-   MouseReport::MouseReport(const void *data)
-{
-   const ReportDataType &report_data 
-            = *static_cast<const ReportDataType *>(data);
-   
-   this->setReportData(report_data);
+MouseReport::MouseReport(const void *data) {
+  const ReportDataType &report_data
+    = *static_cast<const ReportDataType *>(data);
+
+  this->setReportData(report_data);
 }
 
-std::shared_ptr<papilio::Report_> MouseReport::clone() const
-{
-   return std::shared_ptr<papilio::Report_>{ new MouseReport{*this} };
+std::shared_ptr<papilio::Report_> MouseReport::clone() const {
+  return std::shared_ptr<papilio::Report_> { new MouseReport{*this} };
 }
 
-bool MouseReport::equals(const papilio::Report_ &other) const
-{
-   const MouseReport *other_mr =
-      dynamic_cast<const MouseReport *>(&other);
-      
-   if(!other_mr) { return false; }
-   
-   return memcmp(&report_data_, &other_mr->report_data_, sizeof(report_data_)) == 0;
-}
-      
-bool MouseReport::areButtonsPressed(uint8_t button_state) const
-{
-   return report_data_.buttons == button_state;
+bool MouseReport::equals(const papilio::Report_ &other) const {
+  const MouseReport *other_mr =
+    dynamic_cast<const MouseReport *>(&other);
+
+  if (!other_mr) {
+    return false;
+  }
+
+  return memcmp(&report_data_, &other_mr->report_data_, sizeof(report_data_)) == 0;
 }
 
-bool MouseReport::isLeftButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_LEFT;
-} 
-
-bool MouseReport::isMiddleButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_MIDDLE;
-}  
-
-bool MouseReport::isRightButtonPressed() const
-{
-   return report_data_.buttons & MOUSE_RIGHT;
+bool MouseReport::areButtonsPressed(uint8_t button_state) const {
+  return report_data_.buttons == button_state;
 }
 
-int8_t MouseReport::getXMovement() const
-{
-   return report_data_.xAxis;
+bool MouseReport::isLeftButtonPressed() const {
+  return report_data_.buttons & MOUSE_LEFT;
 }
 
-int8_t MouseReport::getYMovement() const
-{
-   return report_data_.yAxis;
+bool MouseReport::isMiddleButtonPressed() const {
+  return report_data_.buttons & MOUSE_MIDDLE;
 }
 
-int8_t MouseReport::getVerticalWheel() const
-{
-   return report_data_.vWheel;
-}  
-
-int8_t MouseReport::getHorizontalWheel() const
-{
-   return report_data_.hWheel;
+bool MouseReport::isRightButtonPressed() const {
+  return report_data_.buttons & MOUSE_RIGHT;
 }
 
-bool MouseReport::isEmpty() const
-{
-   return (report_data_.buttons == 0)
-       && (report_data_.xAxis == 0)
-       && (report_data_.yAxis == 0)
-       && (report_data_.vWheel == 0)
-       && (report_data_.hWheel == 0);
+int8_t MouseReport::getXMovement() const {
+  return report_data_.xAxis;
 }
 
-void MouseReport::dump(const papilio::Simulator &simulator, const char *add_indent) const
-{
+int8_t MouseReport::getYMovement() const {
+  return report_data_.yAxis;
+}
+
+int8_t MouseReport::getVerticalWheel() const {
+  return report_data_.vWheel;
+}
+
+int8_t MouseReport::getHorizontalWheel() const {
+  return report_data_.hWheel;
+}
+
+bool MouseReport::isEmpty() const {
+  return (report_data_.buttons == 0)
+         && (report_data_.xAxis == 0)
+         && (report_data_.yAxis == 0)
+         && (report_data_.vWheel == 0)
+         && (report_data_.hWheel == 0);
+}
+
+void MouseReport::dump(const papilio::Simulator &simulator, const char *add_indent) const {
   simulator.log() << add_indent << "Mouse report content:";
   simulator.log() << add_indent << "  left button: " << this->isLeftButtonPressed();
   simulator.log() << add_indent << "  middle button: " << this->isMiddleButtonPressed();
@@ -116,9 +103,8 @@ void MouseReport::dump(const papilio::Simulator &simulator, const char *add_inde
   simulator.log() << add_indent << "  vertical wheel motion: " << (int)this->getVerticalWheel();
 }
 
-void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data)
-{
-   memcpy(&report_data_, &report_data, sizeof(report_data_));
+void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data) {
+  memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
 
 } // namespace simulator

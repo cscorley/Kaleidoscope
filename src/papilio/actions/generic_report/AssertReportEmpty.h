@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,32 +25,32 @@ namespace actions {
 /// @brief Asserts that the current report is empty.
 ///
 class AssertReportEmpty {
-   
+
+ public:
+
+  PAPILIO_ACTION_STD_CONSTRUCTOR(AssertReportEmpty)
+
+ private:
+
+  class Action : public ReportAction_ {
+
    public:
-      
-      PAPILIO_ACTION_STD_CONSTRUCTOR(AssertReportEmpty)
-   
-   private:
-      
-      class Action : public ReportAction_ {
-            
-         public:
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Report empty";
-            }
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Report empty";
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Report: ";
-               this->getReport().dump(*this->getSimulator(), add_indent);
-            }
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Report: ";
+      this->getReport().dump(*this->getSimulator(), add_indent);
+    }
 
-            virtual bool evalInternal() override {
-               return this->getReport().isEmpty();
-            }
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertReportEmpty)
+    virtual bool evalInternal() override {
+      return this->getReport().isEmpty();
+    }
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertReportEmpty)
 };
 
 } // namespace actions

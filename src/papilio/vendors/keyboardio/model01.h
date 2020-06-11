@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,8 +20,8 @@
 namespace papilio {
 namespace keyboardio {
 namespace model01 {
-   
-/// @brief A formatted string that represents the keyboard layout of 
+
+/// @brief A formatted string that represents the keyboard layout of
 ///        the Keyboardio Model01.
 /// @details Use this string with the renderKeyboard(...) function.
 ///

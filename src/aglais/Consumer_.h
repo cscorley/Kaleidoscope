@@ -25,25 +25,25 @@
 #include <vector>
 
 namespace aglais {
-   
-   class Consumer_ {
-      
-      public:
-         
-         virtual ~Consumer_() {}
-         
-         virtual void onFirmwareId(const char *firmware_id) {}
-         virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) {}
-         virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) {}
-         virtual void onKeyPressed(uint8_t row, uint8_t col) {}
-         virtual void onKeyReleased(uint8_t row, uint8_t col) {}
-         virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) {}
-         virtual void onSetTime(uint32_t time) {}
-         virtual void onCycle(uint32_t cycle_id, uint32_t cycle_start_time, uint32_t cycle_end_time) {}
-         virtual void onCycles(uint32_t start_cycle_id, uint32_t start_time_id, 
-                               const std::vector<uint32_t> &cycle_durations) {}
-         
-   };
+
+class Consumer_ {
+
+ public:
+
+  virtual ~Consumer_() {}
+
+  virtual void onFirmwareId(const char *firmware_id) {}
+  virtual void onStartCycle(uint32_t cycle_id, uint32_t cycle_start_time) {}
+  virtual void onEndCycle(uint32_t cycle_id, uint32_t cycle_end_time) {}
+  virtual void onKeyPressed(uint8_t row, uint8_t col) {}
+  virtual void onKeyReleased(uint8_t row, uint8_t col) {}
+  virtual void onHIDReport(uint8_t id, int length, const uint8_t *data) {}
+  virtual void onSetTime(uint32_t time) {}
+  virtual void onCycle(uint32_t cycle_id, uint32_t cycle_start_time, uint32_t cycle_end_time) {}
+  virtual void onCycles(uint32_t start_cycle_id, uint32_t start_time_id,
+                        const std::vector<uint32_t> &cycle_durations) {}
+
+};
 } // namespace aglais
 
 #endif

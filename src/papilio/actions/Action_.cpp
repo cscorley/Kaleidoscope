@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,43 +21,40 @@
 
 namespace papilio {
 
-void Action_::report(const char *add_indent) const 
-{
-   if(this->valid_) {
-      {
-         auto log = simulator_->log();
-         log << add_indent;
-         if(this->negate_) {
-            log << "negated ";
-         }
-         log << type(*this) << " action passed";
+void Action_::report(const char *add_indent) const {
+  if (this->valid_) {
+    {
+      auto log = simulator_->log();
+      log << add_indent;
+      if (this->negate_) {
+        log << "negated ";
       }
-      //this->describe();
-   }
-   else {
-      std::string indent = std::string(add_indent) + "      ";
-      {
-         auto error = simulator_->error();
-         error << add_indent;
-         if(negate_) {
-            error << "negated ";
-         }
-         error << type(*this) << " action failed";
+      log << type(*this) << " action passed";
+    }
+    //this->describe();
+  } else {
+    std::string indent = std::string(add_indent) + "      ";
+    {
+      auto error = simulator_->error();
+      error << add_indent;
+      if (negate_) {
+        error << "negated ";
       }
-      simulator_->log() << add_indent << "expected:";
-      this->describe(indent.c_str());
-      simulator_->log() << add_indent << "actual:";
-      this->describeState(indent.c_str());
-   }
+      error << type(*this) << " action failed";
+    }
+    simulator_->log() << add_indent << "expected:";
+    this->describe(indent.c_str());
+    simulator_->log() << add_indent << "actual:";
+    this->describeState(indent.c_str());
+  }
 }
 
 void Action_::describeState(const char *add_indent) const {
-   if(valid_) {
-      simulator_->log() << add_indent << "valid";
-   }
-   else {
-      simulator_->error() << add_indent << "failed";
-   }
+  if (valid_) {
+    simulator_->log() << add_indent << "valid";
+  } else {
+    simulator_->error() << add_indent << "failed";
+  }
 }
 
 } // namespace papilio

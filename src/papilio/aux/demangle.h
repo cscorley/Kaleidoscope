@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -30,7 +30,7 @@ std::string demangle(const char* name);
 ///
 template <class T>
 std::string type(const T& t) {
-    return demangle(typeid(t).name());
+  return demangle(typeid(t).name());
 }
 
 } // namespace papilio

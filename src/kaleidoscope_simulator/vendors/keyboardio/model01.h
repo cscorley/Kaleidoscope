@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -22,8 +22,8 @@ namespace kaleidoscope {
 namespace simulator {
 namespace keyboardio {
 namespace model01 {
-   
-/// @brief A formatted string that represents the keyboard layout of 
+
+/// @brief A formatted string that represents the keyboard layout of
 ///        the Keyboardio Model01.
 /// @details Use this string with the renderKeyboard(...) function.
 ///

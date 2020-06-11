@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -28,43 +28,43 @@ namespace actions {
 ///
 template<typename _ReportType>
 class AssertCycleGeneratesNReports {
-   
+
+ public:
+
+  /// @brief Constructor.
+  /// @param n_reports The number of reports that must have been
+  ///        generated.
+  ///
+  AssertCycleGeneratesNReports(int n_reports)
+    : AssertCycleGeneratesNReports(DelegateConstruction{}, n_reports)
+  {}
+
+ private:
+
+  class Action : public Action_ {
+
    public:
-      
-      /// @brief Constructor.
-      /// @param n_reports The number of reports that must have been
-      ///        generated.
-      ///
-      AssertCycleGeneratesNReports(int n_reports) 
-         : AssertCycleGeneratesNReports(DelegateConstruction{}, n_reports) 
-      {}
-   
+
+    Action(int n_reports) : n_reports_(n_reports) {}
+
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() << " keyboard reports encountered";
+    }
+
+    virtual bool evalInternal() override {
+      return this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() == n_reports_;
+    }
+
    private:
-      
-      class Action : public Action_ {
-         
-         public:
 
-            Action(int n_reports) : n_reports_(n_reports) {}
+    int n_reports_ = -1;
+  };
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << n_reports_ << " keyboard reports expected in cycle";
-            }
-
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() << " keyboard reports encountered";
-            }
-
-            virtual bool evalInternal() override {
-               return this->getSimulator()->getNumTypedReportsInCycle<_ReportType>() == n_reports_;
-            }
-            
-         private:
-            
-            int n_reports_ = -1;      
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertCycleGeneratesNReports<_ReportType>)
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY_TMPL(AssertCycleGeneratesNReports<_ReportType>)
 };
 
 } // namespace actions

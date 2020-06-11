@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,9 +18,9 @@
 #pragma once
 
 namespace papilio {
-   
+
 class Simulator;
-   
+
 /// @brief Renders a keyboard's asscii representation.
 ///
 /// @param simulator The parent simulator object.

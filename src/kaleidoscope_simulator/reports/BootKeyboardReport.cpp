@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -33,138 +33,127 @@
 namespace kaleidoscope {
 namespace simulator {
 
-   BootKeyboardReport
-      ::BootKeyboardReport()
-   :  report_data_{}
-{
+BootKeyboardReport
+::BootKeyboardReport()
+  :  report_data_{} {
 }
 
-   BootKeyboardReport
-      ::BootKeyboardReport(const BootKeyboardReport::ReportDataType &report_data) 
-{
-   this->setReportData(report_data);
+BootKeyboardReport
+::BootKeyboardReport(const BootKeyboardReport::ReportDataType &report_data) {
+  this->setReportData(report_data);
 }
 
-   BootKeyboardReport
-      ::BootKeyboardReport(const void *data)
-{
-   const ReportDataType &report_data 
-            = *static_cast<const ReportDataType *>(data);
-   
-   this->setReportData(report_data);
+BootKeyboardReport
+::BootKeyboardReport(const void *data) {
+  const ReportDataType &report_data
+    = *static_cast<const ReportDataType *>(data);
+
+  this->setReportData(report_data);
 }
 
-std::shared_ptr<papilio::Report_> BootKeyboardReport::clone() const
-{
-   return std::shared_ptr<papilio::Report_>{ new BootKeyboardReport{*this} };
+std::shared_ptr<papilio::Report_> BootKeyboardReport::clone() const {
+  return std::shared_ptr<papilio::Report_> { new BootKeyboardReport{*this} };
 }
 
-bool 
-   BootKeyboardReport
-      ::equals(const papilio::Report_ &other) const
-{   
-   const BootKeyboardReport *other_bkr =
-      dynamic_cast<const BootKeyboardReport *>(&other);
-      
-   if(!other_bkr) { return false; }
-   
-   return memcmp(&report_data_, &other_bkr->report_data_, sizeof(report_data_)) == 0;
+bool
+BootKeyboardReport
+::equals(const papilio::Report_ &other) const {
+  const BootKeyboardReport *other_bkr =
+    dynamic_cast<const BootKeyboardReport *>(&other);
+
+  if (!other_bkr) {
+    return false;
+  }
+
+  return memcmp(&report_data_, &other_bkr->report_data_, sizeof(report_data_)) == 0;
 }
-      
-bool 
-   BootKeyboardReport
-      ::isKeycodeActive(uint8_t k) const
-{
-   for(int i = 0; i < 6; ++i) {
-      if(report_data_.keycodes[i] == k) {
-         return true;
-      }
-   }
-   
-   return false;
+
+bool
+BootKeyboardReport
+::isKeycodeActive(uint8_t k) const {
+  for (int i = 0; i < 6; ++i) {
+    if (report_data_.keycodes[i] == k) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::vector<uint8_t>
-   BootKeyboardReport
-      ::getActiveKeycodes() const
-{
-   std::vector<uint8_t> active_keycodes;
-   for(int i = 0; i < 6; ++i) {
-      if(report_data_.keycodes[i] != 0) {
-         active_keycodes.push_back(report_data_.keycodes[i]);
-      }
-   }
-   
-   return active_keycodes;
+BootKeyboardReport
+::getActiveKeycodes() const {
+  std::vector<uint8_t> active_keycodes;
+  for (int i = 0; i < 6; ++i) {
+    if (report_data_.keycodes[i] != 0) {
+      active_keycodes.push_back(report_data_.keycodes[i]);
+    }
+  }
+
+  return active_keycodes;
 }
 
-bool   
-   BootKeyboardReport
-      ::isAnyKeyActive() const
-{
-   for(int i = 0; i < 6; ++i) {
-      if(report_data_.keycodes[i] != 0) {
-         return true;
-      }
-   }
-   
-   return false;
-}
-      
 bool
-   BootKeyboardReport
-      ::isModifierKeycodeActive(uint8_t k) const
-{
-   if (k >= HID_KEYBOARD_FIRST_MODIFIER && k <= HID_KEYBOARD_LAST_MODIFIER) {
-      k = k - HID_KEYBOARD_FIRST_MODIFIER;
-      return !!(report_data_.modifiers & (1 << k));
-   }
-   
-   KS_T_EXCEPTION("isKeycodeActive: Unknown modifier type " << unsigned(k))
-  
-   return false;
-}  
+BootKeyboardReport
+::isAnyKeyActive() const {
+  for (int i = 0; i < 6; ++i) {
+    if (report_data_.keycodes[i] != 0) {
+      return true;
+    }
+  }
 
-bool 
-   BootKeyboardReport
-      ::isAssertAnyModifierActive() const
-{
-   for(uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
-      uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
-      if(!!(report_data_.modifiers & (1 << kTmp))) {
-         return true;
-      }
-   }
-   return false;
+  return false;
 }
 
-std::vector<uint8_t> 
-   BootKeyboardReport
-      ::getActiveModifiers() const
-{
-   std::vector<uint8_t> activeModifiers;
-   
-   for(uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
-      uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
-      if(!!(report_data_.modifiers & (1 << kTmp))) {
-         activeModifiers.push_back(k);
-      }
-   }
-   return activeModifiers;
+bool
+BootKeyboardReport
+::isModifierKeycodeActive(uint8_t k) const {
+  if (k >= HID_KEYBOARD_FIRST_MODIFIER && k <= HID_KEYBOARD_LAST_MODIFIER) {
+    k = k - HID_KEYBOARD_FIRST_MODIFIER;
+    return !!(report_data_.modifiers & (1 << k));
+  }
+
+  KS_T_EXCEPTION("isKeycodeActive: Unknown modifier type " << unsigned(k))
+
+  return false;
 }
 
-bool  
-   BootKeyboardReport
-      ::isEmpty() const
-{
-   return !(this->isAssertAnyModifierActive() || this->isAnyKeyActive());
+bool
+BootKeyboardReport
+::isAssertAnyModifierActive() const {
+  for (uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
+    uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
+    if (!!(report_data_.modifiers & (1 << kTmp))) {
+      return true;
+    }
+  }
+  return false;
 }
-      
-void 
-   BootKeyboardReport
-      ::setReportData(const BootKeyboardReport::ReportDataType &report_data)
-{
-   memcpy(&report_data_, &report_data, sizeof(report_data_));
+
+std::vector<uint8_t>
+BootKeyboardReport
+::getActiveModifiers() const {
+  std::vector<uint8_t> activeModifiers;
+
+  for (uint8_t k = HID_KEYBOARD_FIRST_MODIFIER; k <= HID_KEYBOARD_LAST_MODIFIER; ++k) {
+    uint8_t kTmp = k - HID_KEYBOARD_FIRST_MODIFIER;
+    if (!!(report_data_.modifiers & (1 << kTmp))) {
+      activeModifiers.push_back(k);
+    }
+  }
+  return activeModifiers;
+}
+
+bool
+BootKeyboardReport
+::isEmpty() const {
+  return !(this->isAssertAnyModifierActive() || this->isAnyKeyActive());
+}
+
+void
+BootKeyboardReport
+::setReportData(const BootKeyboardReport::ReportDataType &report_data) {
+  memcpy(&report_data_, &report_data, sizeof(report_data_));
 }
 
 // For each bit set in 'bitfield', output the corresponding string to 'stream'
@@ -178,40 +167,38 @@ void
   if((bitfield) & 1<<6) stream << str6; \
   if((bitfield) & 1<<7) stream << str7;
 void
-   BootKeyboardReport
-      ::dump(const papilio::Simulator &simulator, const char *add_indent) const
-{
-   bool anything = false;
-   if(report_data_.modifiers) {
-      anything = true;
-   }
-   else {
-      for(int i = 0; i < KEY_BYTES; i++) {
-         if(report_data_.keycodes[i]) { 
-            anything = true; 
-            break; 
-         }
+BootKeyboardReport
+::dump(const papilio::Simulator &simulator, const char *add_indent) const {
+  bool anything = false;
+  if (report_data_.modifiers) {
+    anything = true;
+  } else {
+    for (int i = 0; i < KEY_BYTES; i++) {
+      if (report_data_.keycodes[i]) {
+        anything = true;
+        break;
       }
-   }
+    }
+  }
 
-   auto out = simulator.log();
-   
-   out << "Boot keyboard report content:";
-   
-   if(!anything) {
-      out << add_indent << "<none>";
-   } else {
-      out << add_indent;
-      FOREACHBIT(report_data_.modifiers, out,
-        "lctrl ", "lshift ", "lalt ", "lgui ",
-        "rctrl ", "rshift ", "ralt ", "rgui ")
+  auto out = simulator.log();
 
-      for(int i = 0; i < 6; ++i) {
-         if(report_data_.keycodes[i] != 0) {
-            out << simulator.getCore().keycodeToName(report_data_.keycodes[i]) << ' ';
-         }
+  out << "Boot keyboard report content:";
+
+  if (!anything) {
+    out << add_indent << "<none>";
+  } else {
+    out << add_indent;
+    FOREACHBIT(report_data_.modifiers, out,
+               "lctrl ", "lshift ", "lalt ", "lgui ",
+               "rctrl ", "rshift ", "ralt ", "rgui ")
+
+    for (int i = 0; i < 6; ++i) {
+      if (report_data_.keycodes[i] != 0) {
+        out << simulator.getCore().keycodeToName(report_data_.keycodes[i]) << ' ';
       }
-   }
+    }
+  }
 }
 
 } // namespace simulator

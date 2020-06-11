@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -23,69 +23,69 @@
 #include <cassert>
 
 namespace papilio {
-   
+
 /// @brief An abstract report action.
 /// @details This abstract class serves as base class for any
 ///        report actions.
 ///
-///        **Important:** This class is not part of Papilio's 
+///        **Important:** This class is not part of Papilio's
 ///                   public API. It is meant for internal use only.
 ///
-class ReportAction_ : public Action_
-{
-   public:
-      
-      typedef Report_ ReportType;
-      typedef ReportAction_ ActionBaseType;
-      
-      virtual uint8_t getReportTypeId() const { return AnyTypeReportTypeId; }
-      
-      virtual void setReport(const Report_ *report) override {
-         report_ = report;
-      }
-      
-   protected:
-      
-      virtual const Report_ &getReport() const { 
-         assert(report_);
-         return *report_;
-      }
-      
-   protected:
-      
-      const Report_ *report_ = nullptr;
+class ReportAction_ : public Action_ {
+ public:
+
+  typedef Report_ ReportType;
+  typedef ReportAction_ ActionBaseType;
+
+  virtual uint8_t getReportTypeId() const {
+    return AnyTypeReportTypeId;
+  }
+
+  virtual void setReport(const Report_ *report) override {
+    report_ = report;
+  }
+
+ protected:
+
+  virtual const Report_ &getReport() const {
+    assert(report_);
+    return *report_;
+  }
+
+ protected:
+
+  const Report_ *report_ = nullptr;
 };
-   
+
 /// @brief A report action.
 ///
-///        **Important:** This class is not part of Papilio's 
+///        **Important:** This class is not part of Papilio's
 ///                   public API. It is meant for internal use only.
 ///
 template<typename _ReportType>
-class ReportAction : public ReportAction_
-{
-   public:
-      
-      typedef _ReportType ReportType;
-      
-      virtual uint8_t getReportTypeId() const override {
-         return _ReportType::type_;
-      }
-      
-      static const char *typeString() { 
-         return _ReportType::typeString();
-      }
-      
-      virtual const char *getTypeString() const override {
-         return _ReportType::typeString();
-      }
-      
-   protected:
-      
-      virtual const _ReportType &getReport() const override {
-         assert(report_);
-         return *static_cast<const _ReportType *>(report_);
-      }
+class ReportAction : public ReportAction_ {
+ public:
+
+  typedef _ReportType ReportType;
+
+  virtual uint8_t getReportTypeId() const override {
+    return _ReportType::type_;
+  }
+
+  static const char *typeString() {
+    return _ReportType::typeString();
+  }
+
+  virtual const char *getTypeString() const override {
+    return _ReportType::typeString();
+  }
+
+ protected:
+
+  virtual const _ReportType &getReport() const override {
+    assert(report_);
+    return *static_cast<const _ReportType *>(report_);
+  }
 };
 
 } // namespace papilio

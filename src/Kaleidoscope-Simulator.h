@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -20,12 +20,16 @@
 
 namespace papilio {
 namespace actions {
-   
-inline
-uint8_t toModifier(Key key) { return key.getKeyCode(); }
 
 inline
-uint8_t toKeycode(Key key) { return key.getKeyCode(); }
+uint8_t toModifier(Key key) {
+  return key.getKeyCode();
+}
+
+inline
+uint8_t toKeycode(Key key) {
+  return key.getKeyCode();
+}
 
 } // namespace actions
 } // namespace papilio

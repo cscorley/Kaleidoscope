@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,32 +25,32 @@ namespace actions {
 /// @brief Asserts that any keycodes are active in the current report.
 ///
 class AssertAnyKeycodeActive {
-   
+
+ public:
+
+  PAPILIO_ACTION_STD_CONSTRUCTOR(AssertAnyKeycodeActive)
+
+ private:
+
+  class Action : public ReportAction<KeyboardReport_> {
+
    public:
-      
-      PAPILIO_ACTION_STD_CONSTRUCTOR(AssertAnyKeycodeActive)
-      
-   private:
-      
-      class Action : public ReportAction<KeyboardReport_> {
-            
-         public:
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Any keycodes active";
-            }
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Any keycodes active";
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Any keycodes active: ";
-               this->getSimulator()->log() << this->getReport().isAnyKeyActive();
-            }
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Any keycodes active: ";
+      this->getSimulator()->log() << this->getReport().isAnyKeyActive();
+    }
 
-            virtual bool evalInternal() override {
-               return this->getReport().isAnyKeyActive();
-            }
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyKeycodeActive)
+    virtual bool evalInternal() override {
+      return this->getReport().isAnyKeyActive();
+    }
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyKeycodeActive)
 };
 
 } // namespace actions

@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,48 +21,48 @@
 
 namespace papilio {
 namespace actions {
-   
+
 /// @brief Asserts that the current cycle is the nth.
 ///
 class AssertCycleIsNth {
-   
+
+ public:
+
+  /// @brief Constructor
+  /// @param cycle_id The id of the cycle to check against.
+  ///
+  AssertCycleIsNth(int cycle_id)
+    : AssertCycleIsNth(DelegateConstruction{}, cycle_id)
+  {}
+
+ private:
+
+  class Action : public Action_ {
+
    public:
-   
-      /// @brief Constructor
-      /// @param cycle_id The id of the cycle to check against.
-      ///
-      AssertCycleIsNth(int cycle_id)
-         : AssertCycleIsNth(DelegateConstruction{}, cycle_id)
-      {}
-   
+
+    Action(int cycle_id) : cycle_id_(cycle_id) {}
+
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Is " << cycle_id_ << ". cycle";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Is " << this->getSimulator()->getCycleId() << ". cycle";
+    }
+
    private:
-      
-      class Action : public Action_ {
-      
-         public:
-         
-            Action(int cycle_id) : cycle_id_(cycle_id) {}
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Is " << cycle_id_ << ". cycle";
-            }
+    virtual bool evalInternal() override {
+      return this->getSimulator()->getCycleId() == cycle_id_;
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Is " << this->getSimulator()->getCycleId() << ". cycle";
-            }
-         
-         private:
+   private:
 
-            virtual bool evalInternal() override {
-               return this->getSimulator()->getCycleId() == cycle_id_;
-            }
-            
-         private:
-            
-            int cycle_id_ = -1;
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertCycleIsNth)
+    int cycle_id_ = -1;
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertCycleIsNth)
 };
 
 } // namespace actions

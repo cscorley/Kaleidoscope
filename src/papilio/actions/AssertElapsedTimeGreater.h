@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -26,48 +26,48 @@ namespace actions {
 /// @brief Asserts that that time that elapsed is greater than a given time in [ms].
 ///
 class AssertElapsedTimeGreater {
-   
+
+ public:
+
+  /// @brief Constructor.
+  /// @param delta_t The amount of time that is asserted being elapsed.
+  /// @param start_t An optional start point in time as reference (defaults to zero).
+  ///
+  AssertElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0)
+    :  AssertElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
+  {}
+
+ private:
+
+  class Action : public Action_ {
+
    public:
-   
-      /// @brief Constructor.
-      /// @param delta_t The amount of time that is asserted being elapsed.
-      /// @param start_t An optional start point in time as reference (defaults to zero).
-      ///
-      AssertElapsedTimeGreater(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
-         :  AssertElapsedTimeGreater(DelegateConstruction{}, delta_t, start_t)
-      {}
-      
+
+    Action(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0)
+      :  start_t_(start_t),
+         delta_t_(delta_t)
+    {}
+
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
+    }
+
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Actual time elapsed "
+                                  << this->getSimulator()->getTime() << " ms";
+    }
+
+    virtual bool evalInternal() override {
+      return this->getSimulator()->getTime() - start_t_ > delta_t_;
+    }
+
    private:
-      
-      class Action : public Action_ {
-      
-         public:
 
-            Action(Simulator::TimeType delta_t, Simulator::TimeType start_t = 0) 
-               :  start_t_(start_t),
-                  delta_t_(delta_t)
-            {}
-            
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Time elapsed greater " << delta_t_ << " ms";
-            }
+    Simulator::TimeType start_t_ = .0;
+    Simulator::TimeType delta_t_ = .0;
+  };
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Actual time elapsed " 
-                  << this->getSimulator()->getTime() << " ms";
-            }
-
-            virtual bool evalInternal() override {
-               return this->getSimulator()->getTime() - start_t_ > delta_t_;
-            }
-         
-         private:
-            
-            Simulator::TimeType start_t_ = .0;
-            Simulator::TimeType delta_t_ = .0;
-      };
-      
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertElapsedTimeGreater)
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertElapsedTimeGreater)
 };
 
 } // namespace actions

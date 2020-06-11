@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,32 +25,32 @@ namespace actions {
 /// @brief Asserts that any modifiers are active in the current keyboard report.
 ///
 class AssertAnyModifierActive {
-   
+
+ public:
+
+  PAPILIO_ACTION_STD_CONSTRUCTOR(AssertAnyModifierActive)
+
+ private:
+
+  class Action : public ReportAction<KeyboardReport_> {
+
    public:
-      
-      PAPILIO_ACTION_STD_CONSTRUCTOR(AssertAnyModifierActive)
-   
-   private:
-      
-      class Action : public ReportAction<KeyboardReport_> {
-            
-         public:
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getSimulator()->log() << add_indent << "Any modifiers active";
-            }
+    virtual void describe(const char *add_indent = "") const override {
+      this->getSimulator()->log() << add_indent << "Any modifiers active";
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->getSimulator()->log() << add_indent << "Any modifiers active: ";
-               this->getSimulator()->log() << this->getReport().isAssertAnyModifierActive();
-            }
+    virtual void describeState(const char *add_indent = "") const {
+      this->getSimulator()->log() << add_indent << "Any modifiers active: ";
+      this->getSimulator()->log() << this->getReport().isAssertAnyModifierActive();
+    }
 
-            virtual bool evalInternal() override {
-               return this->getReport().isAssertAnyModifierActive();
-            }
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyModifierActive)
+    virtual bool evalInternal() override {
+      return this->getReport().isAssertAnyModifierActive();
+    }
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(AssertAnyModifierActive)
 };
 
 } // namespace actions

@@ -136,7 +136,7 @@ struct VirtualProps : public kaleidoscope::DeviceProps {
   StorageProps;
   typedef typename kaleidoscope::DeviceProps::Storage
   Storage;
-  
+
   static constexpr const char *short_name = "virtual";
 };
 

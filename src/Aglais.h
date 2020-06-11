@@ -21,11 +21,11 @@
 #include <stdint.h>
 
 namespace aglais {
-   
+
 struct DocumentType {
-   static constexpr uint8_t none = 0;
-   static constexpr uint8_t verbose = 1;
-   static constexpr uint8_t compressed = 2;
+  static constexpr uint8_t none = 0;
+  static constexpr uint8_t verbose = 1;
+  static constexpr uint8_t compressed = 2;
 };
 
 } //namespace aglais
@@ -42,47 +42,51 @@ struct DocumentType {
    }
 
 namespace aglais {
-   
+
 namespace v1 {
 class Parser;
 class CompressionConsumer;
 }
-   
+
 class Consumer_;
 
 class Aglais {
-   
-   public:
-      
-      void parse(std::istream &in, Consumer_ &consumer);
-      void parse(const char *document, Consumer_ &consumer);
-      
-      void compress(std::istream &in, std::ostream &out);
-      void compress(const char *document, std::ostream &out);
-      
-      void setDebug(bool state = true) { debug_ = state; }
-      void setOutputDocumentType(uint8_t document_type) {
-         output_document_type_ = document_type;
-      }
-      void setQuoteLines(bool state = true) { quote_lines_ = state; }
-      
-   private:
-      
-      void determineDocumentVersion(std::istream &in);
-      
-   private:
-      
-      int document_type_ = 0;
-      int protocol_version_ = 0;
-      int line_id_ = 0;
-      bool debug_ = false;
-      uint8_t output_document_type_ = DocumentType::compressed;
-      bool quote_lines_ = false;
-      
-      friend class v1::Parser;
-      friend class v1::CompressionConsumer;
+
+ public:
+
+  void parse(std::istream &in, Consumer_ &consumer);
+  void parse(const char *document, Consumer_ &consumer);
+
+  void compress(std::istream &in, std::ostream &out);
+  void compress(const char *document, std::ostream &out);
+
+  void setDebug(bool state = true) {
+    debug_ = state;
+  }
+  void setOutputDocumentType(uint8_t document_type) {
+    output_document_type_ = document_type;
+  }
+  void setQuoteLines(bool state = true) {
+    quote_lines_ = state;
+  }
+
+ private:
+
+  void determineDocumentVersion(std::istream &in);
+
+ private:
+
+  int document_type_ = 0;
+  int protocol_version_ = 0;
+  int line_id_ = 0;
+  bool debug_ = false;
+  uint8_t output_document_type_ = DocumentType::compressed;
+  bool quote_lines_ = false;
+
+  friend class v1::Parser;
+  friend class v1::CompressionConsumer;
 };
-   
+
 } // namespace aglais
 
 #endif

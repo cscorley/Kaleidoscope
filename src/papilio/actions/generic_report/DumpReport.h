@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -25,33 +25,33 @@ namespace actions {
 /// @brief Asserts nothing but dumps the current report instead.
 ///
 class DumpReport {
-   
+
+ public:
+
+  PAPILIO_ACTION_STD_CONSTRUCTOR(DumpReport)
+
+ private:
+
+  class Action : public ReportAction_ {
+
    public:
-      
-      PAPILIO_ACTION_STD_CONSTRUCTOR(DumpReport)
-   
-   private:
-      
-      class Action : public ReportAction_ {
-            
-         public:
 
-            virtual void describe(const char *add_indent = "") const override {
-               this->getReport().dump(*this->getSimulator(), add_indent);
-            }
+    virtual void describe(const char *add_indent = "") const override {
+      this->getReport().dump(*this->getSimulator(), add_indent);
+    }
 
-            virtual void describeState(const char *add_indent = "") const {
-               this->describe(add_indent);
-            }
+    virtual void describeState(const char *add_indent = "") const {
+      this->describe(add_indent);
+    }
 
-            virtual bool evalInternal() override {
-               this->describe();
-               return true;
-            }
+    virtual bool evalInternal() override {
+      this->describe();
+      return true;
+    }
 
-      };
-   
-   PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(DumpReport)
+  };
+
+  PAPILIO_AUTO_DEFINE_ACTION_INVENTORY(DumpReport)
 };
 
 } // namespace actions

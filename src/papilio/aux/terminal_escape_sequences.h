@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -19,7 +19,7 @@
 
 namespace papilio {
 namespace terminal_escape_sequences {
-   
+
 constexpr char reset_formatting[] = "\x1B[0m";
 constexpr char underlined[] = "\x1B[4m";
 constexpr char clear_screen[] = "\033[2J\033[1;1H";

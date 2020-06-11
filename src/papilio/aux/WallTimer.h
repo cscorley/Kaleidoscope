@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,19 +20,18 @@
 #include <chrono>
 
 namespace papilio {
-    
-class WallTimer
-{
-   public:
-      
-      void start();
-      double elapsed(); // ms
-      
-   private:
-      
-      typedef decltype(std::chrono::high_resolution_clock::now()) TimerType;
-      
-      TimerType start_time_;
+
+class WallTimer {
+ public:
+
+  void start();
+  double elapsed(); // ms
+
+ private:
+
+  typedef decltype(std::chrono::high_resolution_clock::now()) TimerType;
+
+  TimerType start_time_;
 };
 
 } // namespace papilio

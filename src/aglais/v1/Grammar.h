@@ -25,7 +25,7 @@
 // This is version 1 of the Aglais protocol
 //
 // Document grammar:
-// 
+//
 // <command_string_XXX> ::= (character string version of command)
 // <command_id_XXX> ::= (uint8_t id version of command)
 // <XXX_cmd> ::= <command_string_XXX> | <command_id_XXX>
@@ -59,7 +59,7 @@
 // <cycle_content> ::= <cycle_ar> | <cycle_ar> <lbr> <cycle_content>
 // <cycle_long> ::= <start_cycle> <lbr> <cycle_content> <lbr> <end_cycle>
 // <set_time> ::= <set_time_cmd> <time>
-// <cycle_short> ::= <cycle_cmd> <cycle_id> 
+// <cycle_short> ::= <cycle_cmd> <cycle_id>
 // <cycle_duration> ::= (uint32_t)
 // <cycle_durations> ::= <cycle_duration> | <cycle_duration> <cycle_durations> # must match <cycles_count>
 // <cycles_start_time> ::= <time>
@@ -73,12 +73,12 @@
 // <header> ::= <document_type> <lbr> <protocol_version> <lbr> <header_content>
 // <document> ::= <header> <lbr> <cycle_data>
 
-// The value of <document_type> defines whether string- or 
+// The value of <document_type> defines whether string- or
 // id-versions of commands are used
 
 namespace aglais {
 namespace v1 {
-   
+
 #define AGLAIS_V1_COMMANDS(OP, SEP, TERM_SEP)                                  \
    OP(none, 0)SEP                                                              \
    OP(firmware_id, 1)SEP                                                       \
@@ -89,11 +89,11 @@ namespace v1 {
    OP(set_time, 6)SEP                                                          \
    OP(cycle, 7)SEP                                                             \
    OP(cycles, 8)TERM_SEP
-   
+
 #define AGLAIS_UINT8_T_STRUCT_DEF(NAME, ID)                                    \
    static constexpr uint8_t NAME = ID;
 struct Command  {
-   AGLAIS_V1_COMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
+  AGLAIS_V1_COMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
 };
 
 #define AGLAIS_V1_SUBCOMMANDS(OP, SEP, TERM_SEP)                               \
@@ -103,12 +103,12 @@ struct Command  {
    OP(hid_report, 3)TERM_SEP
 
 struct SubCommand {
-   AGLAIS_V1_SUBCOMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
+  AGLAIS_V1_SUBCOMMANDS(AGLAIS_UINT8_T_STRUCT_DEF,,)
 };
 
 constexpr uint8_t protocol_version = 1;
 
 constexpr char comment_symbol = '#';
-   
+
 } // namespace v1
 } // namespace aglais

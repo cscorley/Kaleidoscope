@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard 
+ * Kaleidoscope-Simulator -- A C++ testing API for the Kaleidoscope keyboard
  *                         firmware.
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
@@ -27,23 +27,22 @@ namespace kaleidoscope {
 /// @namespace simulator
 ///
 namespace simulator {
-   
+
 /// @brief A Kaleidoscope specific simulator class.
 ///
-class Simulator : public papilio::Simulator
-{
-   public:
-      
-      /// @brief Access the global simulator singleton.
-      ///
-      static Simulator &getInstance();
-      
-   private:
-      
-      Simulator(std::ostream &out);
-      
-      static void processHIDReport(uint8_t id, const void* data, 
-                                    int len, int result);
+class Simulator : public papilio::Simulator {
+ public:
+
+  /// @brief Access the global simulator singleton.
+  ///
+  static Simulator &getInstance();
+
+ private:
+
+  Simulator(std::ostream &out);
+
+  static void processHIDReport(uint8_t id, const void* data,
+                               int len, int result);
 };
 
 } // namespace simulator

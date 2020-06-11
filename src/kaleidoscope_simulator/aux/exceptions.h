@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -22,21 +22,25 @@
 
 namespace kaleidoscope {
 namespace simulator {
-   
+
 /// @private
 ///
-struct OStringStreamWrapper
-{
-   template<typename _T>
-   OStringStreamWrapper &operator<<(const _T &t) { osstream_ << t; return *this; }
-   
-   operator const char *() { return osstream_.str().c_str(); }
-   
-   std::ostringstream osstream_;
+struct OStringStreamWrapper {
+  template<typename _T>
+  OStringStreamWrapper &operator<<(const _T &t) {
+    osstream_ << t;
+    return *this;
+  }
+
+  operator const char *() {
+    return osstream_.str().c_str();
+  }
+
+  std::ostringstream osstream_;
 };
 
 #define KS_T_EXCEPTION(...)                                                    \
    throw std::runtime_error(OStringStreamWrapper() << __VA_ARGS__);
-   
+
 } // namespace simulator
 } // namespace kaleidoscope

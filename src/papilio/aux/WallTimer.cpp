@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Papilio - A keyboard simulation framework 
+ * Papilio - A keyboard simulation framework
  * Copyright (C) 2019  noseglasses (shinynoseglasses@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -18,17 +18,15 @@
 #include "papilio/aux/WallTimer.h"
 
 namespace papilio {
-      
-void WallTimer::start()
-{
-   start_time_ = std::chrono::high_resolution_clock::now();
+
+void WallTimer::start() {
+  start_time_ = std::chrono::high_resolution_clock::now();
 }
 
-double WallTimer::elapsed()
-{
-   static constexpr double inv_clocks_per_sec = 1.0/CLOCKS_PER_SEC;
-   auto cur_time = std::chrono::high_resolution_clock::now();
-   return std::chrono::duration<double, std::milli>(cur_time-start_time_).count();
+double WallTimer::elapsed() {
+  static constexpr double inv_clocks_per_sec = 1.0 / CLOCKS_PER_SEC;
+  auto cur_time = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration<double, std::milli>(cur_time - start_time_).count();
 }
-  
+
 } // namespace papilio
