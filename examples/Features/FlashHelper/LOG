@@ -1,0 +1,6 @@
+BOARD_HARDWARE_PATH="/home/algernon/Arduino/hardware" /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/bin//kaleidoscope-builder build-all
+Building ./FlashHelper 0.0.0 into /tmp/kaleidoscope-algernon/sketch/4221937-FlashHelper.ino/output
+- Size: firmware/FlashHelper/FlashHelper-0.0.0.elf
+  - Program:   10974 bytes (38.3% Full)
+  - Data:        897 bytes (35.0% Full)
+

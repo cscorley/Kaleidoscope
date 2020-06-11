@@ -1,0 +1,347 @@
+BOARD_HARDWARE_PATH="/home/algernon/Arduino/hardware" /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/bin//kaleidoscope-builder build-all
+Building ./Atreus 0.0.0 into /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/output
+Using board 'keyboardio_atreus' from platform in folder: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr
+Using core 'arduino' from platform in folder: /home/algernon/install/arduino-1.8.12/hardware/arduino/avr
+Detecting libraries used...
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /dev/null
+Alternatives for Kaleidoscope.h: [broken-kaleidoscope@0.0.1 src Kaleidoscope@0.0.1]
+ResolveLibrary(Kaleidoscope.h)
+  -> candidates: [broken-kaleidoscope@0.0.1 src Kaleidoscope@0.0.1]
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /dev/null
+Alternatives for KeyboardioHID.h: [KeyboardioHID@0.0.1]
+ResolveLibrary(KeyboardioHID.h)
+  -> candidates: [KeyboardioHID@0.0.1]
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /dev/null
+Alternatives for EEPROM.h: [EEPROM@2.0]
+ResolveLibrary(EEPROM.h)
+  -> candidates: [EEPROM@2.0]
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/libraries/EEPROM/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /dev/null
+Alternatives for Kaleidoscope-HIDAdaptor-KeyboardioHID.h: [Kaleidoscope-HIDAdaptor-KeyboardioHID@0.0.0]
+ResolveLibrary(Kaleidoscope-HIDAdaptor-KeyboardioHID.h)
+  -> candidates: [Kaleidoscope-HIDAdaptor-KeyboardioHID@0.0.0]
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/libraries/EEPROM/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /dev/null
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/bitfields.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/dygma/Raise.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/dygma/raise/Focus.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/dygma/raise/Hand.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/dygma/raise/TWI.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ez/ErgoDox/ErgoDoxScanner.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ez/ErgoDox/i2cmaster.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ez/ErgoDox.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/kbdfans/KBD4x.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/keyboardio/Atreus.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/keyboardio/Imago.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/keyboardio/Model01.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/keyboardio/twi.c
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/olkb/Planck.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/softhruf/Splitography.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/technomancy/Atreus.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/virtual/DefaultHIDReportConsumer.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/virtual/HID.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/virtual/Logging.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/virtual/Virtual.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/bootloader/avr/FLIP.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/hooks.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/key_events.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/layers.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Colormap.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Cycle.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/CycleTimeReport.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/DynamicMacros.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/DynamicTapDance.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/EEPROM-Keymap-Programmer.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/EEPROM-Keymap.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/EEPROM-Settings/crc.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/EEPROM-Settings.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Escape-OneShot.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/FingerPainter.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/FirmwareDump.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/FocusSerial.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/GeminiPR.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/GhostInTheFirmware.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/HardwareTestMode.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Heatmap.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/HostOS-Focus.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/HostOS.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/HostPowerManagement.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/IdleLEDs.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Jukebox.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-ActiveLayerColor.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-ActiveModColor.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-AlphaSquare/Effect.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-AlphaSquare.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-Palette-Theme.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-Stalker.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LED-Wavepool.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDControl/LED-Off.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDControl/LEDUtils.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDControl.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-BootAnimation.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-BootGreeting.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-Breathe.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-Chase.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-Rainbow.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDEffect-SolidColor.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LEDModeInterface.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/LayerFocus.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Leader.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Macros.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/MagicCombo.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Miami.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/MouseKeys/MouseWrapper.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/MouseKeys.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/NumPad.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/OneShot.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/PersistentLEDMode.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Qukeys.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Redial.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/ShapeShifter.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/SpaceCadet.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Syster.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/TapDance.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/TopsyTurvy.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/TriColor.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Turbo.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/TypingBreaks.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/USB-Quirks.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/Unicode.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/plugin/WinKeyToggle.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope_internal/LEDModeManager.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope_internal/device.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope_internal/sketch_exploration/sketch_exploration.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/BootKeyboard/BootKeyboard.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/HID.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/HIDReportObserver.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/AbsoluteMouse.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/ConsumerControl.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/Gamepad.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/Keyboard.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/Mouse.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/MultiReport/SystemControl.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/SingleReport/SingleAbsoluteMouse.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/arch/avr.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src/arch/samd.cpp
+Using cached library dependencies for file: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/src/kaleidoscope/hid.cpp
+Generating function prototypes...
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -w -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -w -x c++ -E -CC -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/libraries/EEPROM/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/preproc/ctags_target_for_gcc_minus_e.cpp
+/home/algernon/install/arduino/tools-builder/ctags/5.8-arduino11/ctags -u --language-force=c++ -f - --c++-kinds=svpf --fields=KSTtzns --line-directives /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/preproc/ctags_target_for_gcc_minus_e.cpp
+Compiling sketch...
+mv /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp.bak
+sh -c "cat /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope_internal/sketch_preprocessing/sketch_header.h /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp.bak /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope_internal/sketch_preprocessing/sketch_footer.h > /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp"
+/tmp/kaleidoscope-algernon/ccache/bin/avr-g++ -c -g -Os -Wall -Wextra -std=c++14 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-qualifiers -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID/src -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/libraries/EEPROM/src -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/src /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp -o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp.o
+Compiling libraries...
+Compiling library "Kaleidoscope"
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/Runtime.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/key_events.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/layers.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/bitfields.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/hooks.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/dygma/Raise.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/dygma/raise/Focus.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/dygma/raise/Hand.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/dygma/raise/TWI.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/ez/ErgoDox.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/ez/ErgoDox/ErgoDoxScanner.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/ez/ErgoDox/i2cmaster.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/kbdfans/KBD4x.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/keyboardio/twi.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/keyboardio/Imago.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/keyboardio/Model01.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/keyboardio/Atreus.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/olkb/Planck.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/softhruf/Splitography.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/technomancy/Atreus.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/virtual/DefaultHIDReportConsumer.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/virtual/Virtual.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/virtual/HID.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/device/virtual/Logging.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/driver/bootloader/avr/FLIP.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Colormap.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/DynamicTapDance.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/EEPROM-Keymap-Programmer.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/EEPROM-Keymap.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/EEPROM-Settings.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Escape-OneShot.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Cycle.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/DynamicMacros.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/CycleTimeReport.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/FingerPainter.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/FirmwareDump.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/GeminiPR.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/HardwareTestMode.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/GhostInTheFirmware.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/FocusSerial.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Heatmap.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/HostOS-Focus.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/IdleLEDs.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/HostPowerManagement.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/HostOS.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-ActiveLayerColor.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Jukebox.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-ActiveModColor.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-Palette-Theme.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-Stalker.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDControl.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-AlphaSquare.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-Wavepool.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-BootAnimation.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-BootGreeting.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-SolidColor.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-Chase.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDModeInterface.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-Rainbow.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Leader.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Macros.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LayerFocus.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/MagicCombo.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/MouseKeys.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/NumPad.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/OneShot.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Miami.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDEffect-Breathe.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/PersistentLEDMode.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Qukeys.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Redial.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/SpaceCadet.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Syster.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/ShapeShifter.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/TopsyTurvy.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/TapDance.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Turbo.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/TriColor.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/TypingBreaks.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/USB-Quirks.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/Unicode.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/WinKeyToggle.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/EEPROM-Settings/crc.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LED-AlphaSquare/Effect.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDControl/LED-Off.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/LEDControl/LEDUtils.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope/plugin/MouseKeys/MouseWrapper.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope_internal/LEDModeManager.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope_internal/device.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/kaleidoscope_internal/sketch_exploration/sketch_exploration.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a
+Compiling library "KeyboardioHID"
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/HID.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/HIDReportObserver.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/BootKeyboard/BootKeyboard.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/AbsoluteMouse.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/ConsumerControl.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/Gamepad.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/Keyboard.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/Mouse.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/MultiReport/SystemControl.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/SingleReport/SingleAbsoluteMouse.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/arch/avr.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/arch/samd.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/KeyboardioHID.a
+Compiling library "EEPROM"
+Compiling library "Kaleidoscope-HIDAdaptor-KeyboardioHID"
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/kaleidoscope/hid.cpp.o
+Compiling core...
+/tmp/kaleidoscope-algernon/ccache/bin/avr-gcc -c -g -x assembler-with-cpp -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10607 -DARDUINO_AVR_KEYBOARDIO_ATREUS -DARDUINO_ARCH_AVR -DUSB_VID=0x1209 -DUSB_PID=0x2303 "-DUSB_MANUFACTURER=\"Keyboardio\"" "-DUSB_PRODUCT=\"Atreus\"" "-DKALEIDOSCOPE_HARDWARE_H=\"Kaleidoscope-Hardware-Keyboardio-Atreus.h\"" -DUSB_CONFIG_POWER=(25) -I/home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino -I/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/variants/keyboardio-atreus /home/algernon/install/arduino-1.8.12/hardware/arduino/avr/cores/arduino/wiring_pulse.S -o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_pulse.S.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WInterrupts.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_analog.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_digital.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/hooks.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_shift.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_pulse.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring.c.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/CDC.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial2.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/IPAddress.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/PluggableUSB.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial1.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Stream.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Print.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Tone.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/USBCore.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial3.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial0.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WMath.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/abi.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/main.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/new.cpp.o
+Using previously compiled file: /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WString.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_pulse.S.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WInterrupts.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/hooks.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_analog.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_digital.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_pulse.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/wiring_shift.c.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/CDC.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial0.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial1.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial2.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/HardwareSerial3.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/IPAddress.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/PluggableUSB.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Print.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Stream.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/Tone.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/USBCore.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WMath.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/WString.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/abi.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/main.cpp.o
+/tmp/kaleidoscope-algernon/ccache/bin/avr-ar rcs /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/new.cpp.o
+Archiving built core (caching) in: /tmp/kaleidoscope-algernon/arduino-cores/core/core_keyboardio_avr_keyboardio_atreus_2a6be0fce726d9aaa7d7c9c75e57f6bd.a
+Linking everything together...
+rm -f /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/Atreus.ino_joined.a
+/tmp/kaleidoscope-algernon/ccache/bin//avr-ar rcT /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/Atreus.ino_joined.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/sketch/Atreus.ino.cpp.o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/KeyboardioHID/KeyboardioHID.a /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID/kaleidoscope/hid.cpp.o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/core/core.a
+/tmp/kaleidoscope-algernon/ccache/bin/avr-gcc -w -Os -Wl,--gc-sections -Wl,-Map=/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/Atreus.ino.elf.map -mmcu=atmega32u4 -o /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/Atreus.ino.elf /tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/Atreus.ino_joined.a -L/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build -lm
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o): In function `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::actOnMatrixScan()':
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::previousKeyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::previousKeyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::keyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::keyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)'
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o):/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: more undefined references to `kaleidoscope::driver::keyscanner::Base<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::handleKeyswitchEvent(kaleidoscope::Key, kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>, unsigned char)' follow
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o): In function `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::readCols()':
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/Runtime.cpp:26: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins'
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o): In function `wdt_disable':
+/home/algernon/install/arduino-1.8.12/hardware/tools/avr/avr/include/avr/wdt.h:528: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins'
+/home/algernon/install/arduino-1.8.12/hardware/tools/avr/avr/include/avr/wdt.h:528: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins'
+/home/algernon/install/arduino-1.8.12/hardware/tools/avr/avr/include/avr/wdt.h:528: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins'
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o):/home/algernon/install/arduino-1.8.12/hardware/tools/avr/avr/include/avr/wdt.h:528: more undefined references to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_col_pins' follow
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o): In function `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::setup()':
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:97: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:97: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:97: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:97: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(Runtime.cpp.o): In function `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::readMatrix()':
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::keyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::keyState_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps::matrix_row_pins'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:118: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:119: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:119: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::debounce_matrix_'
+/tmp/kaleidoscope-algernon/sketch/4550760-Atreus.ino/build/libraries/Kaleidoscope/Kaleidoscope.a(key_events.cpp.o): In function `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::isKeyMasked(kaleidoscope::MatrixAddr<(unsigned char)4, (unsigned char)12>)':
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:195: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::masks_'
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/keyscanner/ATmega.h:195: undefined reference to `kaleidoscope::driver::keyscanner::ATmega<kaleidoscope::device::keyboardio::AtreusProps::KeyScannerProps>::masks_'
+collect2: error: ld returned 1 exit status
+Multiple libraries were found for "Kaleidoscope.h"
+ Used: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope
+ Not used: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/broken-kaleidoscope
+ Not used: /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/src
+Using library Kaleidoscope at version 0.0.1 in folder: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope 
+Using library KeyboardioHID at version 0.0.1 in folder: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/KeyboardioHID 
+Using library EEPROM at version 2.0 in folder: /home/algernon/install/arduino-1.8.12/hardware/arduino/avr/libraries/EEPROM 
+Using library Kaleidoscope-HIDAdaptor-KeyboardioHID at version 0.0.0 in folder: /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope-HIDAdaptor-KeyboardioHID 
+exit status 1
+make: *** [/home/algernon/Arduino/hardware/keyboardio/avr/build-tools/makefiles//rules.mk:80: build-all] Error 1

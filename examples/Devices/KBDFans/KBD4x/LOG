@@ -1,0 +1,6 @@
+BOARD_HARDWARE_PATH="/home/algernon/Arduino/hardware" /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/bin//kaleidoscope-builder build-all
+Building ./KBD4x 0.0.0 into /tmp/kaleidoscope-algernon/sketch/3805629-KBD4x.ino/output
+- Size: firmware/KBD4x/KBD4x-0.0.0.elf
+  - Program:   11208 bytes (39.1% Full)
+  - Data:        660 bytes (25.8% Full)
+

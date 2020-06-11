@@ -1,0 +1,22 @@
+BOARD_HARDWARE_PATH="/home/algernon/Arduino/hardware" /home/algernon/Arduino/hardware/keyboardio/avr/libraries/Kaleidoscope/bin//kaleidoscope-builder build-all
+Building ./Splitography 0.0.0 into /tmp/kaleidoscope-algernon/sketch/4038469-Splitography.ino/output
+In file included from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/softhruf/Splitography.h:35:0,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/Kaleidoscope-Hardware-SOFTHRUF-Splitography.h:21,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/device.h:22,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/Kaleidoscope.h:40,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/examples/Devices/SOFTHRUF/Splitography/Splitography.ino:20:
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ATmega32U4Keyboard.h:95:11: error: invalid use of template-name 'kaleidoscope::driver::mcu::ATmega32U4' without an argument list
+   typedef kaleidoscope::driver::mcu::ATmega32U4 MCU;
+           ^~~~~~~~~~~~
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ATmega32U4Keyboard.h:95:11: note: class template argument deduction is only available with -std=c++1z or -std=gnu++1z
+In file included from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/ATmega32U4Keyboard.h:25:0,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/softhruf/Splitography.h:35,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/Kaleidoscope-Hardware-SOFTHRUF-Splitography.h:21,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/device/device.h:22,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/Kaleidoscope.h:40,
+                 from /home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/examples/Devices/SOFTHRUF/Splitography/Splitography.ino:20:
+/home/algernon/src/keyboardio/Kaleidoscope-Bundle-Keyboardio/avr/libraries/Kaleidoscope/src/kaleidoscope/driver/mcu/ATmega32U4.h:28:7: note: 'template<class _Props> class kaleidoscope::driver::mcu::ATmega32U4' declared here
+ class ATmega32U4 : public kaleidoscope::driver::mcu::Base {
+       ^~~~~~~~~~
+exit status 1
+make: *** [/home/algernon/Arduino/hardware/keyboardio/avr/build-tools/makefiles//rules.mk:80: build-all] Error 1
