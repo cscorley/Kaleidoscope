@@ -16,7 +16,7 @@
  */
 
 #include "papilio/actions/Grouped.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 
 namespace papilio {
 namespace actions {

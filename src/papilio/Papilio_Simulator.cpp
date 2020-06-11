@@ -17,7 +17,7 @@
 
 #include "Arduino.h"
 
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 #include "papilio/ActionContainer_Impl.h"
 #include "papilio/actions/Action_.h"
 #include "papilio/aux/WallTimer.h"

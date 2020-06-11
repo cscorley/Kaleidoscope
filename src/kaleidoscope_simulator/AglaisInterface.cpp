@@ -23,7 +23,7 @@
 #include "Aglais.h"
 #include "aglais/Consumer_.h"
 #include "papilio/actions/generic_report/AssertReportEquals.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 #include "HID-Settings.h"
 
 namespace kaleidoscope {

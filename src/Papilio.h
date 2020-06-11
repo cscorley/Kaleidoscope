@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 #include "papilio/Visualization.h"
 #include "papilio/LED_Checks.h"
 

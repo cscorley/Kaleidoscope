@@ -17,7 +17,7 @@
  */
 
 #include "kaleidoscope_simulator/reports/AbsoluteMouseReport.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 
 namespace kaleidoscope {
 namespace simulator {

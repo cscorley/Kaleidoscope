@@ -20,7 +20,7 @@
 #include "kaleidoscope_simulator/reports/KeyboardReport.h"
 #include "kaleidoscope_simulator/reports/MouseReport.h"
 #include "kaleidoscope_simulator/reports/AbsoluteMouseReport.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 
 #ifdef __unix__ /* __unix__ is usually defined by compilers targeting Unix systems */
 

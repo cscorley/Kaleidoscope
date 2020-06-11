@@ -16,7 +16,7 @@
  */
 
 #include "papilio/LED_Checks.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 #include "papilio/SimulatorCore_.h"
 
 #include <iostream>

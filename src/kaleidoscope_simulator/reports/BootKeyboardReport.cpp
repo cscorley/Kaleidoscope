@@ -24,7 +24,7 @@
 
 #include "kaleidoscope_simulator/reports/BootKeyboardReport.h"
 #include "kaleidoscope_simulator/aux/exceptions.h"
-#include "papilio/Simulator.h"
+#include "papilio/Papilio_Simulator.h"
 #include "papilio/SimulatorCore_.h"
 #include "MultiReport/Keyboard.h"
 
