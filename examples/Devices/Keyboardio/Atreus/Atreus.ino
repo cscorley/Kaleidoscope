@@ -1,5 +1,5 @@
 /* -*- mode: c++ -*-
- * Atreus -- Chrysalis-enabled Sketch for the Atreus2
+ * Atreus -- Chrysalis-enabled Sketch for the Keyboardio Atreus
  * Copyright (C) 2018, 2019  Keyboard.io, Inc
  *
  * This program is free software; you can redistribute it and/or modify
@@ -123,7 +123,7 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 void setup() {
   Kaleidoscope.setup();
   SpaceCadet.disable();
-  EEPROMKeymap.setup(5);
+  EEPROMKeymap.setup(10);
 }
 
 void loop() {
