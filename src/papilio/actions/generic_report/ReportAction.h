@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Action_.h"
 #include "papilio/reports/Report_.h"
 
@@ -89,3 +91,5 @@ class ReportAction : public ReportAction_ {
 };
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

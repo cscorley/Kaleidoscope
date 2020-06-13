@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 namespace papilio {
 class Simulator;
 } // namespace papilio
@@ -28,3 +30,5 @@ void processAglaisDocument(const char *code, papilio::Simulator &sim);
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

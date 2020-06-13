@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #undef min
 #undef max
 
@@ -213,3 +215,5 @@ auto unwrapAction(const _T &action) -> decltype(action.ptr()) {
       {                                                                        \
          __VA_ARGS__                                                           \
       }
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

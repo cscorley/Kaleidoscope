@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/LED_Checks.h"
 #include "papilio/Papilio_Simulator.h"
 #include "papilio/SimulatorCore_.h"
@@ -93,3 +95,5 @@ void assertKeyLEDState(const Simulator &simulator,
 }
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

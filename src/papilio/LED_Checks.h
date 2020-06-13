@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include <stdint.h>
 
 namespace papilio {
@@ -36,3 +38,5 @@ void assertKeyLEDState(const Simulator &simulator,
                        const uint8_t key_led_colors[][3]);
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

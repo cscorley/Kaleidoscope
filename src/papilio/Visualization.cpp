@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/Visualization.h"
 #include "papilio/Papilio_Simulator.h"
 #include "papilio/SimulatorCore_.h"
@@ -146,3 +148,5 @@ void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard) {
 }
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

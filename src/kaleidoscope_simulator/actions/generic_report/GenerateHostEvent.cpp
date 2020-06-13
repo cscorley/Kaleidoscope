@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/actions/generic_report/GenerateHostEvent.h"
 #include "kaleidoscope_simulator/reports/BootKeyboardReport.h"
 #include "kaleidoscope_simulator/reports/KeyboardReport.h"
@@ -392,3 +394,5 @@ bool GenerateHostEvent<AbsoluteMouseReport>::Action::evalInternal() {
 #else
 #error __CLANG_ATOMIC_LLONG_LOCK_FREE
 #endif
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 // Important: Leave stdint.h the first header as some other Kaleidoscope
 //            related stuff depends on standard integer types to be defined
 //            (Arduino defines them auto-magically).
@@ -239,3 +241,5 @@ KeyboardReport
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

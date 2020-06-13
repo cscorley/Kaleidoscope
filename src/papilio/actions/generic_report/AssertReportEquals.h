@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/generic_report/ReportAction.h"
 #include "papilio/Papilio_Simulator.h"
 
@@ -89,3 +91,5 @@ class AssertReportEquals {
 
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

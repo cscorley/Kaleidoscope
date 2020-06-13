@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/AglaisInterface.h"
 #include "kaleidoscope_simulator/reports/KeyboardReport.h"
 #include "kaleidoscope_simulator/reports/BootKeyboardReport.h"
@@ -158,3 +160,5 @@ void processAglaisDocument(const char *code, papilio::Simulator &simulator) {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

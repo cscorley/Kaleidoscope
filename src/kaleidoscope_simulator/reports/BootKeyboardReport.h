@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope/key_defs.h"
 #include "papilio/reports/BootKeyboardReport_.h"
 #include "BootKeyboard/BootKeyboard.h"
@@ -144,3 +146,5 @@ class BootKeyboardReport : public papilio::BootKeyboardReport_ {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

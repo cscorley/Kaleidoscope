@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Grouped.h"
 #include "papilio/aux/demangle.h"
 
@@ -157,3 +159,5 @@ class ActionContainer {
 };
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

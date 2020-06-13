@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Action_.h"
 #include "papilio/Papilio_Simulator.h"
 
@@ -69,3 +71,5 @@ class AssertCycleGeneratesNReports {
 
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

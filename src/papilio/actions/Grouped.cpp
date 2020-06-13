@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Grouped.h"
 #include "papilio/Papilio_Simulator.h"
 
@@ -43,3 +45,5 @@ void Grouped<ReportAction_>::Action::determineGroupType() {
 }
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

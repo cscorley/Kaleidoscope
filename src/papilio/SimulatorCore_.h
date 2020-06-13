@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include <string>
 #include <stdint.h>
 
@@ -108,3 +110,5 @@ class SimulatorCore_ {
 };
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

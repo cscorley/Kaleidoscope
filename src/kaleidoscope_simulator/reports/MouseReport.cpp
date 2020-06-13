@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/reports/MouseReport.h"
 
 #include "papilio/Papilio_Simulator.h"
@@ -109,3 +111,5 @@ void MouseReport::setReportData(const HID_MouseReport_Data_t &report_data) {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

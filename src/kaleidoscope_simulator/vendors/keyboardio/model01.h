@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 namespace kaleidoscope {
 namespace simulator {
 namespace keyboardio {
@@ -33,3 +35,5 @@ extern const char *ascii_keyboard;
 } // namespace keyboardio
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

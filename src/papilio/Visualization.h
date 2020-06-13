@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 namespace papilio {
 
 class Simulator;
@@ -30,3 +32,5 @@ class Simulator;
 void renderKeyboard(const Simulator &simulator, const char *ascii_keyboard);
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/vendors/keyboardio/model01.h"
 
 namespace papilio {
@@ -42,3 +44,5 @@ const char *ascii_keyboard =
 } // namespace model01
 } // namespace keyboardio
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

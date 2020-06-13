@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/generic_report/ReportAction.h"
 #include "papilio/reports/Report_.h"
 
@@ -83,3 +85,5 @@ class GenerateHostEvent {
 } // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

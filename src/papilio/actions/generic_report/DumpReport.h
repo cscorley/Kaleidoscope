@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/generic_report/ReportAction.h"
 
 namespace papilio {
@@ -56,3 +58,5 @@ class DumpReport {
 
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

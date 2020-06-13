@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/reports/Report_.h"
 
 // Undefine some macros defined by Arduino
@@ -84,3 +86,5 @@ class BootKeyboardReport_ : public Report_ {
 };
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

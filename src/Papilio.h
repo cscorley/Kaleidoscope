@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/Papilio_Simulator.h"
 #include "papilio/Visualization.h"
 #include "papilio/LED_Checks.h"
@@ -44,3 +46,5 @@
 #include "papilio/actions/keyboard_report/AssertAnyKeycodeActive.h"
 #include "papilio/actions/keyboard_report/AssertKeycodesActive.h"
 #include "papilio/actions/keyboard_report/AssertAnyModifierActive.h"
+
+#endif

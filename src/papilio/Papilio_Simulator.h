@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/ActionContainer.h"
 #include "papilio/ActionQueueAdaptor.h"
 #include "papilio/reports/BootKeyboardReport_.h"
@@ -862,3 +864,5 @@ class Simulator {
    SIMULATOR.assertCondition((__VA_ARGS__), #__VA_ARGS__)
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

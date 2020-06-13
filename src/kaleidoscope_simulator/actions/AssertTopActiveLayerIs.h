@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Action_.h"
 
 #include "kaleidoscope/layers.h"
@@ -70,3 +72,5 @@ class AssertTopActiveLayerIs {
 } // namespace actions
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

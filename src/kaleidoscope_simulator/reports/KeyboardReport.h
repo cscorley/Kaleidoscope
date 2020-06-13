@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include <stdint.h>
 
 #include "kaleidoscope/key_defs.h"
@@ -146,3 +148,5 @@ class KeyboardReport : public papilio::KeyboardReport_ {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

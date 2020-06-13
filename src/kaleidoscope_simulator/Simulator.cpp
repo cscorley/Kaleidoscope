@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/Simulator.h"
 #include "kaleidoscope_simulator/SimulatorCore.h"
 #include "kaleidoscope_simulator/reports/KeyboardReport.h"
@@ -84,3 +86,5 @@ void Simulator::processHIDReport(uint8_t id, const void* data,
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

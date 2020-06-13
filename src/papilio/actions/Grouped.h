@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/Papilio_Simulator.h"
 #include "papilio/actions/Action_.h"
 #include "papilio/actions/generic_report/ReportAction.h"
@@ -232,3 +234,5 @@ Grouped<ReportAction_> group_(ReportAction_ &action_dummy, const std::shared_ptr
 
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

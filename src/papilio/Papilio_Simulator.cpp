@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "Arduino.h"
 
 #include "papilio/Papilio_Simulator.h"
@@ -657,3 +659,5 @@ void Simulator::runRemoteControlled(const std::function<void()> &cycle_callback,
 }
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

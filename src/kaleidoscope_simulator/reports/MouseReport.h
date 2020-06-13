@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "MultiReport/Mouse.h"
 #include "papilio/reports/MouseReport_.h"
 
@@ -152,3 +154,5 @@ class MouseReport : public papilio::MouseReport_ {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "DeviceAPIs/AbsoluteMouseAPI.h"
 #include "papilio/reports/AbsoluteMouseReport_.h"
 
@@ -155,3 +157,5 @@ class AbsoluteMouseReport : public papilio::AbsoluteMouseReport_ {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

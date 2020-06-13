@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/Action_.h"
 #include "papilio/aux/demangle.h"
 #include "papilio/Papilio_Simulator.h"
@@ -58,3 +60,5 @@ void Action_::describeState(const char *add_indent) const {
 }
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

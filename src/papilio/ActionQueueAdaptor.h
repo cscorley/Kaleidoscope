@@ -17,6 +17,7 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
 
 namespace papilio {
 
@@ -93,3 +94,5 @@ class ActionQueueAdaptor {
 };
 
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

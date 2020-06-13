@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/actions/generic_report/ReportAction.h"
 #include "papilio/SimulatorCore_.h"
 
@@ -164,3 +166,5 @@ class AssertKeycodesActive {
 
 } // namespace actions
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 namespace papilio {
 namespace keyboardio {
 namespace model01 {
@@ -30,3 +32,5 @@ extern const char *ascii_keyboard;
 } // namespace model01
 } // namespace keyboardio
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

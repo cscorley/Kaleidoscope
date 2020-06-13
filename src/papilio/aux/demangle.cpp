@@ -15,6 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/aux/demangle.h"
 #ifdef __GNUG__
 #include <cstdlib>
@@ -48,3 +50,5 @@ std::string demangle(const char* name) {
 
 #endif
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

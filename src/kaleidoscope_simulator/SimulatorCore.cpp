@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/SimulatorCore.h"
 
 #include "Kaleidoscope.h"
@@ -469,3 +471,5 @@ void SimulatorCore::loop() {
 unsigned long millis(void) {
   return kaleidoscope::simulator::millis;
 }
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

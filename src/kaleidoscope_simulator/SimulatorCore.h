@@ -18,6 +18,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "papilio/SimulatorCore_.h"
 
 namespace kaleidoscope {
@@ -57,3 +59,5 @@ class SimulatorCore : public papilio::SimulatorCore_ {
 
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

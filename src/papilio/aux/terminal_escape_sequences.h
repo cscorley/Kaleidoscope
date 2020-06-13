@@ -17,6 +17,8 @@
 
 #pragma once
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 namespace papilio {
 namespace terminal_escape_sequences {
 
@@ -27,3 +29,5 @@ constexpr char cursor_to_upper_left[] = "\x1B[0;0H";
 
 } // namespace terminal_escape_sequences
 } // namespace papilio
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD

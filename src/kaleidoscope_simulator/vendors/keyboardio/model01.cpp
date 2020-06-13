@@ -16,6 +16,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef KALEIDOSCOPE_VIRTUAL_BUILD
+
 #include "kaleidoscope_simulator/vendors/keyboardio/model01.h"
 
 namespace kaleidoscope {
@@ -45,3 +47,5 @@ const char *ascii_keyboard =
 } // namespace keyboardio
 } // namespace simulator
 } // namespace kaleidoscope
+
+#endif // KALEIDOSCOPE_VIRTUAL_BUILD
